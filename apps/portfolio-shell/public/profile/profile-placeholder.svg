@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 600" role="img" aria-labelledby="title desc">
+  <title id="title">Profile picture placeholder for Vishnu Thankappan</title>
+  <desc id="desc">A restrained abstract profile image placeholder using the initials VT.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fafafa"/>
+      <stop offset="1" stop-color="#e4e4e7"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="600" fill="url(#bg)"/>
+  <circle cx="240" cy="222" r="88" fill="#d4d4d8"/>
+  <path d="M86 530c20-112 80-176 154-176s134 64 154 176" fill="#d4d4d8"/>
+  <text x="240" y="534" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="38" font-weight="700" fill="#52525b">VT</text>
+</svg>

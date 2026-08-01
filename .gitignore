@@ -45,3 +45,15 @@ Thumbs.db
 .claude/settings.local.json
 
 .angular
+
+# Python AI lab
+ml/.venv/
+ml/.env
+ml/.env.*
+!ml/.env.example
+ml/data/raw/*
+ml/data/processed/*
+ml/artifacts/*
+!ml/data/raw/.gitkeep
+!ml/data/processed/.gitkeep
+!ml/artifacts/.gitkeep

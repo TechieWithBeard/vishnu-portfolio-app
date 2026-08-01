@@ -1,0 +1,45 @@
+[
+  {
+    "id": "rag-chat",
+    "title": "RAG Document Q&A Chat",
+    "description": "Streaming AI chat interface with source citations, built as an Angular microfrontend.",
+    "type": "native-federation",
+    "remoteName": "demoAngularRag",
+    "exposedModule": "./Component",
+    "status": "planned",
+    "tech": ["Angular 22", "LangChain", "Streaming"],
+    "tags": ["AI", "RAG", "Angular"]
+  },
+  {
+    "id": "agent-dashboard",
+    "title": "Multi-Agent Dashboard",
+    "description": "Real-time visualization of LangGraph agent workflows with human-in-the-loop controls.",
+    "type": "native-federation",
+    "remoteName": "demoAngularAgents",
+    "exposedModule": "./Component",
+    "status": "planned",
+    "tech": ["Angular", "LangGraph", "Signals"],
+    "tags": ["AI", "Agents", "Angular"]
+  },
+  {
+    "id": "react-ai-chat",
+    "title": "React + Vercel AI SDK Chat",
+    "description": "Modern AI chat built with React and Vercel AI SDK to demonstrate cross-framework capability.",
+    "type": "module-federation",
+    "remoteName": "demoReactAi",
+    "status": "planned",
+    "tech": ["React", "Vercel AI SDK", "TypeScript"],
+    "tags": ["AI", "React"]
+  },
+  {
+    "id": "streamlit-ai-demo",
+    "title": "Streamlit AI Prototype",
+    "description": "Hosted Streamlit application demonstrating rapid AI prototyping. Embedded securely via iframe.",
+    "type": "iframe",
+    "url": "https://YOUR_STREAMLIT_APP.streamlit.app",
+    "status": "planned",
+    "tech": ["Streamlit", "Python", "LangChain"],
+    "tags": ["AI", "Streamlit", "Prototyping"],
+    "sandbox": "allow-scripts allow-same-origin allow-forms allow-popups"
+  }
+]

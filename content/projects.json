@@ -1,0 +1,65 @@
+[
+  {
+    "id": "nx-monorepo-optimization",
+    "title": "Large-Scale Nx Monorepo Optimization",
+    "description": "Restructured a monorepo supporting 5+ Angular applications, significantly improving CI feedback loops and developer experience.",
+    "role": "Senior Frontend Engineer",
+    "tech": ["Angular", "Nx", "TypeScript", "CI/CD"],
+    "highlights": [
+      "25–35% reduction in build & test times",
+      "Improved consistency across teams via shared libraries"
+    ],
+    "github": null,
+    "liveDemo": null,
+    "featured": true,
+    "category": "Architecture"
+  },
+  {
+    "id": "angularjs-to-angular-migration",
+    "title": "Enterprise AngularJS → Angular Migration",
+    "description": "Led migration of multiple legacy modules to modern Angular, enabling long-term framework support and better performance.",
+    "role": "Frontend Specialist",
+    "tech": ["Angular", "NgRx", "TypeScript", "RxJS"],
+    "highlights": [
+      "Improved runtime performance and maintainability",
+      "Standardized state management with NgRx"
+    ],
+    "github": null,
+    "liveDemo": null,
+    "featured": true,
+    "category": "Modernization"
+  },
+  {
+    "id": "ai-rag-chat",
+    "title": "Production RAG Chat Interface (Coming)",
+    "description": "Angular + LangChain powered document Q&A interface with streaming responses, source citations, and evaluation feedback loops. Flagship AI demo.",
+    "role": "Personal / Portfolio",
+    "tech": ["Angular 22", "LangChain", "LangGraph", "Nx", "Streaming UI"],
+    "highlights": [
+      "Streaming responses with proper UX",
+      "Source citations and feedback collection",
+      "Designed as a microfrontend remote"
+    ],
+    "github": "https://github.com/YOUR_USERNAME/ai-rag-chat",
+    "liveDemo": "/demos/rag-chat",
+    "demoType": "native-federation",
+    "featured": true,
+    "category": "AI Interfaces"
+  },
+  {
+    "id": "multi-agent-dashboard",
+    "title": "Multi-Agent Workflow Dashboard (Coming)",
+    "description": "Visual monitoring and control interface for LangGraph multi-agent systems.",
+    "role": "Personal / Portfolio",
+    "tech": ["Angular", "LangGraph", "Signals", "Real-time UI"],
+    "highlights": [
+      "Real-time agent execution visualization",
+      "Human-in-the-loop patterns"
+    ],
+    "github": null,
+    "liveDemo": "/demos/agents",
+    "demoType": "native-federation",
+    "featured": true,
+    "category": "AI Interfaces"
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "1",
+    "title": "Add your Medium / LinkedIn articles here",
+    "platform": "medium",
+    "url": "https://medium.com/@yourusername/your-article",
+    "publishedAt": "2026-07-01",
+    "summary": "Short description of the article. This will be replaced by live Medium RSS feed later.",
+    "tags": ["Angular", "Architecture"]
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/ml/.venv/bin/python",
+  "python.analysis.extraPaths": ["${workspaceFolder}/ml/src"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["ml/tests"]
+}

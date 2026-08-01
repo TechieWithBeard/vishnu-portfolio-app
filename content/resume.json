@@ -1,0 +1,73 @@
+{
+  "name": "Vishnu Thankappan",
+  "title": "Senior Frontend Engineer",
+  "tagline": "Scalable UI Architecture • AI-Powered Interfaces • Open to Opportunities",
+  "location": "Bangalore, India",
+  "email": "vishnut071@gmail.com",
+  "phone": "+91-8373923785",
+  "linkedin": "https://www.linkedin.com/in/vishnu-thankappan-7bbb0675/",
+  "github": "https://github.com/YOUR_GITHUB_USERNAME",
+  "summary": "Senior Frontend Engineer with 7+ years of experience building and evolving large-scale, user-facing web platforms. Strong background in frontend architecture, Nx monorepos, reusable design systems, and performance-critical Angular applications. Currently expanding into AI-powered interfaces with LangChain and modern React/Next.js. Proven experience modernizing legacy systems and shipping production-grade features in distributed European client environments.",
+  "availability": {
+    "status": "Open to opportunities",
+    "target": "Senior Frontend / AI Frontend roles",
+    "note": "Available for remote, hybrid, and relocation-friendly opportunities"
+  },
+  "experience": [
+    {
+      "role": "Senior Frontend Engineer",
+      "company": "Parnasoft Technologies — Client: AVEVA",
+      "period": "March 2025 – Present",
+      "location": "European client environment",
+      "highlights": [
+        "Optimized and restructured a large Nx monorepo supporting 5+ Angular applications, reducing build and test times by ~25–35%",
+        "Designed and migrated shared widget and UI libraries, reducing duplicated frontend code by ~30–40%",
+        "Established frontend testing strategy (unit, integration, e2e) using Karma, Cypress, and Playwright",
+        "Refined modular frontend architecture and abstraction boundaries, reducing onboarding time and maintenance overhead"
+      ]
+    },
+    {
+      "role": "Frontend Specialist",
+      "company": "ACI Logistix",
+      "period": "March 2022 – March 2025",
+      "highlights": [
+        "Led migration of multiple legacy AngularJS modules to Angular (v14+), improving runtime performance and maintainability",
+        "Introduced NgRx-based state management across modules",
+        "Published and maintained internal npm packages via Azure Artifacts",
+        "Developed cross-platform applications using Ionic",
+        "Automated internal workflows using Power Apps and Power Platform"
+      ]
+    },
+    {
+      "role": "Expert Frontend Engineer",
+      "company": "Maistering B.V",
+      "period": "January 2019 – March 2022",
+      "location": "European client environment",
+      "highlights": [
+        "Developed and maintained frontend applications using Angular and NgRx",
+        "Worked on full-stack features involving Angular and .NET",
+        "Built a cross-platform mobile application using Xamarin",
+        "Followed Agile/Scrum practices and contributed to architectural discussions"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master of Computer Applications",
+      "institution": "Manipal Academy of Higher Education",
+      "period": "2016 – 2018"
+    },
+    {
+      "degree": "Bachelor of Science in Computer Science",
+      "institution": "Malankara Catholic College",
+      "period": "2011 – 2014"
+    }
+  ],
+  "skills": {
+    "frontendArchitecture": ["Angular", "Nx Monorepos", "Design Systems", "Modular UI Architecture", "TypeScript", "NgRx", "Signals"],
+    "aiInterfaces": ["LangChain", "LangGraph", "RAG Applications", "Streaming UIs", "Vercel AI SDK (learning)", "Agentic Interfaces"],
+    "testingQuality": ["Playwright", "Cypress", "Jasmine/Karma", "Testing Strategy", "Accessibility (WCAG)"],
+    "tooling": ["Git", "CI/CD", "Azure", "Storybook", "Webpack", "REST APIs"],
+    "crossPlatform": ["Ionic", "Xamarin"]
+  }
+}
