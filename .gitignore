@@ -57,3 +57,4 @@ ml/artifacts/*
 !ml/data/raw/.gitkeep
 !ml/data/processed/.gitkeep
 !ml/artifacts/.gitkeep
+ml/.venv310/*
