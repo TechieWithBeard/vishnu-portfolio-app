@@ -1,30 +1,6 @@
 import os
 from pathlib import Path
 from typing import Any
-
-for proxy_var in (
-    "HTTP_PROXY",
-    "HTTPS_PROXY",
-    "ALL_PROXY",
-    "GRPC_PROXY",
-    "FTP_PROXY",
-    "RSYNC_PROXY",
-    "DOCKER_HTTP_PROXY",
-    "DOCKER_HTTPS_PROXY",
-    "CLOUDSDK_PROXY_ADDRESS",
-    "CLOUDSDK_PROXY_PORT",
-    "CLOUDSDK_PROXY_TYPE",
-    "http_proxy",
-    "https_proxy",
-    "all_proxy",
-    "grpc_proxy",
-    "ftp_proxy",
-    "rsync_proxy",
-    "SOCKS_PROXY",
-    "socks_proxy",
-):
-    os.environ.pop(proxy_var, None)
-
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.output_parsers import StrOutputParser
@@ -42,21 +18,16 @@ def get_vector_store(collection_name: str = "example_collection") -> Chroma:
         base_url="http://localhost:11434",
     )
 
-    kwargs = {}
     api_key = os.getenv("CHROMA_API_KEY")
     tenant = os.getenv("CHROMA_TENANT")
     database = os.getenv("CHROMA_DATABASE")
-    if api_key and tenant and database:
-        kwargs = {
-            "chroma_cloud_api_key": api_key,
-            "tenant": tenant,
-            "database": database,
-        }
-
+    
     return Chroma(
         collection_name=collection_name,
         embedding_function=embeddings,
-        **kwargs,
+        chroma_cloud_api_key=api_key,
+        tenant=tenant,
+        database=database,
     )
 
 
@@ -125,7 +96,7 @@ def _build_rag_answer(question: str, docs: list[tuple[Any, float]]) -> str:
 
 def build_rag_chain():
     """Return a reusable chain that checks the vector store and answers from retrieved context."""
-
+    
     def retrieve_documents(payload: dict[str, Any]) -> dict[str, Any]:
         question = payload["query"]
         docs = _get_relevant_docs(question)

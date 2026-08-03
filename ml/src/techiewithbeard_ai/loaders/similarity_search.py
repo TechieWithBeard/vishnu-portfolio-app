@@ -1,29 +1,6 @@
 import os
 from pathlib import Path
 
-for proxy_var in (
-    "HTTP_PROXY",
-    "HTTPS_PROXY",
-    "ALL_PROXY",
-    "GRPC_PROXY",
-    "FTP_PROXY",
-    "RSYNC_PROXY",
-    "DOCKER_HTTP_PROXY",
-    "DOCKER_HTTPS_PROXY",
-    "CLOUDSDK_PROXY_ADDRESS",
-    "CLOUDSDK_PROXY_PORT",
-    "CLOUDSDK_PROXY_TYPE",
-    "http_proxy",
-    "https_proxy",
-    "all_proxy",
-    "grpc_proxy",
-    "ftp_proxy",
-    "rsync_proxy",
-    "SOCKS_PROXY",
-    "socks_proxy",
-):
-    os.environ.pop(proxy_var, None)
-
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=Path(__file__).resolve().parents[3] / ".env")
@@ -51,8 +28,7 @@ def query_chroma(question: str, k: int = 5):
 
     vector_store = Chroma(
         collection_name="example_collection",
-        embedding_function=embeddings,
-        **kwargs,
+        embedding_function=embeddings
     )
 
     docs = vector_store.similarity_search_with_score(question, k=k)
