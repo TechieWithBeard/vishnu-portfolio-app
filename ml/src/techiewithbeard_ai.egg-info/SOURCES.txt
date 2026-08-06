@@ -12,9 +12,12 @@ src/techiewithbeard_ai.egg-info/requires.txt
 src/techiewithbeard_ai.egg-info/top_level.txt
 src/techiewithbeard_ai/chains/__init__.py
 src/techiewithbeard_ai/chains/echo_chain.py
+src/techiewithbeard_ai/chains/rag_chain.py
 src/techiewithbeard_ai/loaders/__init__.py
 src/techiewithbeard_ai/loaders/pdf_loader.py
 src/techiewithbeard_ai/loaders/similarity_search.py
 src/techiewithbeard_ai/retrievers/__init__.py
 src/techiewithbeard_ai/retrievers/embeddings.py
+src/techiewithbeard_ai/utils/environment.py
 tests/test_echo_chain.py
+tests/test_rag_chain.py

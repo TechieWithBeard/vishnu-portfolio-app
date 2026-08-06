@@ -58,3 +58,7 @@ ml/artifacts/*
 !ml/data/processed/.gitkeep
 !ml/artifacts/.gitkeep
 ml/.venv310/*
+
+# Next.js
+.next
+out

@@ -69,6 +69,7 @@
       "continuous": true,
       "executor": "@nx/web:file-server",
       "options": {
+        "proxyConfig": "apps/portfolio-shell/proxy.conf.json",
         "buildTarget": "portfolio-shell:build",
         "port": 4200,
         "staticFilePath": "dist/apps/portfolio-shell/browser",
