@@ -1,2 +1,0 @@
-[console_scripts]
-twb-ai = techiewithbeard_ai.cli:app
