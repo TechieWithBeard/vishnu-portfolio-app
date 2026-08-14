@@ -76,7 +76,7 @@ export const resume: Resume = {
   name: 'Vishnu Thankappan',
   alias: '@techiewithbeard',
   title: 'Senior Frontend Engineer',
-  tagline: 'Scalable UI Architecture - AI-Powered Interfaces - Open to Opportunities',
+  tagline: 'Scalable UI Architecture - AI-Powered Interfaces',
   location: 'Bangalore, India',
   email: 'vishnuthankappan@techiewithbeard.com',
   phone: '+91-8373923785',
