@@ -6,7 +6,7 @@ services:
   # 1. NestJS REST API Web Service
   - type: web
     name: vishnu-portfolio-api
-    env: node
+    runtime: node
     plan: free
     buildCommand: npm install && npm run build:api
     startCommand: npm run start:api:prod
@@ -22,10 +22,8 @@ services:
         sync: false
 
   # 2. Angular 22 Portfolio Shell (Static Site)
-  - type: web
+  - type: static
     name: vishnu-portfolio
-    env: static
-    plan: free
     buildCommand: npm install && npm run build:shell
     staticPublishPath: dist/apps/portfolio-shell/browser
     routes:
@@ -34,10 +32,8 @@ services:
         destination: /index.html
 
   # 3. React 19 Admin Dashboard (Static Site)
-  - type: web
+  - type: static
     name: vishnu-portfolio-admin
-    env: static
-    plan: free
     buildCommand: npm install && npm run build:admin
     staticPublishPath: dist/apps/portfolio-admin
     routes:
