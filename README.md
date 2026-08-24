@@ -1,101 +1,223 @@
-# VishnuPortfolioApp
+<div align="center">
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+# Vishnu Thankappan — Enterprise Engineering Portfolio & Architecture Platform
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+[![Angular](https://img.shields.io/badge/Angular-22-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
+[![Nx](https://img.shields.io/badge/Nx-Monorepo-143055?style=for-the-badge&logo=nx&logoColor=white)](https://nx.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Render](https://img.shields.io/badge/Render-Deployed-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com)
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+<p align="center">
+  <strong>Production-Grade Full-Stack Monorepo Architecture</strong><br />
+  Featuring Angular 22 Signals, React 19 Admin Studio, NestJS REST Microservices, and Supabase Cloud PostgreSQL.
+</p>
 
-## Run tasks
+[Explore Live Shell](https://vishnu-portfolio.onrender.com) • [API Endpoint](https://vishnu-portfolio-api.onrender.com/api/health) • [LinkedIn Profile](https://www.linkedin.com/in/vishnu-thankappan)
 
-To run the dev server for your app, use:
+</div>
 
-```sh
-npx nx serve portfolio-shell
+---
+
+## 🏛️ Architecture Overview
+
+This monorepo is engineered using **Nx** to demonstrate scalable, enterprise-grade frontend architecture, strict separation of concerns, microfrontend sandboxing, and real-time backend state synchronization.
+
+```mermaid
+flowchart TD
+    subgraph Cloud Infrastructure
+        DB[(Supabase PostgreSQL)]
+        API[NestJS REST API Gateway\n:3000 /api]
+    end
+
+    subgraph Client Applications
+        Shell[Angular 22 Portfolio Shell\nSignals + Standalone + Skeletons\n:4200]
+        Admin[React 19 Admin Studio\nVite + CRUD Data Hub\n:5173]
+        Remotes[AI & Microfrontend Hub\nStreamlit / LangChain / HuggingFace]
+    end
+
+    DB <-->|PostgreSQL / RLS| API
+    API <-->|REST API + CORS| Shell
+    API <-->|Admin CRUD API| Admin
+    Shell -.->|Sandboxed IFrame / Module Fed| Remotes
 ```
 
-To create a production bundle:
+---
 
-```sh
-npx nx build portfolio-shell
+## ✨ Key Architectural Highlights
+
+### 1. Angular 22 Standalone Shell (`apps/portfolio-shell`)
+- **Signal-Driven Reactivity**: Pure signal-based architecture (`signal()`, `computed()`, `input()`) with zero RxJS memory leak overhead.
+- **Reusable Animated Skeleton Loaders**: Multi-variant `<app-skeleton-loader>` supporting `hero`, `card-grid`, `timeline-grid`, `article-grid`, and `pill-cloud` formats with fluid shimmer wave animations.
+- **Enterprise Dependency Injection**: API base routing managed via typed `InjectionToken<AppEnvironment>('APP_CONFIG')` with automatic build-time file replacements (`environment.ts` ➔ `environment.prod.ts`).
+- **Security & URL Sanitization**: Custom `SafeResourceUrlPipe` and `SafeUrlPipe` enforcing strict protocol whitelisting (`https://`, `http://`, relative) and static iframe sandboxing (`NG0910` compliant).
+- **Persistent Theme Engine**: Zero-FOUC (Flash of Unstyled Content) dark/light mode synchronization using pre-paint inline scripts and `localStorage`.
+
+### 2. React 19 Admin Studio (`apps/portfolio-admin`)
+- **Modern Vite + React 19**: Ultra-fast HMR and bundling with typed environment resolution (`import.meta.env.VITE_API_URL`).
+- **Full CRUD Management**: Complete dashboard with tabs for Profile, Experience Timeline, Architectural Projects, Multi-Platform Technical Writing (Medium, Dev.to, LinkedIn), Demos, and Skills.
+- **Automated Seeding & Health Monitoring**: One-click database seed button and real-time backend connectivity indicator.
+
+### 3. NestJS REST API Gateway (`apps/api`)
+- **Dynamic Supabase Integration**: Seamless live querying from Supabase PostgreSQL tables with built-in graceful in-memory fallback caching when offline.
+- **Security & CORS**: Fully configurable global CORS policies and route prefixes (`/api`).
+- **PostgreSQL DDL & RLS**: Complete relational schema and Row-Level Security policies included in `supabase/schema.sql`.
+
+---
+
+## 📂 Monorepo Structure
+
+```text
+vishnu-portfolio/
+├── apps/
+│   ├── api/                        # NestJS 11 REST API Backend
+│   │   ├── src/app/
+│   │   │   ├── supabase/          # Supabase Client & Local Cache Engine
+│   │   │   └── *.controller.ts    # REST Controllers (profile, experience, etc.)
+│   │   └── tsconfig.app.json
+│   │
+│   ├── portfolio-shell/           # Angular 22 Enterprise Host Portfolio
+│   │   ├── src/app/
+│   │   │   ├── core/              # Config Tokens & Security Pipes
+│   │   │   ├── layout/            # Sticky Header, Nav Drawer & Footer
+│   │   │   ├── pages/             # Home, Experience, Projects, Writing, Demos
+│   │   │   ├── services/          # PortfolioApiService (Signal Store)
+│   │   │   └── ui/                # Reusable SkeletonLoaderComponent
+│   │   └── src/environments/      # Environment Matrix (dev, prod, models)
+│   │
+│   └── portfolio-admin/           # React 19 Admin Studio Dashboard
+│       ├── src/
+│       │   ├── components/        # CRUD Forms & Modals
+│       │   ├── services/          # AdminApi Client
+│       │   └── types/             # Shared TypeScript Contracts
+│       └── vite.config.ts
+│
+├── libs/
+│   └── shared/models/             # Monorepo-wide Domain Models & Interfaces
+│
+├── supabase/
+│   └── schema.sql                 # PostgreSQL DDL, Indexes & Seed Script
+│
+├── render.yaml                    # Infrastructure-as-Code Blueprint
+├── nx.json                        # Nx Workspace & Caching Configuration
+└── package.json                   # Root Workspace Scripts & Dependencies
 ```
 
-To see all available targets to run for a project, run:
+---
 
-```sh
-npx nx show project portfolio-shell
+## 🚀 Quick Start (Local Development)
+
+### Prerequisites
+- **Node.js**: `v20.x` or higher
+- **npm**: `v10.x` or higher
+
+### 1. Clone & Install Dependencies
+```bash
+git clone https://github.com/TechieWithBeard/vishnu-portfolio-app.git
+cd vishnu-portfolio-app
+npm install
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/angular:app demo
+### 2. Environment Configuration
+Create a `.env` file in the root directory (refer to `.env.example`):
+```env
+PORT=3000
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 ```
 
-To generate a new library, use:
+### 3. Launch Applications
+Run the development servers concurrently in separate terminals:
 
-```sh
-npx nx g @nx/angular:lib mylib
+```bash
+# 1. Start NestJS REST API (Port 3000)
+npm run start:api
+
+# 2. Start Angular Portfolio Shell (Port 4200)
+npm run start:shell
+
+# 3. Start React Admin Studio (Port 5173)
+npm run start:admin
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+---
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🛠️ Build & Verification Scripts
 
-## Set up CI!
+| Command | Purpose |
+| :--- | :--- |
+| `npm run typecheck` | Validates TypeScript compilation across all 3 apps with zero emit |
+| `npm run build:api` | Compiles NestJS backend for production to `dist/apps/api` |
+| `npm run build:shell` | Compiles Angular 22 shell with production optimizations to `dist/apps/portfolio-shell/browser` |
+| `npm run build:admin` | Builds React 19 Admin studio with Vite to `dist/apps/portfolio-admin` |
+| `npm run build:all` | Sequentially builds all three applications for production deployment |
 
-### Step 1
+---
 
-To connect to Nx Cloud, run the following command:
+## ☁️ Deployment & Infrastructure (Render Blueprint)
 
-```sh
-npx nx connect
+The repository includes a ready-to-use **[Render Blueprint (`render.yaml`)](render.yaml)** configuring automated continuous deployment:
+
+```yaml
+services:
+  - type: web
+    name: vishnu-portfolio-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build:api
+    startCommand: npm run start:api:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+
+  - type: static
+    name: vishnu-portfolio
+    buildCommand: npm install && npm run build:shell
+    staticPublishPath: dist/apps/portfolio-shell/browser
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  - type: static
+    name: vishnu-portfolio-admin
+    buildCommand: npm install && npm run build:admin
+    staticPublishPath: dist/apps/portfolio-admin
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+---
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🔒 Security Best Practices Implemented
 
-### Step 2
+1. **Zero Secret Leaks**: `.env` and sensitive files are strictly ignored via `.gitignore`. Secrets are injected securely via Render Environment Variables.
+2. **Content Security & Protocol Whitelisting**: Dynamic URL embeds are filtered through `SafeResourceUrlPipe` and `SafeUrlPipe` to prevent `javascript:` XSS vectors.
+3. **Static Iframe Sandboxing**: Configured with strict sandboxing attributes (`allow-scripts allow-same-origin allow-forms allow-popups`) preventing privilege escalation.
+4. **PostgreSQL Row-Level Security (RLS)**: Public read access enabled on portfolio tables with restricted write policies.
 
-Use the following command to configure a CI workflow for your workspace:
+---
 
-```sh
-npx nx g ci-workflow
-```
+## 👨‍💻 Author & Engineering Profile
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+**Vishnu Thankappan**  
+*Senior Frontend Engineer • UI & AI Architect*  
+- **LinkedIn**: [linkedin.com/in/vishnu-thankappan](https://www.linkedin.com/in/vishnu-thankappan)
+- **GitHub**: [github.com/TechieWithBeard](https://github.com/TechieWithBeard)
+- **Specializations**: Angular 22 (Signals), React 19, Nx Monorepos, AI/LLM Streaming Interfaces, Design Systems, High-Performance Web Architecture.
 
-## Install Nx Console
+---
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+## 📄 License
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This project is open source and available under the [MIT License](LICENSE).
