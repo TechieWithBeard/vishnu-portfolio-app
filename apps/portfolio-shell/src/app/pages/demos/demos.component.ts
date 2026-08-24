@@ -2,10 +2,11 @@ import { Component, inject } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
 import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
+import { SafeResourceUrlPipe, SafeUrlPipe } from '../../core/pipes/safe-resource-url.pipe';
 
 @Component({
   selector: 'app-demos',
-  imports: [UpperCasePipe, SkeletonLoaderComponent],
+  imports: [UpperCasePipe, SkeletonLoaderComponent, SafeResourceUrlPipe, SafeUrlPipe],
   template: `
     <div class="container">
       <section class="section" style="padding-bottom: var(--space-8);">
@@ -24,13 +25,26 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
             <article class="card">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); flex-wrap: wrap; gap: 0.5rem;">
                 <span class="tag tag-ai">{{ demo.type }}</span>
-                <span
-                  class="tag"
-                  [style.background]="demo.status === 'live' ? 'var(--color-success-subtle)' : 'var(--color-bg-subtle)'"
-                  [style.color]="demo.status === 'live' ? 'var(--color-success)' : 'var(--color-text-muted)'"
-                >
-                  ● {{ demo.status | uppercase }}
-                </span>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span
+                    class="tag"
+                    [style.background]="demo.status === 'live' ? 'var(--color-success-subtle)' : 'var(--color-bg-subtle)'"
+                    [style.color]="demo.status === 'live' ? 'var(--color-success)' : 'var(--color-text-muted)'"
+                  >
+                    ● {{ demo.status | uppercase }}
+                  </span>
+                  @if (demo.url) {
+                    <a
+                      class="btn btn-secondary btn-sm"
+                      [href]="demo.url | safeUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Open demo in new tab"
+                    >
+                      <span>↗</span> New Tab
+                    </a>
+                  }
+                </div>
               </div>
 
               <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: var(--space-2);">
@@ -46,8 +60,28 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
                 }
               </div>
 
-              @if (demo.type === 'iframe' && demo.url && !demo.url.includes('YOUR_')) {
-                <iframe [src]="demo.url" [sandbox]="demo.sandbox || ''" loading="lazy" [title]="demo.title"></iframe>
+              @if (demo.type === 'iframe' && demo.url) {
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: var(--text-xs); color: var(--color-text-muted);">
+                      Interactive Sandboxed Preview
+                    </span>
+                    <a
+                      class="btn btn-secondary btn-sm"
+                      [href]="demo.url | safeUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Open Fullscreen ↗
+                    </a>
+                  </div>
+                  <iframe
+                    [src]="demo.url | safeResourceUrl"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                    loading="lazy"
+                    [title]="demo.title"
+                  ></iframe>
+                </div>
               } @else {
                 <div class="demo-placeholder">
                   <strong style="color: var(--color-text-primary); font-size: 0.95rem;">
@@ -56,6 +90,17 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
                   <span style="font-size: 0.85rem; color: var(--color-text-muted);">
                     {{ demo.exposedModule ? 'Federated Module: ' + demo.exposedModule : 'Connect hosted endpoint to stream this interface.' }}
                   </span>
+                  @if (demo.url) {
+                    <a
+                      class="btn btn-primary btn-sm"
+                      style="margin-top: 0.5rem;"
+                      [href]="demo.url | safeUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Open App ↗
+                    </a>
+                  }
                 </div>
               }
             </article>
