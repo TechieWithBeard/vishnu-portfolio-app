@@ -1,86 +1,14 @@
-export interface Resume {
-  name: string;
-  alias: string;
-  title: string;
-  tagline: string;
-  location: string;
-  email: string;
-  phone: string;
-  linkedin: string;
-  github: string;
-  summary: string;
-  availability: {
-    status: string;
-    target: string;
-    note: string;
-  };
-  experience: ExperienceItem[];
-  education: EducationItem[];
-  skills: Record<string, string[]>;
-}
+import {
+  ProfileData,
+  ExperienceItem,
+  ProjectItem,
+  WritingItem,
+  DemoItem,
+  SkillCategoryItem,
+} from '../types/portfolio.types';
 
-export interface ExperienceItem {
-  id: string;
-  role: string;
-  company: string;
-  period: string;
-  location?: string;
-  highlights: string[];
-  tech: string[];
-  orderIndex?: number;
-}
-
-export interface EducationItem {
-  degree: string;
-  institution: string;
-  period: string;
-}
-
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  role: string;
-  tech: string[];
-  highlights: string[];
-  github: string | null;
-  liveDemo: string | null;
-  demoType?: 'native-federation' | 'module-federation' | 'iframe';
-  featured: boolean;
-  category: string;
-  orderIndex?: number;
-}
-
-export interface Demo {
-  id: string;
-  title: string;
-  description: string;
-  type: 'native-federation' | 'module-federation' | 'iframe';
-  remoteName?: string;
-  exposedModule?: string;
-  url?: string;
-  status: 'live' | 'planned' | 'wip';
-  tech: string[];
-  tags: string[];
-  sandbox?: string;
-  orderIndex?: number;
-}
-
-export interface WritingItem {
-  id: string;
-  title: string;
-  platform: 'medium' | 'dev.to' | 'linkedin' | 'youtube' | 'hashnode' | 'other' | string;
-  url: string;
-  publishedAt: string;
-  summary: string;
-  tags: string[];
-  thumbnail?: string;
-  readTime?: string;
-  featured?: boolean;
-  orderIndex?: number;
-}
-
-export const resume: Resume = {
+export const initialProfile: ProfileData = {
+  id: 'default',
   name: 'Vishnu Thankappan',
   alias: '@techiewithbeard',
   title: 'Senior Frontend Engineer',
@@ -97,88 +25,6 @@ export const resume: Resume = {
     target: 'Senior Frontend / UI Architect / AI Frontend roles',
     note: 'Available for high-impact engineering opportunities',
   },
-  experience: [
-    {
-      id: 'exp-1',
-      role: 'Senior Frontend Engineer',
-      company: 'Parnasoft Technologies — Client: AVEVA',
-      period: 'March 2025 – Present',
-      location: 'European Enterprise Environment',
-      highlights: [
-        'Architected and optimized a large-scale Nx monorepo orchestrating 5+ Angular enterprise applications, slashing CI/CD build & test durations by 25–35%.',
-        'Designed and migrated modular shared UI/widget libraries across teams, cutting duplicated frontend code by 30–40%.',
-        'Established comprehensive frontend test strategy across unit, integration, and E2E tiers utilizing Playwright and Cypress.',
-        'Enforced strict architectural boundaries, code-sharing standards, and performance budgets across distributed engineering squads.',
-      ],
-      tech: [
-        'Angular 22',
-        'Nx Monorepo',
-        'TypeScript',
-        'Playwright',
-        'Cypress',
-        'Design Systems',
-        'CI/CD',
-      ],
-      orderIndex: 1,
-    },
-    {
-      id: 'exp-2',
-      role: 'Frontend Specialist',
-      company: 'ACI Logistix',
-      period: 'March 2022 – March 2025',
-      location: 'Global Logistics Platform',
-      highlights: [
-        'Led end-to-end migration of mission-critical AngularJS logistics applications to modern Angular (v14+), significantly improving runtime performance and maintainability.',
-        'Standardized predictable global state management across cross-functional modules using NgRx.',
-        'Authored and maintained internal NPM design system libraries distributed through Azure Artifacts.',
-        'Engineered cross-platform mobile scanning and tracking utilities using Ionic and modern web standards.',
-      ],
-      tech: [
-        'Angular',
-        'NgRx',
-        'TypeScript',
-        'RxJS',
-        'Ionic',
-        'Azure Artifacts',
-        'REST APIs',
-      ],
-      orderIndex: 2,
-    },
-    {
-      id: 'exp-3',
-      role: 'Expert Frontend Engineer',
-      company: 'Maistering B.V',
-      period: 'January 2019 – March 2022',
-      location: 'European Client Environment',
-      highlights: [
-        'Built and evolved responsive AI-assisted business management platforms using Angular, TypeScript, and NgRx.',
-        'Collaborated with European product and architecture leaders to deliver high-reliability enterprise features.',
-        'Developed cross-platform mobile experiences with Xamarin and integrated real-time data synchronization.',
-        'Championed clean code practices, component decoupling, and test-driven development in Agile squads.',
-      ],
-      tech: [
-        'Angular',
-        'NgRx',
-        'TypeScript',
-        'Xamarin',
-        'Enterprise UI',
-        'Agile',
-      ],
-      orderIndex: 3,
-    },
-  ],
-  education: [
-    {
-      degree: 'Master of Computer Applications',
-      institution: 'Manipal Academy of Higher Education',
-      period: '2016 – 2018',
-    },
-    {
-      degree: 'Bachelor of Science in Computer Science',
-      institution: 'Malankara Catholic College',
-      period: '2011 – 2014',
-    },
-  ],
   skills: {
     frontendArchitecture: [
       'Angular 22',
@@ -224,7 +70,78 @@ export const resume: Resume = {
   },
 };
 
-export const projects: Project[] = [
+export const initialExperience: ExperienceItem[] = [
+  {
+    id: 'exp-1',
+    role: 'Senior Frontend Engineer',
+    company: 'Parnasoft Technologies — Client: AVEVA',
+    period: 'March 2025 – Present',
+    location: 'European Enterprise Environment',
+    highlights: [
+      'Architected and optimized a large-scale Nx monorepo orchestrating 5+ Angular enterprise applications, slashing CI/CD build & test durations by 25–35%.',
+      'Designed and migrated modular shared UI/widget libraries across teams, cutting duplicated frontend code by 30–40%.',
+      'Established comprehensive frontend test strategy across unit, integration, and E2E tiers utilizing Playwright and Cypress.',
+      'Enforced strict architectural boundaries, code-sharing standards, and performance budgets across distributed engineering squads.',
+    ],
+    tech: [
+      'Angular 22',
+      'Nx Monorepo',
+      'TypeScript',
+      'Playwright',
+      'Cypress',
+      'Design Systems',
+      'CI/CD',
+    ],
+    orderIndex: 1,
+  },
+  {
+    id: 'exp-2',
+    role: 'Frontend Specialist',
+    company: 'ACI Logistix',
+    period: 'March 2022 – March 2025',
+    location: 'Global Logistics Platform',
+    highlights: [
+      'Led end-to-end migration of mission-critical AngularJS logistics applications to modern Angular (v14+), significantly improving runtime performance and maintainability.',
+      'Standardized predictable global state management across cross-functional modules using NgRx.',
+      'Authored and maintained internal NPM design system libraries distributed through Azure Artifacts.',
+      'Engineered cross-platform mobile scanning and tracking utilities using Ionic and modern web standards.',
+    ],
+    tech: [
+      'Angular',
+      'NgRx',
+      'TypeScript',
+      'RxJS',
+      'Ionic',
+      'Azure Artifacts',
+      'REST APIs',
+    ],
+    orderIndex: 2,
+  },
+  {
+    id: 'exp-3',
+    role: 'Expert Frontend Engineer',
+    company: 'Maistering B.V',
+    period: 'January 2019 – March 2022',
+    location: 'European Client Environment',
+    highlights: [
+      'Built and evolved responsive AI-assisted business management platforms using Angular, TypeScript, and NgRx.',
+      'Collaborated with European product and architecture leaders to deliver high-reliability enterprise features.',
+      'Developed cross-platform mobile experiences with Xamarin and integrated real-time data synchronization.',
+      'Championed clean code practices, component decoupling, and test-driven development in Agile squads.',
+    ],
+    tech: [
+      'Angular',
+      'NgRx',
+      'TypeScript',
+      'Xamarin',
+      'Enterprise UI',
+      'Agile',
+    ],
+    orderIndex: 3,
+  },
+];
+
+export const initialProjects: ProjectItem[] = [
   {
     id: 'nx-monorepo-optimization',
     title: 'Large-Scale Enterprise Nx Monorepo Architecture',
@@ -303,7 +220,49 @@ export const projects: Project[] = [
   },
 ];
 
-export const demos: Demo[] = [
+export const initialWriting: WritingItem[] = [
+  {
+    id: 'article-1',
+    title: 'Architecting Large-Scale Angular Applications with Nx Monorepos & Native Federation',
+    platform: 'medium',
+    url: 'https://medium.com/@techiewithbeard/architecting-large-scale-angular-apps-with-nx-and-native-federation',
+    publishedAt: '2026-06-15',
+    summary:
+      'A deep dive into structuring enterprise Angular monorepos, optimizing CI build graphs with Nx affected, and deploying microfrontends using Native Federation.',
+    tags: ['Angular', 'Nx Monorepo', 'Microfrontends', 'Architecture'],
+    readTime: '7 min read',
+    featured: true,
+    orderIndex: 1,
+  },
+  {
+    id: 'article-2',
+    title: 'Building Responsive Streaming AI Interfaces with LangChain and Angular Signals',
+    platform: 'dev.to',
+    url: 'https://dev.to/techiewithbeard/building-responsive-streaming-ai-interfaces-with-langchain-and-angular-signals',
+    publishedAt: '2026-05-20',
+    summary:
+      'How to handle real-time LLM token streams in Angular using modern Signals, error boundaries, and accessible markdown rendering.',
+    tags: ['AI', 'LangChain', 'Angular', 'Signals', 'Frontend'],
+    readTime: '6 min read',
+    featured: true,
+    orderIndex: 2,
+  },
+  {
+    id: 'article-3',
+    title: 'From AngularJS to Angular 22: Enterprise Modernization Strategies That Actually Work',
+    platform: 'linkedin',
+    url: 'https://www.linkedin.com/pulse/enterprise-angularjs-modernization-strategies-vishnu-thankappan/',
+    publishedAt: '2026-04-10',
+    summary:
+      'Key lessons, architectural patterns, and risk-mitigation strategies learned from migrating legacy enterprise suites to modern reactive frameworks.',
+    tags: ['Enterprise', 'Angular', 'Migration', 'SoftwareEngineering'],
+    readTime: '5 min read',
+    featured: true,
+    orderIndex: 3,
+  },
+];
+
+export const initialDemos: DemoItem[] = [
   {
     id: 'rag-chat',
     title: 'RAG Document Q&A Assistant',
@@ -361,44 +320,78 @@ export const demos: Demo[] = [
   },
 ];
 
-export const writing: WritingItem[] = [
+export const initialSkills: SkillCategoryItem[] = [
   {
-    id: 'article-1',
-    title: 'Architecting Large-Scale Angular Applications with Nx Monorepos & Native Federation',
-    platform: 'medium',
-    url: 'https://medium.com/@techiewithbeard/architecting-large-scale-angular-apps-with-nx-and-native-federation',
-    publishedAt: '2026-06-15',
-    summary:
-      'A deep dive into structuring enterprise Angular monorepos, optimizing CI build graphs with Nx affected, and deploying microfrontends using Native Federation.',
-    tags: ['Angular', 'Nx Monorepo', 'Microfrontends', 'Architecture'],
-    readTime: '7 min read',
-    featured: true,
+    id: 'cat-1',
+    category: 'frontendArchitecture',
+    categoryLabel: 'Frontend Architecture & Frameworks',
+    items: [
+      'Angular 22',
+      'Nx Monorepos',
+      'Design Systems',
+      'TypeScript',
+      'Microfrontends (Native Federation)',
+      'Signals & RxJS',
+      'Modular UI Architecture',
+      'React 19 & Next.js',
+    ],
     orderIndex: 1,
   },
   {
-    id: 'article-2',
-    title: 'Building Responsive Streaming AI Interfaces with LangChain and Angular Signals',
-    platform: 'dev.to',
-    url: 'https://dev.to/techiewithbeard/building-responsive-streaming-ai-interfaces-with-langchain-and-angular-signals',
-    publishedAt: '2026-05-20',
-    summary:
-      'How to handle real-time LLM token streams in Angular using modern Signals, error boundaries, and accessible markdown rendering.',
-    tags: ['AI', 'LangChain', 'Angular', 'Signals', 'Frontend'],
-    readTime: '6 min read',
-    featured: true,
+    id: 'cat-2',
+    category: 'aiInterfaces',
+    categoryLabel: 'AI & Intelligent Interfaces',
+    items: [
+      'LangChain',
+      'LangGraph',
+      'RAG Applications',
+      'Streaming UIs',
+      'Vercel AI SDK',
+      'Agentic Workflows',
+      'Vector DB Integrations',
+      'LLM Prompting & Evaluation',
+    ],
     orderIndex: 2,
   },
   {
-    id: 'article-3',
-    title: 'From AngularJS to Angular 22: Enterprise Modernization Strategies That Actually Work',
-    platform: 'linkedin',
-    url: 'https://www.linkedin.com/pulse/enterprise-angularjs-modernization-strategies-vishnu-thankappan/',
-    publishedAt: '2026-04-10',
-    summary:
-      'Key lessons, architectural patterns, and risk-mitigation strategies learned from migrating legacy enterprise suites to modern reactive frameworks.',
-    tags: ['Enterprise', 'Angular', 'Migration', 'SoftwareEngineering'],
-    readTime: '5 min read',
-    featured: true,
+    id: 'cat-3',
+    category: 'testingQuality',
+    categoryLabel: 'Testing, Quality & Accessibility',
+    items: [
+      'Playwright',
+      'Cypress',
+      'Jasmine & Karma',
+      'WCAG 2.2 AA Accessibility',
+      'Performance Profiling (CWV)',
+      'CI/CD GitHub Actions',
+    ],
     orderIndex: 3,
+  },
+  {
+    id: 'cat-4',
+    category: 'tooling',
+    categoryLabel: 'Tooling, Cloud & Ecosystem',
+    items: [
+      'Git & Trunk-Based Dev',
+      'Docker',
+      'Webpack & Vite',
+      'Tailwind CSS v4',
+      'Azure & Vercel',
+      'REST & GraphQL APIs',
+    ],
+    orderIndex: 4,
+  },
+  {
+    id: 'cat-5',
+    category: 'crossPlatform',
+    categoryLabel: 'State Management & Platforms',
+    items: [
+      'NgRx & Signals Store',
+      'Ionic Framework',
+      'Cross-Platform Web',
+      'Zoneless Angular',
+      'PWA & Offline First',
+    ],
+    orderIndex: 5,
   },
 ];

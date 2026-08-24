@@ -1,52 +1,84 @@
-import { Component } from '@angular/core';
-
-import { resume } from '../../data/portfolio.data';
+import { Component, inject } from '@angular/core';
+import { PortfolioApiService } from '../../services/portfolio-api.service';
 
 @Component({
   selector: 'app-experience',
   template: `
-    <section class="page-hero">
-      <p class="eyebrow">Experience</p>
-      <h1>Frontend architecture across European enterprise teams.</h1>
-      <p>{{ summary }}</p>
-    </section>
+    <div class="container">
+      <section class="section" style="padding-bottom: var(--space-8);">
+        <span class="eyebrow">Professional History</span>
+        <h1 style="margin-bottom: var(--space-3);">Engineering Experience</h1>
+        <p class="section-subtitle">
+          Proven track record leading frontend architecture, Nx monorepos, and modernized web platforms across European and global enterprise teams.
+        </p>
+      </section>
 
-    <section class="timeline">
-      @for (item of experience; track item.company) {
-        <article class="card timeline-item">
-          <div>
-            <span class="tag">{{ item.period }}</span>
-            <h2>{{ item.role }}</h2>
-            <p class="company">{{ item.company }}</p>
-            @if (item.location) {
-              <p>{{ item.location }}</p>
-            }
-          </div>
-          <ul>
-            @for (highlight of item.highlights; track highlight) {
-              <li>{{ highlight }}</li>
-            }
-          </ul>
-        </article>
-      }
-    </section>
+      <!-- Experience Timeline -->
+      <section class="timeline">
+        @for (item of experience(); track item.id) {
+          <article class="card timeline-item">
+            <div class="timeline-sidebar">
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: var(--space-2);">
+                <span class="tag tag-accent">{{ item.period }}</span>
+                @if (item.location) {
+                  <span class="tag" style="background: var(--color-success-subtle); color: var(--color-success); border-color: color-mix(in srgb, var(--color-success) 30%, transparent);">
+                    🇪🇺 {{ item.location }}
+                  </span>
+                }
+              </div>
+              <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem;">{{ item.role }}</h2>
+              <p class="timeline-company">{{ item.company }}</p>
+            </div>
 
-    <section class="section">
-      <h2>Education</h2>
-      <div class="grid two">
-        @for (item of education; track item.degree) {
-          <article class="card">
-            <h3>{{ item.degree }}</h3>
-            <p>{{ item.institution }}</p>
-            <span class="tag">{{ item.period }}</span>
+            <div>
+              <ul style="margin-bottom: var(--space-4); display: flex; flex-direction: column; gap: 0.5rem;">
+                @for (highlight of item.highlights; track highlight) {
+                  <li style="line-height: 1.65;">{{ highlight }}</li>
+                }
+              </ul>
+
+              @if (item.tech && item.tech.length > 0) {
+                <div class="tag-row">
+                  @for (t of item.tech; track t) {
+                    <span class="tag">{{ t }}</span>
+                  }
+                </div>
+              }
+            </div>
           </article>
         }
-      </div>
-    </section>
+      </section>
+
+      <!-- Education Section -->
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Academic Background</span>
+            <h2 class="section-title">Education & Qualifications</h2>
+          </div>
+        </div>
+
+        <div class="grid two">
+          @for (item of profile().education; track item.degree) {
+            <article class="card">
+              <span class="tag tag-accent" style="align-self: flex-start; margin-bottom: var(--space-3);">
+                {{ item.period }}
+              </span>
+              <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-1);">
+                {{ item.degree }}
+              </h3>
+              <p style="margin-bottom: 0; color: var(--color-text-secondary);">
+                {{ item.institution }}
+              </p>
+            </article>
+          }
+        </div>
+      </section>
+    </div>
   `,
 })
 export class ExperienceComponent {
-  protected readonly summary = resume.summary;
-  protected readonly experience = resume.experience;
-  protected readonly education = resume.education;
+  private readonly apiService = inject(PortfolioApiService);
+  protected readonly profile = this.apiService.profile;
+  protected readonly experience = this.apiService.experience;
 }

@@ -1,6 +1,7 @@
-export interface Resume {
+export interface ProfileData {
+  id: string;
   name: string;
-  alias?: string;
+  alias: string;
   title: string;
   tagline: string;
   location: string;
@@ -12,12 +13,10 @@ export interface Resume {
   availability: {
     status: string;
     target: string;
-    note?: string;
-    relocation?: string;
+    note: string;
   };
-  experience: ExperienceItem[];
-  education: EducationItem[];
   skills: Record<string, string[]>;
+  updatedAt?: string;
 }
 
 export interface ExperienceItem {
@@ -28,16 +27,10 @@ export interface ExperienceItem {
   location?: string;
   highlights: string[];
   tech: string[];
-  orderIndex?: number;
+  orderIndex: number;
 }
 
-export interface EducationItem {
-  degree: string;
-  institution: string;
-  period: string;
-}
-
-export interface Project {
+export interface ProjectItem {
   id: string;
   title: string;
   description: string;
@@ -49,28 +42,13 @@ export interface Project {
   demoType?: 'native-federation' | 'module-federation' | 'iframe';
   featured: boolean;
   category: string;
-  orderIndex?: number;
-}
-
-export interface Demo {
-  id: string;
-  title: string;
-  description: string;
-  type: 'native-federation' | 'module-federation' | 'iframe';
-  remoteName?: string;
-  exposedModule?: string;
-  url?: string;
-  status: 'live' | 'planned' | 'wip';
-  tech: string[];
-  tags: string[];
-  sandbox?: string;
-  orderIndex?: number;
+  orderIndex: number;
 }
 
 export interface WritingItem {
   id: string;
   title: string;
-  platform: 'medium' | 'dev.to' | 'linkedin' | 'youtube' | 'hashnode' | 'other' | string;
+  platform: 'medium' | 'dev.to' | 'linkedin' | 'youtube' | 'hashnode' | 'other';
   url: string;
   publishedAt: string;
   summary: string;
@@ -78,5 +56,28 @@ export interface WritingItem {
   thumbnail?: string;
   readTime?: string;
   featured?: boolean;
-  orderIndex?: number;
+  orderIndex: number;
+}
+
+export interface DemoItem {
+  id: string;
+  title: string;
+  description: string;
+  type: 'native-federation' | 'module-federation' | 'iframe' | 'standalone';
+  remoteName?: string;
+  exposedModule?: string;
+  url?: string;
+  status: 'live' | 'planned' | 'wip';
+  tech: string[];
+  tags: string[];
+  sandbox?: string;
+  orderIndex: number;
+}
+
+export interface SkillCategoryItem {
+  id: string;
+  category: string;
+  categoryLabel: string;
+  items: string[];
+  orderIndex: number;
 }

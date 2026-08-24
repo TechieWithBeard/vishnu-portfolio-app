@@ -1,8 +1,16 @@
 {
   "name": "@vishnu-portfolio-app/source",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start:api": "ts-node -P apps/api/tsconfig.app.json apps/api/src/main.ts",
+    "start:admin": "vite --config apps/portfolio-admin/vite.config.ts apps/portfolio-admin --port 5173",
+    "start:shell": "NX_DAEMON=false nx serve portfolio-shell --port 4200",
+    "build:api": "tsc --project apps/api/tsconfig.app.json",
+    "build:admin": "vite build --config apps/portfolio-admin/vite.config.ts apps/portfolio-admin",
+    "build:shell": "NX_DAEMON=false nx build portfolio-shell",
+    "typecheck": "tsc --project apps/api/tsconfig.app.json --noEmit && tsc --project apps/portfolio-admin/tsconfig.json --noEmit && tsc --project apps/portfolio-shell/tsconfig.app.json --noEmit"
+  },
   "private": true,
   "dependencies": {
     "@angular/common": "~22.0.4",
@@ -14,6 +22,7 @@
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@supabase/supabase-js": "^2.112.3",
     "axios": "^1.6.0",
     "next": "~16.1.6",
     "react": "^19.0.0",
@@ -50,7 +59,10 @@
     "@swc/helpers": "~0.5.18",
     "@types/jest": "~30.0.0",
     "@types/node": "^22.0.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
     "@typescript-eslint/utils": "^8.58.0",
+    "@vitejs/plugin-react": "^5.2.0",
     "angular-eslint": "^22.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",

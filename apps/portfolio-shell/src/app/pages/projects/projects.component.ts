@@ -1,50 +1,106 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-import { projects } from '../../data/portfolio.data';
+import { PortfolioApiService } from '../../services/portfolio-api.service';
 
 @Component({
   selector: 'app-projects',
   imports: [RouterLink],
   template: `
-    <section class="page-hero">
-      <p class="eyebrow">Projects</p>
-      <h1>Architecture case studies and AI interface demos.</h1>
-      <p>Selected work focused on scalable Angular systems, modernization, design systems, and emerging AI product interfaces.</p>
-    </section>
+    <div class="container">
+      <section class="section" style="padding-bottom: var(--space-8);">
+        <span class="eyebrow">Case Studies & Systems</span>
+        <h1 style="margin-bottom: var(--space-3);">Engineering Projects</h1>
+        <p class="section-subtitle">
+          Selected architectural case studies, LangChain AI interfaces, enterprise migrations, and microfrontends.
+        </p>
+      </section>
 
-    <section class="grid two">
-      @for (project of projectList; track project.id) {
-        <article class="card project-card">
-          <div class="card-topline">
-            <span class="tag">{{ project.category }}</span>
-            <span class="tag">{{ project.role }}</span>
-          </div>
-          <h2>{{ project.title }}</h2>
-          <p>{{ project.description }}</p>
-          <ul>
-            @for (highlight of project.highlights; track highlight) {
-              <li>{{ highlight }}</li>
+      <!-- Category Filter Tabs -->
+      <div class="filter-bar">
+        @for (category of categories; track category) {
+          <button
+            class="filter-btn"
+            [class.active]="selectedCategory() === category"
+            (click)="selectCategory(category)"
+          >
+            {{ category }}
+          </button>
+        }
+      </div>
+
+      <!-- Projects Grid -->
+      <section class="grid two">
+        @for (project of filteredProjects(); track project.id) {
+          <article class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); flex-wrap: wrap; gap: 0.5rem;">
+              <span class="tag tag-accent">{{ project.category }}</span>
+              <span class="tag tag-ai">{{ project.role }}</span>
+            </div>
+
+            <h2 style="font-size: 1.35rem; font-weight: 700; margin-bottom: var(--space-2);">
+              {{ project.title }}
+            </h2>
+            <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: var(--space-4);">
+              {{ project.description }}
+            </p>
+
+            @if (project.highlights && project.highlights.length > 0) {
+              <ul style="margin-bottom: var(--space-4); display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.9rem;">
+                @for (h of project.highlights; track h) {
+                  <li>{{ h }}</li>
+                }
+              </ul>
             }
-          </ul>
-          <div class="tag-row">
-            @for (tech of project.tech; track tech) {
-              <span class="tag tag-ai">{{ tech }}</span>
-            }
-          </div>
-          <div class="card-actions">
-            @if (project.liveDemo) {
-              <a class="btn btn-primary" [routerLink]="project.liveDemo">Open Demo</a>
-            }
-            @if (project.github && !project.github.includes('YOUR_')) {
-              <a class="btn btn-secondary" [href]="project.github" target="_blank" rel="noreferrer">GitHub</a>
-            }
-          </div>
-        </article>
-      }
-    </section>
+
+            <div class="tag-row" style="margin-bottom: var(--space-6);">
+              @for (tech of project.tech; track tech) {
+                <span class="tag">{{ tech }}</span>
+              }
+            </div>
+
+            <div style="display: flex; gap: var(--space-3); margin-top: auto; border-top: 1px solid var(--color-border); padding-top: var(--space-4);">
+              @if (project.liveDemo) {
+                <a class="btn btn-primary" [routerLink]="project.liveDemo">
+                  Open Demo ↗
+                </a>
+              }
+              @if (project.github && !project.github.includes('YOUR_')) {
+                <a
+                  class="btn btn-secondary"
+                  [href]="project.github"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  GitHub Repository
+                </a>
+              }
+            </div>
+          </article>
+        }
+      </section>
+    </div>
   `,
 })
 export class ProjectsComponent {
-  protected readonly projectList = projects;
+  private readonly apiService = inject(PortfolioApiService);
+  protected readonly projects = this.apiService.projects;
+
+  protected readonly categories = [
+    'All',
+    'Architecture',
+    'AI Interfaces',
+    'Modernization',
+  ];
+
+  protected readonly selectedCategory = signal<string>('All');
+
+  protected readonly filteredProjects = computed(() => {
+    const cat = this.selectedCategory();
+    if (cat === 'All') return this.projects();
+    return this.projects().filter((p) => p.category.toLowerCase() === cat.toLowerCase());
+  });
+
+  protected selectCategory(category: string): void {
+    this.selectedCategory.set(category);
+  }
 }

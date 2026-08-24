@@ -1,17 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {DecimalPipe} from '@angular/common';
-import { projects, resume } from '../../data/portfolio.data';
+import { PortfolioApiService } from '../../services/portfolio-api.service';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink,DecimalPipe],
-  templateUrl: "./home.component.html",
-  styleUrls: ['./home.component.scss']
+  imports: [RouterLink],
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent {
-  protected readonly profile = resume;
-  readonly currentYear = new Date().getFullYear();
-  protected readonly featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
-  protected readonly architectureSkills = resume.skills['frontendArchitecture'];
+  private readonly apiService = inject(PortfolioApiService);
+
+  protected readonly profile = this.apiService.profile;
+  protected readonly projects = this.apiService.projects;
+  protected readonly skills = this.apiService.skills;
+  protected readonly experience = this.apiService.experience;
+
+  protected readonly featuredProjects = computed(() =>
+    this.projects().filter((p) => p.featured).slice(0, 3)
+  );
+
+  protected readonly architectureSkills = computed(() => {
+    const found = this.skills().find((s) => s.category === 'frontendArchitecture');
+    return found ? found.items : ['Angular 22', 'Nx Monorepos', 'Design Systems', 'TypeScript', 'Signals'];
+  });
+
+  protected readonly aiSkills = computed(() => {
+    const found = this.skills().find((s) => s.category === 'aiInterfaces');
+    return found ? found.items : ['LangChain', 'LangGraph', 'Streaming UIs', 'RAG Applications'];
+  });
 }
