@@ -58,7 +58,8 @@
       },
       "configurations": {
         "production": {
-          "buildTarget": "portfolio-shell:build:production"
+          "buildTarget": "portfolio-shell:build:production",
+           "proxyConfig": "apps/portfolio-shell/proxy.conf.prod.json"
         },
         "development": {
           "buildTarget": "portfolio-shell:build:development",
