@@ -1,8 +1,4 @@
-export interface AppEnvironment {
-  production: boolean;
-  apiUrl: string;
-  enableAnalytics?: boolean;
-}
+import { AppEnvironment } from './environment.model';
 
 export const environment: AppEnvironment = {
   production: false,
