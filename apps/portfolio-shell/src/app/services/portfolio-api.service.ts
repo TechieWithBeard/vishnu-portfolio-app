@@ -13,6 +13,8 @@ import {
   ExperienceItem,
 } from '../data/portfolio.data';
 
+import { APP_CONFIG } from '../core/config/app-config.token';
+
 export interface SkillCategory {
   id: string;
   category: string;
@@ -26,18 +28,10 @@ export interface SkillCategory {
 })
 export class PortfolioApiService {
   private readonly http = inject(HttpClient);
+  private readonly config = inject(APP_CONFIG);
   
   private get apiBase(): string {
-    if (typeof window !== 'undefined') {
-      const custom = (window as any).__PORTFOLIO_API_URL__;
-      if (custom) return custom;
-      const host = window.location.hostname;
-      if (host.includes('onrender.com') && !host.includes('-api')) {
-        const apiHost = host.replace('.onrender.com', '-api.onrender.com');
-        return `https://${apiHost}/api`;
-      }
-    }
-    return '/api';
+    return this.config.apiUrl;
   }
 
   // State Signals

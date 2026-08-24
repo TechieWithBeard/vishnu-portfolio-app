@@ -8,23 +8,7 @@ import {
   HealthResponse,
 } from '../types/admin.types';
 
-function getApiBase(): string {
-  if (typeof window !== 'undefined') {
-    const custom = (window as any).__PORTFOLIO_API_URL__ || (import.meta as any).env?.VITE_API_URL;
-    if (custom) return custom;
-    const host = window.location.hostname;
-    if (host.includes('onrender.com') && !host.includes('-api')) {
-      const apiHost = host.replace('-admin', '').replace('.onrender.com', '-api.onrender.com');
-      return `https://${apiHost}/api`;
-    }
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return 'http://localhost:3000/api';
-    }
-  }
-  return '/api';
-}
-
-const API_BASE = getApiBase();
+const API_BASE = (import.meta as any).env?.VITE_API_URL || '/api';
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
