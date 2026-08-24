@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, delay, of, tap } from 'rxjs';
 import {
   Resume,
   Project,
@@ -26,60 +26,67 @@ export interface SkillCategory {
 })
 export class PortfolioApiService {
   private readonly http = inject(HttpClient);
-  private readonly apiBase = '/api';
+  
+  private get apiBase(): string {
+    if (typeof window !== 'undefined') {
+      const custom = (window as any).__PORTFOLIO_API_URL__;
+      if (custom) return custom;
+      const host = window.location.hostname;
+      if (host.includes('onrender.com') && !host.includes('-api')) {
+        const apiHost = host.replace('.onrender.com', '-api.onrender.com');
+        return `https://${apiHost}/api`;
+      }
+    }
+    return '/api';
+  }
 
-  // Signals
+  // State Signals
   readonly profile = signal<Resume>(fallbackResume);
-  readonly experience = signal<ExperienceItem[]>(fallbackResume.experience);
-  readonly projects = signal<Project[]>(fallbackProjects);
-  readonly writing = signal<WritingItem[]>(fallbackWriting);
-  readonly demos = signal<Demo[]>(fallbackDemos);
-  readonly skills = signal<SkillCategory[]>([
-    {
-      id: 'cat-1',
-      category: 'frontendArchitecture',
-      categoryLabel: 'Frontend Architecture & Frameworks',
-      items: fallbackResume.skills['frontendArchitecture'] || [],
-      orderIndex: 1,
-    },
-    {
-      id: 'cat-2',
-      category: 'aiInterfaces',
-      categoryLabel: 'AI & Intelligent Interfaces',
-      items: fallbackResume.skills['aiInterfaces'] || [],
-      orderIndex: 2,
-    },
-    {
-      id: 'cat-3',
-      category: 'testingQuality',
-      categoryLabel: 'Testing, Quality & Accessibility',
-      items: fallbackResume.skills['testingQuality'] || [],
-      orderIndex: 3,
-    },
-    {
-      id: 'cat-4',
-      category: 'tooling',
-      categoryLabel: 'Tooling, Cloud & Ecosystem',
-      items: fallbackResume.skills['tooling'] || [],
-      orderIndex: 4,
-    },
-  ]);
+  readonly experience = signal<ExperienceItem[]>([]);
+  readonly projects = signal<Project[]>([]);
+  readonly writing = signal<WritingItem[]>([]);
+  readonly demos = signal<Demo[]>([]);
+  readonly skills = signal<SkillCategory[]>([]);
 
-  readonly loading = signal<boolean>(false);
+  // Granular Loading State Signals for Skeletons
+  readonly loading = signal<boolean>(true);
+  readonly loadingProfile = signal<boolean>(true);
+  readonly loadingExperience = signal<boolean>(true);
+  readonly loadingProjects = signal<boolean>(true);
+  readonly loadingWriting = signal<boolean>(true);
+  readonly loadingDemos = signal<boolean>(true);
+  readonly loadingSkills = signal<boolean>(true);
+
   readonly apiConnected = signal<boolean>(false);
 
   constructor() {
     this.fetchAllData();
   }
 
+  refresh(): void {
+    this.fetchAllData();
+  }
+
   fetchAllData(): void {
     this.loading.set(true);
+    this.loadingProfile.set(true);
+    this.loadingExperience.set(true);
+    this.loadingProjects.set(true);
+    this.loadingWriting.set(true);
+    this.loadingDemos.set(true);
+    this.loadingSkills.set(true);
 
     // Fetch Profile
     this.http
       .get<any>(`${this.apiBase}/profile`)
       .pipe(
-        catchError(() => of(null)),
+        delay(400),
+        catchError((err) => {
+          console.warn('[PortfolioApiService] /api/profile offline, using fallback:', err?.message || err);
+          this.profile.set(fallbackResume);
+          this.loadingProfile.set(false);
+          return of(null);
+        }),
         tap((data) => {
           if (data) {
             this.profile.set({
@@ -99,7 +106,10 @@ export class PortfolioApiService {
               skills: data.skills || fallbackResume.skills,
             });
             this.apiConnected.set(true);
+          } else {
+            this.profile.set(fallbackResume);
           }
+          this.loadingProfile.set(false);
         })
       )
       .subscribe();
@@ -108,11 +118,19 @@ export class PortfolioApiService {
     this.http
       .get<ExperienceItem[]>(`${this.apiBase}/experience`)
       .pipe(
-        catchError(() => of(null)),
+        delay(450),
+        catchError(() => {
+          this.experience.set(fallbackResume.experience);
+          this.loadingExperience.set(false);
+          return of(null);
+        }),
         tap((data) => {
           if (data && data.length > 0) {
             this.experience.set(data);
+          } else {
+            this.experience.set(fallbackResume.experience);
           }
+          this.loadingExperience.set(false);
         })
       )
       .subscribe();
@@ -121,11 +139,19 @@ export class PortfolioApiService {
     this.http
       .get<Project[]>(`${this.apiBase}/projects`)
       .pipe(
-        catchError(() => of(null)),
+        delay(500),
+        catchError(() => {
+          this.projects.set(fallbackProjects);
+          this.loadingProjects.set(false);
+          return of(null);
+        }),
         tap((data) => {
           if (data && data.length > 0) {
             this.projects.set(data);
+          } else {
+            this.projects.set(fallbackProjects);
           }
+          this.loadingProjects.set(false);
         })
       )
       .subscribe();
@@ -134,11 +160,19 @@ export class PortfolioApiService {
     this.http
       .get<WritingItem[]>(`${this.apiBase}/writing`)
       .pipe(
-        catchError(() => of(null)),
+        delay(500),
+        catchError(() => {
+          this.writing.set(fallbackWriting);
+          this.loadingWriting.set(false);
+          return of(null);
+        }),
         tap((data) => {
           if (data && data.length > 0) {
             this.writing.set(data);
+          } else {
+            this.writing.set(fallbackWriting);
           }
+          this.loadingWriting.set(false);
         })
       )
       .subscribe();
@@ -147,11 +181,19 @@ export class PortfolioApiService {
     this.http
       .get<Demo[]>(`${this.apiBase}/demos`)
       .pipe(
-        catchError(() => of(null)),
+        delay(550),
+        catchError(() => {
+          this.demos.set(fallbackDemos);
+          this.loadingDemos.set(false);
+          return of(null);
+        }),
         tap((data) => {
           if (data && data.length > 0) {
             this.demos.set(data);
+          } else {
+            this.demos.set(fallbackDemos);
           }
+          this.loadingDemos.set(false);
         })
       )
       .subscribe();
@@ -160,17 +202,33 @@ export class PortfolioApiService {
     this.http
       .get<SkillCategory[]>(`${this.apiBase}/skills`)
       .pipe(
-        catchError(() => of(null)),
+        delay(550),
+        catchError(() => {
+          this.skills.set([
+            { id: 'cat-1', category: 'frontendArchitecture', categoryLabel: 'Frontend Architecture & Frameworks', items: fallbackResume.skills['frontendArchitecture'] || [], orderIndex: 1 },
+            { id: 'cat-2', category: 'aiInterfaces', categoryLabel: 'AI & Intelligent Interfaces', items: fallbackResume.skills['aiInterfaces'] || [], orderIndex: 2 },
+            { id: 'cat-3', category: 'testingQuality', categoryLabel: 'Testing, Quality & Accessibility', items: fallbackResume.skills['testingQuality'] || [], orderIndex: 3 },
+            { id: 'cat-4', category: 'tooling', categoryLabel: 'Tooling, Cloud & Ecosystem', items: fallbackResume.skills['tooling'] || [], orderIndex: 4 },
+          ]);
+          this.loadingSkills.set(false);
+          this.loading.set(false);
+          return of(null);
+        }),
         tap((data) => {
           if (data && data.length > 0) {
             this.skills.set(data);
+          } else {
+            this.skills.set([
+              { id: 'cat-1', category: 'frontendArchitecture', categoryLabel: 'Frontend Architecture & Frameworks', items: fallbackResume.skills['frontendArchitecture'] || [], orderIndex: 1 },
+              { id: 'cat-2', category: 'aiInterfaces', categoryLabel: 'AI & Intelligent Interfaces', items: fallbackResume.skills['aiInterfaces'] || [], orderIndex: 2 },
+              { id: 'cat-3', category: 'testingQuality', categoryLabel: 'Testing, Quality & Accessibility', items: fallbackResume.skills['testingQuality'] || [], orderIndex: 3 },
+              { id: 'cat-4', category: 'tooling', categoryLabel: 'Tooling, Cloud & Ecosystem', items: fallbackResume.skills['tooling'] || [], orderIndex: 4 },
+            ]);
           }
+          this.loadingSkills.set(false);
           this.loading.set(false);
         })
       )
-      .subscribe({
-        complete: () => this.loading.set(false),
-        error: () => this.loading.set(false),
-      });
+      .subscribe();
   }
 }

@@ -53,12 +53,16 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/portfolio-shell/proxy.conf.json"
+      },
       "configurations": {
         "production": {
           "buildTarget": "portfolio-shell:build:production"
         },
         "development": {
-          "buildTarget": "portfolio-shell:build:development"
+          "buildTarget": "portfolio-shell:build:development",
+          "proxyConfig": "apps/portfolio-shell/proxy.conf.json"
         }
       }
     },

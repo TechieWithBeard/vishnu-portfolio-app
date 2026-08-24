@@ -1,0 +1,46 @@
+# ==============================================================================
+# Render.com Blueprint — Vishnu Portfolio Deployment
+# ==============================================================================
+
+services:
+  # 1. NestJS REST API Web Service
+  - type: web
+    name: vishnu-portfolio-api
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build:api
+    startCommand: npm run start:api:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
+  # 2. Angular 22 Portfolio Shell (Static Site)
+  - type: web
+    name: vishnu-portfolio
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build:shell
+    staticPublishPath: dist/apps/portfolio-shell/browser
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # 3. React 19 Admin Dashboard (Static Site)
+  - type: web
+    name: vishnu-portfolio-admin
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build:admin
+    staticPublishPath: dist/apps/portfolio-admin
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -1,29 +1,35 @@
 import { Route } from '@angular/router';
+import { HomeComponent } from './pages/home/home.component';
+import { ExperienceComponent } from './pages/experience/experience.component';
+import { ProjectsComponent } from './pages/projects/projects.component';
+import { DemosComponent } from './pages/demos/demos.component';
+import { WritingComponent } from './pages/writing/writing.component';
+import { ContactComponent } from './pages/contact/contact.component';
 
 export const appRoutes: Route[] = [
   {
     path: '',
-    loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
+    component: HomeComponent,
   },
   {
     path: 'experience',
-    loadComponent: () => import('./pages/experience/experience.component').then((m) => m.ExperienceComponent),
+    component: ExperienceComponent,
   },
   {
     path: 'projects',
-    loadComponent: () => import('./pages/projects/projects.component').then((m) => m.ProjectsComponent),
+    component: ProjectsComponent,
   },
   {
     path: 'demos',
-    loadComponent: () => import('./pages/demos/demos.component').then((m) => m.DemosComponent),
+    component: DemosComponent,
   },
   {
     path: 'writing',
-    loadComponent: () => import('./pages/writing/writing.component').then((m) => m.WritingComponent),
+    component: WritingComponent,
   },
   {
     path: 'contact',
-    loadComponent: () => import('./pages/contact/contact.component').then((m) => m.ContactComponent),
+    component: ContactComponent,
   },
   {
     path: '**',

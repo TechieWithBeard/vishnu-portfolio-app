@@ -38,7 +38,7 @@ export class SupabaseService implements OnModuleInit {
       process.env.SUPABASE_ANON_KEY ||
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    if (supabaseUrl && supabaseKey && !supabaseUrl.includes('YOUR_')) {
+    if (supabaseUrl && supabaseKey && !supabaseUrl.includes('YOUR_') && !supabaseUrl.includes('your-project-id')) {
       try {
         this.client = createClient(supabaseUrl, supabaseKey, {
           auth: { persistSession: false },
@@ -50,20 +50,20 @@ export class SupabaseService implements OnModuleInit {
         this.logger.warn(`⚠️ Failed to initialize Supabase client: ${err.message}. Using Local Store.`);
       }
     } else {
-      this.logger.log('ℹ️ No Supabase credentials configured. Running in Local Store mode.');
+      this.logger.log('ℹ️ No valid Supabase credentials configured. Running in Local Store mode.');
     }
   }
 
-  private async syncFromSupabase(): Promise<void> {
+  public async syncFromSupabase(): Promise<void> {
     if (!this.client) return;
     try {
       // Profile
-      const { data: pData } = await this.client.from('profile').select('*').limit(1).single();
-      if (pData) {
+      const { data: pData, error: pErr } = await this.client.from('profile').select('*').limit(1).single();
+      if (pData && !pErr) {
         this.profileStore = {
           id: pData.id,
           name: pData.name,
-          alias: pData.alias,
+          alias: pData.alias || initialProfile.alias,
           title: pData.title,
           tagline: pData.tagline,
           location: pData.location,
@@ -79,11 +79,11 @@ export class SupabaseService implements OnModuleInit {
       }
 
       // Experience
-      const { data: eData } = await this.client
+      const { data: eData, error: eErr } = await this.client
         .from('experience')
         .select('*')
         .order('order_index', { ascending: true });
-      if (eData && eData.length > 0) {
+      if (eData && !eErr && eData.length > 0) {
         this.experienceStore = eData.map((item: any) => ({
           id: item.id,
           role: item.role,
@@ -97,11 +97,11 @@ export class SupabaseService implements OnModuleInit {
       }
 
       // Projects
-      const { data: prData } = await this.client
+      const { data: prData, error: prErr } = await this.client
         .from('projects')
         .select('*')
         .order('order_index', { ascending: true });
-      if (prData && prData.length > 0) {
+      if (prData && !prErr && prData.length > 0) {
         this.projectsStore = prData.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -119,11 +119,11 @@ export class SupabaseService implements OnModuleInit {
       }
 
       // Writing
-      const { data: wData } = await this.client
+      const { data: wData, error: wErr } = await this.client
         .from('writing')
         .select('*')
         .order('order_index', { ascending: true });
-      if (wData && wData.length > 0) {
+      if (wData && !wErr && wData.length > 0) {
         this.writingStore = wData.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -140,11 +140,11 @@ export class SupabaseService implements OnModuleInit {
       }
 
       // Demos
-      const { data: dData } = await this.client
+      const { data: dData, error: dErr } = await this.client
         .from('demos')
         .select('*')
         .order('order_index', { ascending: true });
-      if (dData && dData.length > 0) {
+      if (dData && !dErr && dData.length > 0) {
         this.demosStore = dData.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -162,11 +162,11 @@ export class SupabaseService implements OnModuleInit {
       }
 
       // Skills
-      const { data: sData } = await this.client
+      const { data: sData, error: sErr } = await this.client
         .from('skills')
         .select('*')
         .order('order_index', { ascending: true });
-      if (sData && sData.length > 0) {
+      if (sData && !sErr && sData.length > 0) {
         this.skillsStore = sData.map((item: any) => ({
           id: item.id,
           category: item.category,
@@ -201,6 +201,31 @@ export class SupabaseService implements OnModuleInit {
 
   // --- PROFILE ---
   async getProfile(): Promise<ProfileData> {
+    if (this.client) {
+      try {
+        const { data, error } = await this.client.from('profile').select('*').limit(1).single();
+        if (data && !error) {
+          this.profileStore = {
+            id: data.id,
+            name: data.name,
+            alias: data.alias || initialProfile.alias,
+            title: data.title,
+            tagline: data.tagline,
+            location: data.location,
+            email: data.email,
+            phone: data.phone,
+            linkedin: data.linkedin,
+            github: data.github,
+            summary: data.summary,
+            availability: data.availability || initialProfile.availability,
+            skills: data.skills || initialProfile.skills,
+            updatedAt: data.updated_at,
+          };
+        }
+      } catch (err: any) {
+        this.logger.warn(`Supabase getProfile error: ${err.message}. Serving local cache.`);
+      }
+    }
     return this.profileStore;
   }
 
@@ -239,6 +264,28 @@ export class SupabaseService implements OnModuleInit {
 
   // --- EXPERIENCE ---
   async getExperience(): Promise<ExperienceItem[]> {
+    if (this.client) {
+      try {
+        const { data, error } = await this.client
+          .from('experience')
+          .select('*')
+          .order('order_index', { ascending: true });
+        if (data && !error && data.length > 0) {
+          this.experienceStore = data.map((item: any) => ({
+            id: item.id,
+            role: item.role,
+            company: item.company,
+            period: item.period,
+            location: item.location,
+            highlights: item.highlights || [],
+            tech: item.tech || [],
+            orderIndex: item.order_index ?? 0,
+          }));
+        }
+      } catch (err: any) {
+        this.logger.warn(`Supabase getExperience error: ${err.message}. Serving local cache.`);
+      }
+    }
     return [...this.experienceStore].sort((a, b) => a.orderIndex - b.orderIndex);
   }
 
@@ -330,6 +377,37 @@ export class SupabaseService implements OnModuleInit {
 
   // --- PROJECTS ---
   async getProjects(featuredOnly = false, category?: string): Promise<ProjectItem[]> {
+    if (this.client) {
+      try {
+        let query = this.client.from('projects').select('*').order('order_index', { ascending: true });
+        if (featuredOnly) {
+          query = query.eq('featured', true);
+        }
+        if (category) {
+          query = query.ilike('category', category);
+        }
+        const { data, error } = await query;
+        if (data && !error && data.length > 0) {
+          this.projectsStore = data.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            role: item.role,
+            tech: item.tech || [],
+            highlights: item.highlights || [],
+            github: item.github,
+            liveDemo: item.live_demo,
+            demoType: item.demo_type,
+            featured: item.featured ?? false,
+            category: item.category || 'Architecture',
+            orderIndex: item.order_index ?? 0,
+          }));
+        }
+      } catch (err: any) {
+        this.logger.warn(`Supabase getProjects error: ${err.message}. Serving local cache.`);
+      }
+    }
+
     let result = [...this.projectsStore].sort((a, b) => a.orderIndex - b.orderIndex);
     if (featuredOnly) {
       result = result.filter((p) => p.featured);
@@ -440,6 +518,33 @@ export class SupabaseService implements OnModuleInit {
 
   // --- WRITING / ARTICLES ---
   async getWriting(platform?: string): Promise<WritingItem[]> {
+    if (this.client) {
+      try {
+        let query = this.client.from('writing').select('*').order('order_index', { ascending: true });
+        if (platform) {
+          query = query.ilike('platform', platform);
+        }
+        const { data, error } = await query;
+        if (data && !error && data.length > 0) {
+          this.writingStore = data.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            platform: item.platform,
+            url: item.url,
+            publishedAt: item.published_at,
+            summary: item.summary,
+            tags: item.tags || [],
+            thumbnail: item.thumbnail,
+            readTime: item.read_time,
+            featured: item.featured ?? false,
+            orderIndex: item.order_index ?? 0,
+          }));
+        }
+      } catch (err: any) {
+        this.logger.warn(`Supabase getWriting error: ${err.message}. Serving local cache.`);
+      }
+    }
+
     let result = [...this.writingStore].sort((a, b) => a.orderIndex - b.orderIndex);
     if (platform) {
       result = result.filter((w) => w.platform.toLowerCase() === platform.toLowerCase());
@@ -544,6 +649,32 @@ export class SupabaseService implements OnModuleInit {
 
   // --- DEMOS ---
   async getDemos(): Promise<DemoItem[]> {
+    if (this.client) {
+      try {
+        const { data, error } = await this.client
+          .from('demos')
+          .select('*')
+          .order('order_index', { ascending: true });
+        if (data && !error && data.length > 0) {
+          this.demosStore = data.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            type: item.type,
+            remoteName: item.remote_name,
+            exposedModule: item.exposed_module,
+            url: item.url,
+            status: item.status,
+            tech: item.tech || [],
+            tags: item.tags || [],
+            sandbox: item.sandbox,
+            orderIndex: item.order_index ?? 0,
+          }));
+        }
+      } catch (err: any) {
+        this.logger.warn(`Supabase getDemos error: ${err.message}. Serving local cache.`);
+      }
+    }
     return [...this.demosStore].sort((a, b) => a.orderIndex - b.orderIndex);
   }
 
@@ -647,6 +778,25 @@ export class SupabaseService implements OnModuleInit {
 
   // --- SKILLS ---
   async getSkills(): Promise<SkillCategoryItem[]> {
+    if (this.client) {
+      try {
+        const { data, error } = await this.client
+          .from('skills')
+          .select('*')
+          .order('order_index', { ascending: true });
+        if (data && !error && data.length > 0) {
+          this.skillsStore = data.map((item: any) => ({
+            id: item.id,
+            category: item.category,
+            categoryLabel: item.category_label,
+            items: item.items || [],
+            orderIndex: item.order_index ?? 0,
+          }));
+        }
+      } catch (err: any) {
+        this.logger.warn(`Supabase getSkills error: ${err.message}. Serving local cache.`);
+      }
+    }
     return [...this.skillsStore].sort((a, b) => a.orderIndex - b.orderIndex);
   }
 

@@ -3,9 +3,14 @@
   <section class="hero">
     <div class="hero-content">
       <span class="eyebrow">Senior Frontend Engineer • UI & AI Architect</span>
-      <h1>{{ profile().name }}</h1>
-      <p class="hero-tagline">{{ profile().tagline }}</p>
-      <p class="hero-summary">{{ profile().summary }}</p>
+
+      @if (loadingProfile()) {
+        <app-skeleton-loader type="hero"></app-skeleton-loader>
+      } @else {
+        <h1>{{ profile().name }}</h1>
+        <p class="hero-tagline">{{ profile().tagline }}</p>
+        <p class="hero-summary">{{ profile().summary }}</p>
+      }
 
       <div class="hero-actions">
         <a class="btn btn-primary" routerLink="/projects">
@@ -43,23 +48,35 @@
     <!-- Portrait & Details Card -->
     <aside class="profile-card" aria-label="Profile Card">
       <figure class="profile-portrait">
-        <img
-          src="/profile/vishnu.jpeg"
-          alt="Vishnu Thankappan - Senior Frontend Engineer"
-          width="480"
-          height="560"
-          loading="eager"
-        />
+        @if (loadingProfile()) {
+          <app-skeleton-loader type="avatar"></app-skeleton-loader>
+        } @else {
+          <img
+            src="/profile/vishnu.jpeg"
+            alt="Vishnu Thankappan - Senior Frontend Engineer"
+            width="480"
+            height="560"
+            loading="eager"
+          />
+        }
       </figure>
 
       <div class="profile-meta-row">
         <div style="display: flex; align-items: center; justify-content: space-between;">
-          <h2 style="font-size: 1.15rem; font-weight: 700;">{{ profile().title }}</h2>
-          <span class="tag tag-accent">{{ profile().alias }}</span>
+          @if (loadingProfile()) {
+            <app-skeleton-loader type="title" width="60%"></app-skeleton-loader>
+          } @else {
+            <h2 style="font-size: 1.15rem; font-weight: 700;">{{ profile().title }}</h2>
+            <span class="tag tag-accent">{{ profile().alias }}</span>
+          }
         </div>
-        <p style="font-size: 0.85rem; color: var(--color-text-muted);">
-          📍 {{ profile().location }}
-        </p>
+        @if (loadingProfile()) {
+          <app-skeleton-loader type="custom" height="0.9rem" width="50%"></app-skeleton-loader>
+        } @else {
+          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0;">
+            📍 {{ profile().location }}
+          </p>
+        }
       </div>
 
       <div style="display: flex; gap: 0.5rem; margin-top: auto;">
@@ -124,49 +141,53 @@
       <a class="btn btn-secondary" routerLink="/projects">All Projects & Case Studies →</a>
     </div>
 
-    <div class="grid three">
-      @for (project of featuredProjects(); track project.id) {
-        <article class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
-            <span class="tag tag-accent">{{ project.category }}</span>
-            @if (project.demoType) {
-              <span class="tag tag-ai">{{ project.demoType }}</span>
-            }
-          </div>
+    @if (loadingProjects()) {
+      <app-skeleton-loader type="card-grid" [count]="3" [columns]="3"></app-skeleton-loader>
+    } @else {
+      <div class="grid three">
+        @for (project of featuredProjects(); track project.id) {
+          <article class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+              <span class="tag tag-accent">{{ project.category }}</span>
+              @if (project.demoType) {
+                <span class="tag tag-ai">{{ project.demoType }}</span>
+              }
+            </div>
 
-          <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-2);">
-            {{ project.title }}
-          </h3>
-          <p style="font-size: 0.9rem; margin-bottom: var(--space-4); line-height: 1.6; flex: 1;">
-            {{ project.description }}
-          </p>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-2);">
+              {{ project.title }}
+            </h3>
+            <p style="font-size: 0.9rem; margin-bottom: var(--space-4); line-height: 1.6; flex: 1;">
+              {{ project.description }}
+            </p>
 
-          <div class="tag-row" style="margin-bottom: var(--space-4);">
-            @for (tech of project.tech; track tech) {
-              <span class="tag">{{ tech }}</span>
-            }
-          </div>
+            <div class="tag-row" style="margin-bottom: var(--space-4);">
+              @for (tech of project.tech; track tech) {
+                <span class="tag">{{ tech }}</span>
+              }
+            </div>
 
-          <div style="display: flex; gap: var(--space-2); margin-top: auto; border-top: 1px solid var(--color-border); padding-top: var(--space-3);">
-            @if (project.liveDemo) {
-              <a class="btn btn-primary btn-sm" [routerLink]="project.liveDemo" style="flex: 1;">
-                View Demo
-              </a>
-            }
-            @if (project.github && !project.github.includes('YOUR_')) {
-              <a
-                class="btn btn-secondary btn-sm"
-                [href]="project.github"
-                target="_blank"
-                rel="noreferrer"
-              >
-                GitHub ↗
-              </a>
-            }
-          </div>
-        </article>
-      }
-    </div>
+            <div style="display: flex; gap: var(--space-2); margin-top: auto; border-top: 1px solid var(--color-border); padding-top: var(--space-3);">
+              @if (project.liveDemo) {
+                <a class="btn btn-primary btn-sm" [routerLink]="project.liveDemo" style="flex: 1;">
+                  View Demo
+                </a>
+              }
+              @if (project.github && !project.github.includes('YOUR_')) {
+                <a
+                  class="btn btn-secondary btn-sm"
+                  [href]="project.github"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  GitHub ↗
+                </a>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
   </section>
 
   <!-- Core Architectural Strength Section -->
@@ -187,22 +208,30 @@
           <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-accent); margin-bottom: var(--space-3);">
             📐 Architecture & Frameworks
           </h3>
-          <div class="skill-cloud">
-            @for (skill of architectureSkills(); track skill) {
-              <span class="tag tag-accent">{{ skill }}</span>
-            }
-          </div>
+          @if (loadingSkills()) {
+            <app-skeleton-loader type="pill-cloud" [count]="6"></app-skeleton-loader>
+          } @else {
+            <div class="skill-cloud">
+              @for (skill of architectureSkills(); track skill) {
+                <span class="tag tag-accent">{{ skill }}</span>
+              }
+            </div>
+          }
         </div>
 
         <div class="card">
           <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-ai); margin-bottom: var(--space-3);">
             🤖 AI & Intelligent Interfaces
           </h3>
-          <div class="skill-cloud">
-            @for (skill of aiSkills(); track skill) {
-              <span class="tag tag-ai">{{ skill }}</span>
-            }
-          </div>
+          @if (loadingSkills()) {
+            <app-skeleton-loader type="pill-cloud" [count]="5"></app-skeleton-loader>
+          } @else {
+            <div class="skill-cloud">
+              @for (skill of aiSkills(); track skill) {
+                <span class="tag tag-ai">{{ skill }}</span>
+              }
+            </div>
+          }
         </div>
       </div>
     </div>

@@ -8,7 +8,23 @@ import {
   HealthResponse,
 } from '../types/admin.types';
 
-const API_BASE = 'http://localhost:3000/api';
+function getApiBase(): string {
+  if (typeof window !== 'undefined') {
+    const custom = (window as any).__PORTFOLIO_API_URL__ || (import.meta as any).env?.VITE_API_URL;
+    if (custom) return custom;
+    const host = window.location.hostname;
+    if (host.includes('onrender.com') && !host.includes('-api')) {
+      const apiHost = host.replace('-admin', '').replace('.onrender.com', '-api.onrender.com');
+      return `https://${apiHost}/api`;
+    }
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return 'http://localhost:3000/api';
+    }
+  }
+  return '/api';
+}
+
+const API_BASE = getApiBase();
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -45,15 +61,15 @@ export const AdminApi = {
 
   // Experience
   getExperience: () => fetchJson<ExperienceItem[]>(`${API_BASE}/experience`),
-  createExperience: (data: Omit<ExperienceItem, 'id'> & { id?: string }) =>
+  createExperience: (item: Omit<ExperienceItem, 'id'> & { id?: string }) =>
     fetchJson<ExperienceItem>(`${API_BASE}/experience`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(item),
     }),
-  updateExperience: (id: string, data: Partial<ExperienceItem>) =>
+  updateExperience: (id: string, item: Partial<ExperienceItem>) =>
     fetchJson<ExperienceItem>(`${API_BASE}/experience/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: JSON.stringify(item),
     }),
   deleteExperience: (id: string) =>
     fetchJson<{ success: boolean }>(`${API_BASE}/experience/${id}`, {
@@ -61,16 +77,22 @@ export const AdminApi = {
     }),
 
   // Projects
-  getProjects: () => fetchJson<ProjectItem[]>(`${API_BASE}/projects`),
-  createProject: (data: Omit<ProjectItem, 'id'> & { id?: string }) =>
+  getProjects: (featuredOnly = false, category?: string) => {
+    const params = new URLSearchParams();
+    if (featuredOnly) params.append('featured', 'true');
+    if (category) params.append('category', category);
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    return fetchJson<ProjectItem[]>(`${API_BASE}/projects${qs}`);
+  },
+  createProject: (item: Omit<ProjectItem, 'id'> & { id?: string }) =>
     fetchJson<ProjectItem>(`${API_BASE}/projects`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(item),
     }),
-  updateProject: (id: string, data: Partial<ProjectItem>) =>
+  updateProject: (id: string, item: Partial<ProjectItem>) =>
     fetchJson<ProjectItem>(`${API_BASE}/projects/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: JSON.stringify(item),
     }),
   deleteProject: (id: string) =>
     fetchJson<{ success: boolean }>(`${API_BASE}/projects/${id}`, {
@@ -78,16 +100,19 @@ export const AdminApi = {
     }),
 
   // Writing
-  getWriting: () => fetchJson<WritingItem[]>(`${API_BASE}/writing`),
-  createWriting: (data: Omit<WritingItem, 'id'> & { id?: string }) =>
+  getWriting: (platform?: string) => {
+    const qs = platform ? `?platform=${encodeURIComponent(platform)}` : '';
+    return fetchJson<WritingItem[]>(`${API_BASE}/writing${qs}`);
+  },
+  createWriting: (item: Omit<WritingItem, 'id'> & { id?: string }) =>
     fetchJson<WritingItem>(`${API_BASE}/writing`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(item),
     }),
-  updateWriting: (id: string, data: Partial<WritingItem>) =>
+  updateWriting: (id: string, item: Partial<WritingItem>) =>
     fetchJson<WritingItem>(`${API_BASE}/writing/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: JSON.stringify(item),
     }),
   deleteWriting: (id: string) =>
     fetchJson<{ success: boolean }>(`${API_BASE}/writing/${id}`, {
@@ -96,15 +121,15 @@ export const AdminApi = {
 
   // Demos
   getDemos: () => fetchJson<DemoItem[]>(`${API_BASE}/demos`),
-  createDemo: (data: Omit<DemoItem, 'id'> & { id?: string }) =>
+  createDemo: (item: Omit<DemoItem, 'id'> & { id?: string }) =>
     fetchJson<DemoItem>(`${API_BASE}/demos`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(item),
     }),
-  updateDemo: (id: string, data: Partial<DemoItem>) =>
+  updateDemo: (id: string, item: Partial<DemoItem>) =>
     fetchJson<DemoItem>(`${API_BASE}/demos/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: JSON.stringify(item),
     }),
   deleteDemo: (id: string) =>
     fetchJson<{ success: boolean }>(`${API_BASE}/demos/${id}`, {
@@ -113,9 +138,9 @@ export const AdminApi = {
 
   // Skills
   getSkills: () => fetchJson<SkillCategoryItem[]>(`${API_BASE}/skills`),
-  updateSkills: (data: SkillCategoryItem[]) =>
+  updateSkills: (skills: SkillCategoryItem[]) =>
     fetchJson<SkillCategoryItem[]>(`${API_BASE}/skills`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: JSON.stringify(skills),
     }),
 };

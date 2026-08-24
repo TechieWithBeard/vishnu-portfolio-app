@@ -1,8 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
+import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
 
 @Component({
   selector: 'app-contact',
+  imports: [SkeletonLoaderComponent],
   template: `
     <div class="container">
       <section class="section" style="padding-bottom: var(--space-8);">
@@ -45,7 +47,11 @@ import { PortfolioApiService } from '../../services/portfolio-api.service';
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3);">
               <div>
                 <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">EMAIL</small>
-                <strong>{{ profile().email }}</strong>
+                @if (loadingProfile()) {
+                  <app-skeleton-loader type="custom" height="1.1rem" width="14rem"></app-skeleton-loader>
+                } @else {
+                  <strong>{{ profile().email }}</strong>
+                }
               </div>
               <button
                 class="btn btn-secondary btn-sm"
@@ -58,7 +64,11 @@ import { PortfolioApiService } from '../../services/portfolio-api.service';
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3);">
               <div>
                 <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">PHONE</small>
-                <strong>{{ profile().phone }}</strong>
+                @if (loadingProfile()) {
+                  <app-skeleton-loader type="custom" height="1.1rem" width="10rem"></app-skeleton-loader>
+                } @else {
+                  <strong>{{ profile().phone }}</strong>
+                }
               </div>
               <button
                 class="btn btn-secondary btn-sm"
@@ -70,12 +80,20 @@ import { PortfolioApiService } from '../../services/portfolio-api.service';
 
             <div style="border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3);">
               <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">LOCATION</small>
-              <strong>{{ profile().location }}</strong>
+              @if (loadingProfile()) {
+                <app-skeleton-loader type="custom" height="1.1rem" width="12rem"></app-skeleton-loader>
+              } @else {
+                <strong>{{ profile().location }}</strong>
+              }
             </div>
 
             <div>
               <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">ONLINE ALIAS</small>
-              <strong style="color: var(--color-accent);">{{ profile().alias }}</strong>
+              @if (loadingProfile()) {
+                <app-skeleton-loader type="custom" height="1.1rem" width="8rem"></app-skeleton-loader>
+              } @else {
+                <strong style="color: var(--color-accent);">{{ profile().alias }}</strong>
+              }
             </div>
           </div>
         </article>
@@ -90,22 +108,34 @@ import { PortfolioApiService } from '../../services/portfolio-api.service';
               <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">CURRENT STATUS</small>
               <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
                 <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-success);"></span>
-                <strong>{{ profile().availability.status }}</strong>
+                @if (loadingProfile()) {
+                  <app-skeleton-loader type="custom" height="1.1rem" width="12rem"></app-skeleton-loader>
+                } @else {
+                  <strong>{{ profile().availability.status }}</strong>
+                }
               </div>
             </div>
 
             <div style="border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3);">
               <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">TARGET POSITIONS</small>
-              <p style="margin-bottom: 0; color: var(--color-text-primary); font-weight: 500;">
-                {{ profile().availability.target }}
-              </p>
+              @if (loadingProfile()) {
+                <app-skeleton-loader type="custom" height="1.1rem" width="100%"></app-skeleton-loader>
+              } @else {
+                <p style="margin-bottom: 0; color: var(--color-text-primary); font-weight: 500;">
+                  {{ profile().availability.target }}
+                </p>
+              }
             </div>
 
             <div>
               <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">NOTES</small>
-              <p style="margin-bottom: 0; color: var(--color-text-secondary); font-size: 0.95rem;">
-                {{ profile().availability.note }}
-              </p>
+              @if (loadingProfile()) {
+                <app-skeleton-loader type="custom" height="1.1rem" width="100%"></app-skeleton-loader>
+              } @else {
+                <p style="margin-bottom: 0; color: var(--color-text-secondary); font-size: 0.95rem;">
+                  {{ profile().availability.note }}
+                </p>
+              }
             </div>
           </div>
         </article>
@@ -116,6 +146,7 @@ import { PortfolioApiService } from '../../services/portfolio-api.service';
 export class ContactComponent {
   private readonly apiService = inject(PortfolioApiService);
   protected readonly profile = this.apiService.profile;
+  protected readonly loadingProfile = this.apiService.loadingProfile;
 
   protected readonly copiedField = signal<string | null>(null);
 
