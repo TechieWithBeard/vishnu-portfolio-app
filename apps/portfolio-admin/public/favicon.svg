@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="vt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="50%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+  </defs>
+
+  <!-- Base Rounded Container -->
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#bg-grad)" stroke="url(#vt-grad)" stroke-width="2.5" />
+
+  <!-- Stylized Monogram: V & T -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- V Shape -->
+    <path d="M 14 18 L 26 44 L 34 26" stroke="url(#vt-grad)" stroke-width="4.5" />
+    
+    <!-- T Top Bar -->
+    <path d="M 28 18 L 50 18" stroke="#ffffff" stroke-width="4.5" />
+    <!-- T Stem -->
+    <path d="M 40 18 L 40 44" stroke="url(#vt-grad)" stroke-width="4.5" />
+  </g>
+
+  <!-- Radiant AI Architect Accent Dot -->
+  <circle cx="50" cy="42" r="3.2" fill="#38bdf8" />
+</svg>
