@@ -16,14 +16,18 @@ export const DemosTab: React.FC<DemosTabProps> = ({
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<DemoItem | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Form State
+  const [id, setId] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<'native-federation' | 'module-federation' | 'iframe' | 'standalone'>('native-federation');
   const [remoteName, setRemoteName] = useState('');
   const [exposedModule, setExposedModule] = useState('');
   const [url, setUrl] = useState('');
+  const [documentation, setDocumentation] = useState('');
+  const [video, setVideo] = useState('');
   const [status, setStatus] = useState<'live' | 'planned' | 'wip'>('live');
   const [techText, setTechText] = useState('');
   const [tagsText, setTagsText] = useState('');
@@ -48,34 +52,50 @@ export const DemosTab: React.FC<DemosTabProps> = ({
 
   const handleOpenAdd = () => {
     setEditingItem(null);
+    setId(`demo-${Date.now()}`);
     setTitle('');
     setDescription('');
     setType('native-federation');
     setRemoteName('demoAngularRag');
     setExposedModule('./Component');
     setUrl('/demos/rag-chat');
+    setDocumentation('');
+    setVideo('');
     setStatus('live');
     setTechText('Angular 22, LangChain, Streaming UI');
     setTagsText('AI, RAG, Microfrontend');
-    setSandbox('');
+    setSandbox('allow-scripts allow-same-origin allow-forms allow-popups');
     setOrderIndex(items.length + 1);
     setModalOpen(true);
   };
 
   const handleOpenEdit = (item: DemoItem) => {
     setEditingItem(item);
+    setId(item.id);
     setTitle(item.title);
     setDescription(item.description);
     setType(item.type);
     setRemoteName(item.remoteName || '');
     setExposedModule(item.exposedModule || '');
     setUrl(item.url || '');
+    setDocumentation(item.documentation || '');
+    setVideo(item.video || '');
     setStatus(item.status);
     setTechText(item.tech.join(', '));
     setTagsText(item.tags.join(', '));
-    setSandbox(item.sandbox || '');
+    setSandbox(item.sandbox || 'allow-scripts allow-same-origin allow-forms allow-popups');
     setOrderIndex(item.orderIndex);
     setModalOpen(true);
+  };
+
+  const handleCopyDeeplink = (demoId: string) => {
+    const link = `https://www.techiewithbeard.com/demos?demo=${encodeURIComponent(demoId)}`;
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(link);
+      setCopiedId(demoId);
+      onShowToast('success', `Deeplink copied: ${link}`);
+      setTimeout(() => setCopiedId(null), 2500);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,21 +112,26 @@ export const DemosTab: React.FC<DemosTabProps> = ({
           remoteName: remoteName || undefined,
           exposedModule: exposedModule || undefined,
           url: url || undefined,
+          documentation: documentation || undefined,
+          video: video || undefined,
           status,
           tech,
           tags,
           sandbox: sandbox || undefined,
           orderIndex,
         });
-        onShowToast('success', 'Demo updated');
+        onShowToast('success', 'Demo updated successfully');
       } else {
         await AdminApi.createDemo({
+          id,
           title,
           description,
           type,
           remoteName: remoteName || undefined,
           exposedModule: exposedModule || undefined,
           url: url || undefined,
+          documentation: documentation || undefined,
+          video: video || undefined,
           status,
           tech,
           tags,
@@ -139,84 +164,139 @@ export const DemosTab: React.FC<DemosTabProps> = ({
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Live Demo Hub</h1>
+          <h1 className="page-title">Live Demos & Microfrontends</h1>
           <p className="page-subtitle">
-            Configure Angular Native Federation remotes, React Module Federation, and embedded Streamlit AI applications.
+            Manage embedded applications, Native Federation remotes, and deep-linked interactive AI prototypes.
           </p>
         </div>
         <button className="btn btn-primary" onClick={handleOpenAdd}>
-          <span>➕</span> Add Demo
+          + Add New Demo
         </button>
       </div>
 
       {loading ? (
-        <div style={{ color: 'var(--text-muted)' }}>Loading live demos...</div>
+        <div style={{ textAlign: 'center', padding: '3rem' }}>Loading demos...</div>
+      ) : items.length === 0 ? (
+        <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+          <h3>No Demos Configured</h3>
+          <p style={{ color: 'var(--color-text-secondary)' }}>
+            Add your first interactive demo or remote application.
+          </p>
+        </div>
       ) : (
-        <div className="items-grid">
+        <div className="grid two">
           {items.map((item) => (
-            <div key={item.id} className="item-card">
-              <div>
-                <div className="item-card-header">
-                  <span className="tag-badge" style={{ background: 'rgba(124, 58, 237, 0.15)', color: '#c084fc' }}>
-                    {item.type}
+            <div key={item.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span className="badge badge-accent">{item.type}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span className={`badge ${item.status === 'live' ? 'badge-success' : 'badge-warning'}`}>
+                    ● {item.status.toUpperCase()}
                   </span>
-                  <span
-                    className="status-pill"
-                    style={{
-                      background: item.status === 'live' ? 'var(--success-subtle)' : 'var(--bg-surface-hover)',
-                      color: item.status === 'live' ? '#34d399' : 'var(--text-muted)',
-                    }}
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleCopyDeeplink(item.id)}
+                    title="Copy LinkedIn shareable deep link"
                   >
-                    <span className="dot" />
-                    {item.status.toUpperCase()}
-                  </span>
-                </div>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0.6rem 0 0.25rem' }}>{item.title}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem', lineHeight: 1.5 }}>
-                  {item.description}
-                </p>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.75rem' }}>
-                  {item.tech.map((t, i) => (
-                    <span key={i} className="tag-badge">{t}</span>
-                  ))}
+                    {copiedId === item.id ? '✓ Copied' : '🔗 Link'}
+                  </button>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  {item.remoteName || item.url}
-                </span>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button className="btn btn-secondary btn-sm" onClick={() => handleOpenEdit(item)}>
-                    ✏️ Edit
-                  </button>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item.id)}>
-                    🗑️
-                  </button>
-                </div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+                {item.title}
+              </h3>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: '0.75rem', flex: 1 }}>
+                {item.description}
+              </p>
+
+              {/* Resource Badges */}
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.75rem', fontSize: '0.75rem' }}>
+                {item.documentation && (
+                  <a
+                    href={item.documentation}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="badge"
+                    style={{ background: 'var(--color-bg-subtle)', textDecoration: 'none', color: 'var(--accent)' }}
+                  >
+                    📄 Docs ↗
+                  </a>
+                )}
+                {item.video && (
+                  <a
+                    href={item.video}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="badge"
+                    style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', textDecoration: 'none' }}
+                  >
+                    🎥 Video ↗
+                  </a>
+                )}
+                {item.url && (
+                  <span className="badge" style={{ background: 'var(--color-bg-subtle)' }}>
+                    URL: {item.url}
+                  </span>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '1rem' }}>
+                {item.tech.map((t) => (
+                  <span key={t} className="badge">
+                    {t}
+                  </span>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: 'auto', borderTop: '1px solid var(--color-border)', paddingTop: '0.75rem' }}>
+                <button className="btn btn-secondary btn-sm" onClick={() => handleOpenEdit(item)}>
+                  ✏️ Edit
+                </button>
+                <button className="btn btn-secondary btn-sm" style={{ color: '#ef4444' }} onClick={() => handleDelete(item.id)}>
+                  🗑️ Delete
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Demo Modal */}
+      {/* Demo Add/Edit Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editingItem ? 'Edit Live Demo' : 'Add Live Demo'}
+        title={editingItem ? `Edit: ${editingItem.title}` : 'Add New Live Demo'}
+        maxWidth="760px"
       >
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Demo Title</label>
-            <input
-              className="form-input"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. RAG Document Q&A Assistant"
-              required
-            />
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Demo ID / Deep Link Slug</label>
+              <input
+                className="form-input"
+                value={id}
+                onChange={(e) => setId(e.target.value)}
+                placeholder="e.g. talentlens-ai or rag-chat"
+                disabled={!!editingItem}
+                required
+              />
+              <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                Used for deeplinks: <code>techiewithbeard.com/demos?demo={id || 'slug'}</code>
+              </small>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Demo Title</label>
+              <input
+                className="form-input"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. talentLens-ai Resume Analyzer"
+                required
+              />
+            </div>
           </div>
 
           <div className="form-row">
@@ -229,7 +309,7 @@ export const DemosTab: React.FC<DemosTabProps> = ({
               >
                 <option value="native-federation">Angular Native Federation (Microfrontend)</option>
                 <option value="module-federation">React Module Federation (Microfrontend)</option>
-                <option value="iframe">Secure Iframe (Streamlit / Next.js)</option>
+                <option value="iframe">Secure Iframe (Hugging Face / Streamlit / Gradio)</option>
                 <option value="standalone">Standalone Web App</option>
               </select>
             </div>
@@ -249,7 +329,7 @@ export const DemosTab: React.FC<DemosTabProps> = ({
 
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Remote Name (MF)</label>
+              <label className="form-label">Remote Name (For Microfrontends)</label>
               <input
                 className="form-input"
                 value={remoteName}
@@ -258,7 +338,7 @@ export const DemosTab: React.FC<DemosTabProps> = ({
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Exposed Module (MF)</label>
+              <label className="form-label">Exposed Module (For Microfrontends)</label>
               <input
                 className="form-input"
                 value={exposedModule}
@@ -274,16 +354,39 @@ export const DemosTab: React.FC<DemosTabProps> = ({
               className="form-input"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="/demos/rag-chat or https://..."
+              placeholder="https://techiewithbeard-talentlens-ai.hf.space/ or /demos/rag-chat"
             />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">📄 Documentation Link (Optional External URL)</label>
+              <input
+                className="form-input"
+                value={documentation}
+                onChange={(e) => setDocumentation(e.target.value)}
+                placeholder="https://medium.com/... or https://github.com/..."
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">🎥 Video Demo Link (Optional YouTube URL)</label>
+              <input
+                className="form-input"
+                value={video}
+                onChange={(e) => setVideo(e.target.value)}
+                placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+              />
+            </div>
           </div>
 
           <div className="form-group">
             <label className="form-label">Description</label>
             <textarea
               className="form-textarea"
+              style={{ minHeight: '90px' }}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe the application architecture, key capabilities, and problem solved..."
               required
             />
           </div>
@@ -294,7 +397,7 @@ export const DemosTab: React.FC<DemosTabProps> = ({
               className="form-input"
               value={techText}
               onChange={(e) => setTechText(e.target.value)}
-              placeholder="Angular 22, LangChain, Streaming UI"
+              placeholder="Angular 22, LangChain, LangGraph, Python, Ollama"
             />
           </div>
 

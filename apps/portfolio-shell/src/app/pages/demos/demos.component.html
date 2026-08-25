@@ -4,7 +4,7 @@
     <span class="eyebrow">Microfrontends & AI Embeds</span>
     <h1 style="margin-bottom: var(--space-3);">Live Architecture & AI Demos</h1>
     <p class="section-subtitle">
-      Interactive applications demonstrating Angular Native Federation remotes, React Module Federation, and secure sandboxed AI prototypes.
+      Interactive applications demonstrating Angular Native Federation remotes, React Module Federation, and secure sandboxed AI prototypes. Direct shareable deep links available for every demo.
     </p>
   </section>
 
@@ -27,12 +27,12 @@
   } @else {
     <section class="demos-grid">
       @for (demo of filteredDemos(); track demo.id) {
-        <article class="demo-card">
+        <article class="demo-card" [attr.id]="'demo-' + demo.id">
           <!-- Card Header Meta -->
           <div class="demo-card-header">
             <span class="demo-type-pill">{{ demo.type }}</span>
 
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
               <span
                 class="tag"
                 [style.background]="demo.status === 'live' ? 'var(--color-success-subtle)' : 'var(--color-bg-subtle)'"
@@ -40,6 +40,20 @@
               >
                 ● {{ demo.status | uppercase }}
               </span>
+
+              <!-- Deep Link Copy Button -->
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm"
+                (click)="copyDeepLink(demo, $event)"
+                [title]="'Copy deep link to ' + demo.title + ' for LinkedIn'"
+              >
+                @if (copiedDemoId() === demo.id) {
+                  <span style="color: var(--color-success); font-weight: 700;">✓ Copied!</span>
+                } @else {
+                  <span>🔗 Link</span>
+                }
+              </button>
 
               @if (demo.url) {
                 <a
@@ -49,7 +63,7 @@
                   rel="noopener noreferrer"
                   title="Open demo in new tab"
                 >
-                  <span>↗</span> New Tab
+                  <span>↗</span>
                 </a>
               }
             </div>
@@ -64,6 +78,33 @@
             <div class="remote-contract-badge">
               <span>Remote: <code>{{ demo.remoteName || 'app-remote' }}</code></span>
               <span>Module: <code>{{ demo.exposedModule || './Component' }}</code></span>
+            </div>
+          }
+
+          <!-- Documentation & Video Walkthrough Badges -->
+          @if (demo.documentation || demo.video) {
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: var(--space-4);">
+              @if (demo.documentation) {
+                <a
+                  class="tag"
+                  style="background: color-mix(in srgb, var(--color-accent) 10%, var(--color-bg-subtle)); color: var(--color-accent); border-color: color-mix(in srgb, var(--color-accent) 25%, transparent); font-weight: 600;"
+                  [href]="demo.documentation | safeUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  📄 Docs ↗
+                </a>
+              }
+              @if (demo.video) {
+                <button
+                  type="button"
+                  class="tag"
+                  style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.3); font-weight: 600; cursor: pointer;"
+                  (click)="openVideo(demo)"
+                >
+                  🎥 Video Walkthrough ▶
+                </button>
+              }
             </div>
           }
 
@@ -142,7 +183,7 @@
     [attr.aria-label]="activeDemo.title + ' Live Preview'"
   >
     <div class="modal-dialog" (click)="$event.stopPropagation()">
-      <!-- Modal Browser-like Header -->
+      <!-- Modal Browser Header -->
       <div class="modal-header">
         <div class="modal-header-left">
           <div class="traffic-dots">
@@ -155,6 +196,20 @@
         </div>
 
         <div class="modal-header-actions">
+          <!-- Copy Deeplink in Modal -->
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm"
+            (click)="copyDeepLink(activeDemo)"
+            title="Copy shareable link for LinkedIn"
+          >
+            @if (copiedDemoId() === activeDemo.id) {
+              <span style="color: var(--color-success); font-weight: 700;">✓ Link Copied!</span>
+            } @else {
+              <span>🔗 Copy Link</span>
+            }
+          </button>
+
           @if (activeDemo.url) {
             <a
               class="btn btn-secondary btn-sm"
@@ -163,7 +218,7 @@
               rel="noopener noreferrer"
               title="Open full page in new tab"
             >
-              <span>↗</span> Open Fullscreen
+              <span>↗</span> Fullscreen
             </a>
           }
 
@@ -194,22 +249,99 @@
 
       <!-- Modal Footer Details -->
       <div class="modal-footer">
-        <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; max-width: 70%;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; max-width: 60%;">
           @for (tech of activeDemo.tech; track tech) {
             <span class="tag">{{ tech }}</span>
           }
         </div>
 
-        @if (activeDemo.url) {
-          <a
-            class="btn btn-primary btn-sm"
-            [href]="activeDemo.url | safeUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Launch Standalone App ↗
-          </a>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          @if (activeDemo.documentation) {
+            <a
+              class="btn btn-secondary btn-sm"
+              [href]="activeDemo.documentation | safeUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📄 Read Docs ↗
+            </a>
+          }
+
+          @if (activeDemo.video) {
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              style="color: #ef4444;"
+              (click)="openVideo(activeDemo)"
+            >
+              🎥 Watch Video ▶
+            </button>
+          }
+
+          @if (activeDemo.url) {
+            <a
+              class="btn btn-primary btn-sm"
+              [href]="activeDemo.url | safeUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Launch Standalone ↗
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ============================================================
+     Video Walkthrough Modal (YouTube Player)
+     ============================================================ -->
+@if (activeVideoDemo(); as videoDemo) {
+  <div
+    class="modal-backdrop"
+    (click)="closeVideo()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="videoDemo.title + ' Video Walkthrough'"
+  >
+    <div class="modal-dialog" style="max-width: 860px;" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <span style="font-size: 1.1rem;">🎥</span>
+          <span class="modal-title-text">{{ videoDemo.title }} — Video Walkthrough</span>
+        </div>
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeVideo()"
+          aria-label="Close video"
+          title="Close (Esc)"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="modal-body" style="min-height: 480px; aspect-ratio: 16 / 9;">
+        @if (getYouTubeEmbedUrl(videoDemo.video); as embedUrl) {
+          <iframe
+            class="modal-iframe"
+            [src]="embedUrl | safeResourceUrl"
+            sandbox="allow-scripts allow-same-origin allow-presentation"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            [title]="videoDemo.title + ' Video'"
+          ></iframe>
         }
+      </div>
+
+      <div class="modal-footer">
+        <p style="margin-bottom: 0; font-size: 0.85rem; color: var(--color-text-secondary);">
+          {{ videoDemo.description }}
+        </p>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="closeVideo()">
+          Close
+        </button>
       </div>
     </div>
   </div>

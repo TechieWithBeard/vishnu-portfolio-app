@@ -67,6 +67,8 @@ export interface DemoItem {
   remoteName?: string;
   exposedModule?: string;
   url?: string;
+  documentation?: string;
+  video?: string;
   status: 'live' | 'planned' | 'wip';
   tech: string[];
   tags: string[];

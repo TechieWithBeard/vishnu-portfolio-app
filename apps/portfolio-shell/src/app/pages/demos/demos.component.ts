@@ -1,5 +1,6 @@
-import { Component, computed, HostListener, inject, signal } from '@angular/core';
+import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
 import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
 import { SafeResourceUrlPipe, SafeUrlPipe } from '../../core/pipes/safe-resource-url.pipe';
@@ -11,8 +12,11 @@ import { Demo } from '../../data/portfolio.data';
   templateUrl: './demos.component.html',
   styleUrls: ['./demos.component.scss'],
 })
-export class DemosComponent {
+export class DemosComponent implements OnInit {
   private readonly apiService = inject(PortfolioApiService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
   protected readonly demos = this.apiService.demos;
   protected readonly loadingDemos = this.apiService.loadingDemos;
 
@@ -25,15 +29,36 @@ export class DemosComponent {
     'Module Federation',
   ];
 
-  // Active studio modal preview
+  // Active studio modal preview & video player modal
   protected readonly activePreviewDemo = signal<Demo | null>(null);
+  protected readonly activeVideoDemo = signal<Demo | null>(null);
+
+  // Copied deep link toast state
+  protected readonly copiedDemoId = signal<string | null>(null);
 
   // Independent chip expansion map
   protected readonly expandedTechMap = signal<Record<string, boolean>>({});
 
+  ngOnInit(): void {
+    // Listen for incoming deeplinks (e.g. /demos?demo=talentlens-ai or /demos?id=...)
+    this.route.queryParams.subscribe((params) => {
+      const targetId = params['demo'] || params['id'];
+      if (targetId) {
+        // Auto open matching preview once demos are loaded
+        const match = this.demos().find(
+          (d) => d.id.toLowerCase() === targetId.toLowerCase()
+        );
+        if (match) {
+          this.openPreview(match, false);
+        }
+      }
+    });
+  }
+
   @HostListener('document:keydown.escape')
   protected handleEscapeKey(): void {
     this.closePreview();
+    this.closeVideo();
   }
 
   protected readonly filteredDemos = computed(() => {
@@ -62,12 +87,44 @@ export class DemosComponent {
     this.selectedFilter.set(filter);
   }
 
-  protected openPreview(demo: Demo): void {
+  protected openPreview(demo: Demo, updateUrl = true): void {
     this.activePreviewDemo.set(demo);
+    if (updateUrl) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { demo: demo.id },
+        queryParamsHandling: 'merge',
+      });
+    }
   }
 
   protected closePreview(): void {
     this.activePreviewDemo.set(null);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { demo: null, id: null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  protected openVideo(demo: Demo): void {
+    this.activeVideoDemo.set(demo);
+  }
+
+  protected closeVideo(): void {
+    this.activeVideoDemo.set(null);
+  }
+
+  protected copyDeepLink(demo: Demo, event?: Event): void {
+    if (event) event.stopPropagation();
+    if (typeof window !== 'undefined' && navigator?.clipboard) {
+      const url = `${window.location.origin}/demos?demo=${encodeURIComponent(demo.id)}`;
+      navigator.clipboard.writeText(url);
+      this.copiedDemoId.set(demo.id);
+      setTimeout(() => {
+        this.copiedDemoId.set(null);
+      }, 2500);
+    }
   }
 
   protected toggleTech(id: string): void {
@@ -106,5 +163,16 @@ export class DemosComponent {
     } catch {
       return url;
     }
+  }
+
+  protected getYouTubeEmbedUrl(url?: string): string | null {
+    if (!url) return null;
+    const match = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/
+    );
+    if (match && match[1]) {
+      return `https://www.youtube-nocookie.com/embed/${match[1]}?autoplay=1&rel=0`;
+    }
+    return url;
   }
 }

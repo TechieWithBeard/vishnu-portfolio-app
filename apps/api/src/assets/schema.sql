@@ -87,6 +87,8 @@ CREATE TABLE demos (
     remote_name TEXT,
     exposed_module TEXT,
     url TEXT,
+    documentation TEXT,
+    video TEXT,
     status TEXT NOT NULL DEFAULT 'live',
     tech JSONB NOT NULL DEFAULT '[]'::jsonb,
     tags JSONB NOT NULL DEFAULT '[]'::jsonb,
