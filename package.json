@@ -9,7 +9,7 @@
     "start:shell": "NX_DAEMON=false nx serve portfolio-shell --port 4200",
     "build:api": "tsc --project apps/api/tsconfig.app.json",
     "build:admin": "vite build --config apps/portfolio-admin/vite.config.ts apps/portfolio-admin",
-    "build:shell": "NX_DAEMON=false nx build portfolio-shell",
+    "build:shell": "NX_DAEMON=false nx build portfolio-shell --skip-nx-cache",
     "build:all": "npm run build:api && npm run build:admin && npm run build:shell",
     "typecheck": "tsc --project apps/api/tsconfig.app.json --noEmit && tsc --project apps/portfolio-admin/tsconfig.json --noEmit && tsc --project apps/portfolio-shell/tsconfig.app.json --noEmit"
   },
