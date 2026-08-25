@@ -1,0 +1,216 @@
+<div class="container">
+  <!-- Section Heading -->
+  <section class="section" style="padding-bottom: var(--space-6);">
+    <span class="eyebrow">Microfrontends & AI Embeds</span>
+    <h1 style="margin-bottom: var(--space-3);">Live Architecture & AI Demos</h1>
+    <p class="section-subtitle">
+      Interactive applications demonstrating Angular Native Federation remotes, React Module Federation, and secure sandboxed AI prototypes.
+    </p>
+  </section>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    @for (filter of filterOptions; track filter) {
+      <button
+        class="filter-btn"
+        [class.active]="selectedFilter() === filter"
+        (click)="setFilter(filter)"
+      >
+        {{ filter }}
+      </button>
+    }
+  </div>
+
+  <!-- Uniform Demos Grid -->
+  @if (loadingDemos()) {
+    <app-skeleton-loader type="card-grid" [count]="4" [columns]="2"></app-skeleton-loader>
+  } @else {
+    <section class="demos-grid">
+      @for (demo of filteredDemos(); track demo.id) {
+        <article class="demo-card">
+          <!-- Card Header Meta -->
+          <div class="demo-card-header">
+            <span class="demo-type-pill">{{ demo.type }}</span>
+
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span
+                class="tag"
+                [style.background]="demo.status === 'live' ? 'var(--color-success-subtle)' : 'var(--color-bg-subtle)'"
+                [style.color]="demo.status === 'live' ? 'var(--color-success)' : 'var(--color-text-muted)'"
+              >
+                ● {{ demo.status | uppercase }}
+              </span>
+
+              @if (demo.url) {
+                <a
+                  class="btn btn-secondary btn-sm"
+                  [href]="demo.url | safeUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open demo in new tab"
+                >
+                  <span>↗</span> New Tab
+                </a>
+              }
+            </div>
+          </div>
+
+          <!-- Title & Clamped Description -->
+          <h2 class="demo-title">{{ demo.title }}</h2>
+          <p class="demo-desc" [title]="demo.description">{{ demo.description }}</p>
+
+          <!-- Microfrontend Remote Contract Badge (for Federated Remotes) -->
+          @if (demo.type !== 'iframe' && (demo.remoteName || demo.exposedModule)) {
+            <div class="remote-contract-badge">
+              <span>Remote: <code>{{ demo.remoteName || 'app-remote' }}</code></span>
+              <span>Module: <code>{{ demo.exposedModule || './Component' }}</code></span>
+            </div>
+          }
+
+          <!-- Smart Clustered Tech Tags -->
+          <div class="tech-cluster">
+            @for (tech of getVisibleTech(demo); track tech) {
+              <span class="tech-pill">{{ tech }}</span>
+            }
+
+            @if (demo.tech && demo.tech.length > 4) {
+              <button
+                type="button"
+                class="tech-pill tech-pill-more"
+                (click)="toggleTech(demo.id)"
+                [attr.aria-expanded]="isTechExpanded(demo.id)"
+                title="Toggle additional technologies"
+              >
+                @if (isTechExpanded(demo.id)) {
+                  <span>− Collapse</span>
+                } @else {
+                  <span>+{{ getRemainingTechCount(demo) }} more</span>
+                }
+              </button>
+            }
+          </div>
+
+          <!-- Uniform Bottom Action Bar -->
+          <div class="demo-card-actions">
+            @if (demo.type === 'iframe' && demo.url) {
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                style="flex: 1; justify-content: center;"
+                (click)="openPreview(demo)"
+              >
+                <span>⚡</span> Interactive Live Preview
+              </button>
+
+              <a
+                class="btn btn-secondary btn-sm"
+                [href]="demo.url | safeUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Fullscreen ↗
+              </a>
+            } @else {
+              @if (demo.url) {
+                <a
+                  class="btn btn-primary btn-sm"
+                  style="flex: 1; justify-content: center;"
+                  [href]="demo.url | safeUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span>⚡</span> Launch Remote Interface ↗
+                </a>
+              }
+            }
+          </div>
+        </article>
+      }
+    </section>
+  }
+</div>
+
+<!-- ============================================================
+     Interactive Studio Live Preview Modal
+     ============================================================ -->
+@if (activePreviewDemo(); as activeDemo) {
+  <div
+    class="modal-backdrop"
+    (click)="closePreview()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="activeDemo.title + ' Live Preview'"
+  >
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <!-- Modal Browser-like Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="traffic-dots">
+            <span class="traffic-dot red"></span>
+            <span class="traffic-dot yellow"></span>
+            <span class="traffic-dot green"></span>
+          </div>
+          <span class="modal-title-text">{{ activeDemo.title }}</span>
+          <span class="tag tag-ai" style="font-size: 0.68rem;">{{ activeDemo.type }}</span>
+        </div>
+
+        <div class="modal-header-actions">
+          @if (activeDemo.url) {
+            <a
+              class="btn btn-secondary btn-sm"
+              [href]="activeDemo.url | safeUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open full page in new tab"
+            >
+              <span>↗</span> Open Fullscreen
+            </a>
+          }
+
+          <button
+            type="button"
+            class="close-btn"
+            (click)="closePreview()"
+            aria-label="Close live preview"
+            title="Close (Esc)"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Iframe Body -->
+      <div class="modal-body">
+        @if (activeDemo.url) {
+          <iframe
+            class="modal-iframe"
+            [src]="activeDemo.url | safeResourceUrl"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            loading="eager"
+            [title]="activeDemo.title"
+          ></iframe>
+        }
+      </div>
+
+      <!-- Modal Footer Details -->
+      <div class="modal-footer">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; max-width: 70%;">
+          @for (tech of activeDemo.tech; track tech) {
+            <span class="tag">{{ tech }}</span>
+          }
+        </div>
+
+        @if (activeDemo.url) {
+          <a
+            class="btn btn-primary btn-sm"
+            [href]="activeDemo.url | safeUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Launch Standalone App ↗
+          </a>
+        }
+      </div>
+    </div>
+  </div>
+}

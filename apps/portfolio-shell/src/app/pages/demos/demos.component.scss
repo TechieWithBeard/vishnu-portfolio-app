@@ -1,0 +1,291 @@
+/* ============================================================
+   Live Demo Hub — Uniform Enterprise Cards & Interactive Studio Modal
+   ============================================================ */
+
+/* Demos Grid */
+.demos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: var(--space-6);
+  align-items: stretch;
+}
+
+/* Compact Uniform Demo Card */
+.demo-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  position: relative;
+  height: 100%;
+}
+
+.demo-card:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  box-shadow: var(--shadow-md), 0 0 24px rgba(59, 130, 246, 0.08);
+  transform: translateY(-2px);
+}
+
+.demo-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.demo-type-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  background: var(--color-ai-subtle);
+  color: var(--color-ai);
+  border: 1px solid color-mix(in srgb, var(--color-ai) 25%, transparent);
+}
+
+.demo-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.demo-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-4);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+/* Compact Tech Cluster */
+.tech-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: var(--space-4);
+}
+
+.tech-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.tech-pill-more {
+  cursor: pointer;
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-bg-subtle));
+  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  font-weight: 600;
+}
+
+.tech-pill-more:hover {
+  background: color-mix(in srgb, var(--color-accent) 22%, var(--color-bg-subtle));
+}
+
+/* Architecture Metadata Box (For Federated Remotes) */
+.remote-contract-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: var(--space-4);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.remote-contract-badge code {
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* Bottom Action Bar */
+.demo-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  align-items: center;
+}
+
+/* ============================================================
+   Live Studio Preview Modal Overlay
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: modal-fade-in 180ms ease-out;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-dialog {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-xl);
+  width: min(1080px, 96vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg), 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  background: color-mix(in srgb, var(--color-bg) 70%, var(--color-bg-subtle));
+  border-bottom: 1px solid var(--color-border);
+  gap: 1rem;
+}
+
+.modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.traffic-dots {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.traffic-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.traffic-dot.red { background: #ef4444; }
+.traffic-dot.yellow { background: #eab308; }
+.traffic-dot.green { background: #22c55e; }
+
+.modal-title-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.close-btn {
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: all var(--transition-fast);
+}
+
+.close-btn:hover {
+  background: var(--color-border);
+}
+
+/* Modal Body / Iframe */
+.modal-body {
+  flex: 1;
+  position: relative;
+  min-height: 480px;
+  max-height: 65vh;
+  background: #000000;
+}
+
+.modal-iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  border: none;
+  display: block;
+  background: #ffffff;
+}
+
+/* Modal Footer Meta */
+.modal-footer {
+  padding: 1rem 1.25rem;
+  background: var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .demos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-dialog {
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-body {
+    min-height: 60vh;
+  }
+
+  .modal-iframe {
+    min-height: 60vh;
+  }
+}
