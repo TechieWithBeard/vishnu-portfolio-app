@@ -274,7 +274,54 @@ export class McpService {
       };
     }
 
-    // 8. Contact & Availability / Hiring
+    // 8. Funny, Personal, or Out-of-Context Banter
+    const isFunnyOrPersonal =
+      q.includes('joke') ||
+      q.includes('funny') ||
+      q.includes('haha') ||
+      q.includes('lol') ||
+      q.includes('coffee') ||
+      q.includes('pizza') ||
+      q.includes('food') ||
+      q.includes('beer') ||
+      q.includes('whiskey') ||
+      q.includes('girlfriend') ||
+      q.includes('boyfriend') ||
+      q.includes('married') ||
+      q.includes('marry') ||
+      q.includes('love') ||
+      q.includes('secret') ||
+      q.includes('hobbies') ||
+      q.includes('hobby') ||
+      q.includes('game') ||
+      q.includes('robot') ||
+      q.includes('skynet') ||
+      q.includes('weather');
+
+    if (isFunnyOrPersonal) {
+      references.push('https://www.techiewithbeard.com');
+      let joke = 'Why do frontend architects love dark mode? Because light attracts bugs! 🐛';
+      if (q.includes('coffee')) {
+        joke = 'Vishnu converts dark roast espresso into clean TypeScript and Angular 22 Signals at a 1:1 ratio! ☕⚡';
+      } else if (q.includes('robot') || q.includes('skynet')) {
+        joke = "Don't worry, the robots aren't taking over yet—we're still busy trying to vertically center a `<div>`! 🤖😅";
+      } else if (q.includes('pizza') || q.includes('food')) {
+        joke = 'A great slice of pizza is like an enterprise Nx monorepo: crisp crust, perfect layers, and zero circular dependencies! 🍕';
+      } else if (q.includes('marry') || q.includes('married') || q.includes('love')) {
+        joke = 'Vishnu is already in a committed relationship—with clean code architecture, semantic HTML, and his espresso machine! 💍☕';
+      }
+
+      return {
+        answer:
+          `😄 ${joke}\n\n` +
+          `*(P.S. I've logged this curveball and beamed a note directly over to Vishnu's terminal. ` +
+          `He'll definitely get a kick out of this and will follow up with you next time!)*\n\n` +
+          `In the meantime, feel free to ask me anything about his 7+ years of enterprise UI architecture or live AI demos at [techiewithbeard.com](https://www.techiewithbeard.com)!`,
+        references,
+      };
+    }
+
+    // 9. Contact & Availability / Hiring
     if (q.includes('contact') || q.includes('hire') || q.includes('email') || q.includes('available') || q.includes('role') || q.includes('rate') || q.includes('reach') || q.includes('linkedin')) {
       references.push('https://www.techiewithbeard.com/contact');
       return {
