@@ -93,7 +93,11 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
-    setActiveTool('Analyzing query intent...');
+    setActiveTool('🧭 Routing query intent...');
+
+    const phaseTimer1 = setTimeout(() => setActiveTool('🎯 Selecting optimal WebMCP tool...'), 700);
+    const phaseTimer2 = setTimeout(() => setActiveTool('🌐 Fetching verified portfolio facts...'), 1600);
+    const phaseTimer3 = setTimeout(() => setActiveTool('✂️ Pruning payload & synthesizing answer...'), 2600);
 
     try {
       const endpoint = `${apiUrl.replace(/\/$/, '')}/api/agent/query`;
@@ -139,6 +143,9 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         },
       ]);
     } finally {
+      clearTimeout(phaseTimer1);
+      clearTimeout(phaseTimer2);
+      clearTimeout(phaseTimer3);
       setLoading(false);
       setActiveTool(null);
     }
