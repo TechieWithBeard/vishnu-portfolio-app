@@ -1,0 +1,29 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Vishnu Thankappan Portfolio MCP",
+  "name_for_model": "vishnu_portfolio_mcp",
+  "description_for_human": "Explore Vishnu Thankappan's architecture, 7+ years track record, and AI demos via Model Context Protocol.",
+  "description_for_model": "Plugin and Model Context Protocol (MCP) tools to query Vishnu Thankappan's enterprise track record, Angular 22 architecture, and interactive LangGraph AI demos.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://vishnu-portfolio-api.onrender.com/api/agent/context"
+  },
+  "mcp": {
+    "sse_url": "https://vishnu-portfolio-api.onrender.com/mcp/sse",
+    "messages_url": "https://vishnu-portfolio-api.onrender.com/mcp/messages",
+    "webmcp": true,
+    "tools": [
+      "get_architect_profile",
+      "get_work_history",
+      "search_skills",
+      "get_live_demos",
+      "ask_portfolio_agent"
+    ]
+  },
+  "logo_url": "https://www.techiewithbeard.com/favicon.svg",
+  "contact_email": "techiewithbeard@gmail.com",
+  "legal_info_url": "https://www.techiewithbeard.com"
+}

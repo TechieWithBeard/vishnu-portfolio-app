@@ -175,4 +175,41 @@ export class McpController {
       tools: this.mcpService.getTools(),
     };
   }
+
+  /**
+   * 6. Standard MCP Discovery Endpoints
+   * Spec: Model Context Protocol /.well-known/mcp.json and /mcp.json
+   */
+  @Get(['.well-known/mcp.json', 'mcp.json'])
+  getMcpDiscoveryManifest() {
+    return {
+      $schema: 'https://modelcontextprotocol.io/schema.json',
+      name: 'techiewithbeard-portfolio-mcp',
+      description: "Vishnu Thankappan's official portfolio Model Context Protocol (MCP) and WebMCP interface.",
+      version: '1.0.0',
+      author: 'Vishnu Thankappan (@techiewithbeard)',
+      homepage: 'https://www.techiewithbeard.com',
+      mcpServers: {
+        'portfolio-mcp': {
+          type: 'sse',
+          url: 'https://vishnu-portfolio-api.onrender.com/mcp/sse',
+          postEndpoint: 'https://vishnu-portfolio-api.onrender.com/mcp/messages',
+        },
+      },
+      webmcp: {
+        enabled: true,
+        framework: 'Angular 22 (provideExperimentalWebMcpTools)',
+        specification: 'https://angular.dev/ai/webmcp',
+        runtimeApi: 'document.modelContext',
+        tools: this.mcpService.getTools().map((t: any) => ({ name: t.name, description: t.description })),
+      },
+      endpoints: {
+        sse: 'https://vishnu-portfolio-api.onrender.com/mcp/sse',
+        messages: 'https://vishnu-portfolio-api.onrender.com/mcp/messages',
+        context: 'https://vishnu-portfolio-api.onrender.com/api/agent/context',
+        query: 'https://vishnu-portfolio-api.onrender.com/api/agent/query',
+        llms: 'https://www.techiewithbeard.com/llms.txt',
+      },
+    };
+  }
 }

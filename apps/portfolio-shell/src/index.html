@@ -13,6 +13,76 @@
     <meta name="theme-color" content="#070a11" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
 
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Vishnu Thankappan (@techiewithbeard) • Lead Frontend Architect with 7+ years enterprise experience in Angular 22, Nx Monorepos, Native Federation, and WebMCP AI interfaces." />
+    <meta name="author" content="Vishnu Thankappan" />
+    <meta name="keywords" content="Vishnu Thankappan, TechieWithBeard, WebMCP, Model Context Protocol, Angular 22, modelContext, registerTool, Nx Monorepo, Native Federation, LangGraph, AI" />
+
+    <!-- Open Graph & Social -->
+    <meta property="og:title" content="Vishnu Thankappan • Senior Frontend & AI Architect" />
+    <meta property="og:description" content="Official portfolio with native Angular 22 WebMCP (document.modelContext) in-browser agent tools and remote Model Context Protocol (MCP) SSE endpoints." />
+    <meta property="og:url" content="https://www.techiewithbeard.com" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@techiewithbeard" />
+
+    <!-- AI & Model Context Protocol (MCP / WebMCP) Discovery -->
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs Context" />
+    <link rel="alternate" type="text/plain" href="/llms-full.txt" title="LLMs Full Context" />
+    <link rel="mcp" href="https://vishnu-portfolio-api.onrender.com/mcp/sse" type="application/json" />
+    <link rel="manifest" href="/.well-known/mcp.json" type="application/json" />
+    <meta name="mcp-server" content="https://vishnu-portfolio-api.onrender.com/mcp/sse" />
+    <meta name="mcp-messages" content="https://vishnu-portfolio-api.onrender.com/mcp/messages" />
+    <meta name="webmcp-enabled" content="true" />
+    <meta name="webmcp-runtime" content="document.modelContext" />
+    <meta name="webmcp-framework" content="Angular 22 (provideExperimentalWebMcpTools)" />
+    <meta name="webmcp-spec" content="https://angular.dev/ai/webmcp" />
+    <meta name="webmcp-tools" content="get_architect_profile,get_work_history,search_skills,get_live_demos,ask_portfolio_agent" />
+
+    <!-- JSON-LD Machine-Readable Agentic Metadata -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "name": "Vishnu Thankappan (@techiewithbeard)",
+      "url": "https://www.techiewithbeard.com",
+      "description": "Senior Frontend Engineer & AI Architect with 7+ years enterprise experience. Specializes in Angular 22, Nx monorepos, Native Federation, and WebMCP agent interfaces.",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "Vishnu Thankappan",
+        "alternateName": "TechieWithBeard",
+        "jobTitle": "Lead Frontend Architect",
+        "email": "techiewithbeard@gmail.com",
+        "sameAs": [
+          "https://github.com/TechieWithBeard",
+          "https://www.linkedin.com/in/vishnuthankappan/"
+        ]
+      },
+      "modelContextProtocol": {
+        "status": "enabled",
+        "webmcp": {
+          "runtime": "document.modelContext",
+          "specification": "https://angular.dev/ai/webmcp",
+          "framework": "Angular 22 (provideExperimentalWebMcpTools)",
+          "tools": [
+            "get_architect_profile",
+            "get_work_history",
+            "search_skills",
+            "get_live_demos",
+            "ask_portfolio_agent"
+          ]
+        },
+        "remoteMcp": {
+          "transport": "SSE",
+          "sseEndpoint": "https://vishnu-portfolio-api.onrender.com/mcp/sse",
+          "messagesEndpoint": "https://vishnu-portfolio-api.onrender.com/mcp/messages",
+          "discoveryManifest": "https://www.techiewithbeard.com/.well-known/mcp.json",
+          "llmsTxt": "https://www.techiewithbeard.com/llms.txt"
+        }
+      }
+    }
+    </script>
+
     <script>
       (function () {
         try {
@@ -25,6 +95,19 @@
 
   </head>
   <body>
+    <noscript>
+      <div style="padding: 2rem; font-family: system-ui, sans-serif; background: #0b0f19; color: #f8fafc;">
+        <h1>Vishnu Thankappan — Senior Frontend &amp; AI Architect</h1>
+        <p>7+ years enterprise engineering experience specializing in Angular 22, Nx Monorepos, Native Federation microfrontends, and Model Context Protocol (MCP).</p>
+        <p><strong>WebMCP &amp; Agentic Capabilities:</strong></p>
+        <ul>
+          <li>Browser Runtime: <code>document.modelContext.registerTool</code> (Angular 22 <code>provideExperimentalWebMcpTools</code>)</li>
+          <li>Registered Tools: <code>get_architect_profile</code>, <code>get_work_history</code>, <code>search_skills</code>, <code>get_live_demos</code>, <code>ask_portfolio_agent</code></li>
+          <li>Remote MCP SSE Server: <a href="https://vishnu-portfolio-api.onrender.com/mcp/sse">https://vishnu-portfolio-api.onrender.com/mcp/sse</a></li>
+          <li>Discovery Manifest: <a href="/.well-known/mcp.json">/.well-known/mcp.json</a> | Context: <a href="/llms.txt">/llms.txt</a></li>
+        </ul>
+      </div>
+    </noscript>
     <app-root></app-root>
   </body>
 </html>

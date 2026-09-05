@@ -1,0 +1,50 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema.json",
+  "name": "techiewithbeard-portfolio-mcp",
+  "description": "Vishnu Thankappan's official portfolio Model Context Protocol (MCP) and WebMCP interface. Exposes architectural experience, verified skills, and interactive live demos.",
+  "version": "1.0.0",
+  "author": "Vishnu Thankappan (@techiewithbeard)",
+  "homepage": "https://www.techiewithbeard.com",
+  "mcpServers": {
+    "portfolio-mcp": {
+      "type": "sse",
+      "url": "https://vishnu-portfolio-api.onrender.com/mcp/sse",
+      "postEndpoint": "https://vishnu-portfolio-api.onrender.com/mcp/messages"
+    }
+  },
+  "webmcp": {
+    "enabled": true,
+    "framework": "Angular 22 (provideExperimentalWebMcpTools)",
+    "specification": "https://angular.dev/ai/webmcp",
+    "runtimeApi": "document.modelContext",
+    "tools": [
+      {
+        "name": "get_architect_profile",
+        "description": "Retrieve Vishnu Thankappan's architect profile, contact details, availability status, and bio."
+      },
+      {
+        "name": "get_work_history",
+        "description": "Retrieve Vishnu's enterprise work history and track record at AVEVA, Maistering B.V, and ACI Logistix."
+      },
+      {
+        "name": "search_skills",
+        "description": "Search Vishnu's verified technical skills across Frontend Architecture, AI Interfaces, and DevOps."
+      },
+      {
+        "name": "get_live_demos",
+        "description": "Retrieve all interactive AI and frontend demos with deep-links, live sandboxes, and documentation."
+      },
+      {
+        "name": "ask_portfolio_agent",
+        "description": "Query Vishnu Thankappan's career, architectural decisions, and projects using natural language."
+      }
+    ]
+  },
+  "endpoints": {
+    "sse": "https://vishnu-portfolio-api.onrender.com/mcp/sse",
+    "messages": "https://vishnu-portfolio-api.onrender.com/mcp/messages",
+    "context": "https://vishnu-portfolio-api.onrender.com/api/agent/context",
+    "query": "https://vishnu-portfolio-api.onrender.com/api/agent/query",
+    "llms": "https://www.techiewithbeard.com/llms.txt"
+  }
+}

@@ -1,0 +1,14 @@
+# Robots.txt for https://www.techiewithbeard.com
+User-agent: *
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /mcp.json
+Allow: /.well-known/
+
+# AI Agent & Model Context Protocol Discovery
+# Specification: https://modelcontextprotocol.io
+# WebMCP: https://angular.dev/ai/webmcp
+# llms-txt: https://www.techiewithbeard.com/llms.txt
+# mcp-sse: https://vishnu-portfolio-api.onrender.com/mcp/sse
+# mcp-manifest: https://www.techiewithbeard.com/.well-known/mcp.json

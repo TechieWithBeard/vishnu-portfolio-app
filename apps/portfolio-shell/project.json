@@ -20,6 +20,11 @@
           {
             "glob": "**/*",
             "input": "apps/portfolio-shell/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/portfolio-shell/public/.well-known",
+            "output": ".well-known"
           }
         ],
         "styles": [
