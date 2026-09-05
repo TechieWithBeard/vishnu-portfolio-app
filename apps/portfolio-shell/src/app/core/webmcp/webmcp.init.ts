@@ -52,20 +52,20 @@ export function initWebMcp(apiUrl: string): void {
 
   // Local fallback knowledge answer engine
   function answerQueryLocally(question: string): { answer: string; references: string[] } {
-    const q = question.toLowerCase();
+    const q = (question || '').toLowerCase().trim();
     const references: string[] = [];
 
-    // Experience / Years
-    if (q.includes('year') || q.includes('how long') || q.includes('experience')) {
-      references.push('https://www.techiewithbeard.com/experience');
+    // Bio / Profile / About / Intro
+    if (!q || q.includes('who') || q.includes('about') || q.includes('bio') || q.includes('profile') || q.includes('intro') || q.includes('yourself')) {
+      references.push('https://www.techiewithbeard.com');
       return {
-        answer: 'Vishnu Thankappan has 7+ years of enterprise engineering experience (2019 – Present), delivering high-scale frontend architectures and AI interfaces for AVEVA, ACI Logistix, and Maistering B.V.',
+        answer: `${fallbackResume.name} (${fallbackResume.alias}) is a ${fallbackResume.title} based in ${fallbackResume.location}. He brings 7+ years of enterprise engineering experience (2019 – Present) specializing in Nx monorepos, Angular 22, Native Federation microfrontends, and real-time LangGraph AI streaming interfaces. Currently ${fallbackResume.availability.status} for ${fallbackResume.availability.target}.`,
         references,
       };
     }
 
     // AVEVA / Monorepo
-    if (q.includes('aveva') || q.includes('parnasoft') || q.includes('monorepo')) {
+    if (q.includes('aveva') || q.includes('parnasoft') || q.includes('monorepo') || q.includes('lead')) {
       references.push('https://www.techiewithbeard.com/experience');
       return {
         answer: 'At AVEVA (via Parnasoft), Vishnu is Lead Frontend Architect. He unified 5+ production Angular enterprise applications into an Nx monorepo, cutting CI/CD build times by 30% through affected dependency caching and slashing duplicate UI code by 40%+ using standardized design system tokens.',
@@ -74,16 +74,16 @@ export function initWebMcp(apiUrl: string): void {
     }
 
     // Maistering B.V
-    if (q.includes('maistering') || q.includes('european')) {
+    if (q.includes('maistering') || q.includes('european') || q.includes('netherlands')) {
       references.push('https://www.techiewithbeard.com/experience');
       return {
-        answer: 'At Maistering B.V (European enterprise AI platform), Vishnu worked as an Expert Frontend Engineer delivering AI-assisted business management platforms using Angular, TypeScript, and NgRx with real-time data sync.',
+        answer: 'At Maistering B.V (European enterprise AI platform), Vishnu worked as an Expert Frontend Engineer delivering AI-assisted business management platforms using Angular, TypeScript, and NgRx with real-time WebSocket data sync.',
         references,
       };
     }
 
     // ACI Logistix
-    if (q.includes('aci') || q.includes('logistix') || q.includes('migration')) {
+    if (q.includes('aci') || q.includes('logistix') || q.includes('migration') || q.includes('logistics')) {
       references.push('https://www.techiewithbeard.com/experience');
       return {
         answer: 'At ACI Logistix, Vishnu led the end-to-end migration of legacy AngularJS logistics applications to modern Angular (v14+), reducing bundle sizes by 42% with zero downtime, and authored internal NPM design system packages published via Azure Artifacts.',
@@ -91,8 +91,17 @@ export function initWebMcp(apiUrl: string): void {
       };
     }
 
-    // AI & Demos
-    if (q.includes('ai') || q.includes('demo') || q.includes('talentlens') || q.includes('langgraph') || q.includes('rag')) {
+    // Experience / Years / Career
+    if (q.includes('year') || q.includes('how long') || q.includes('experience') || q.includes('career') || q.includes('history') || q.includes('track record')) {
+      references.push('https://www.techiewithbeard.com/experience');
+      return {
+        answer: 'Vishnu Thankappan has 7+ years of enterprise engineering experience (2019 – Present):\n• AVEVA / Parnasoft (2022 – Present): Lead Frontend Architect\n• Maistering B.V (2021 – 2022): Expert Frontend Engineer (European AI)\n• ACI Logistix (2019 – 2021): Senior Software Engineer',
+        references,
+      };
+    }
+
+    // AI & Demos & Projects
+    if (q.includes('ai') || q.includes('demo') || q.includes('project') || q.includes('talentlens') || q.includes('langgraph') || q.includes('rag') || q.includes('llm') || q.includes('portfolio')) {
       references.push('https://www.techiewithbeard.com/demos');
       const demoList = demos.map((d) => `• ${d.title} (${d.type}): https://www.techiewithbeard.com/demos?demo=${d.id}`).join('\n');
       return {
@@ -101,20 +110,20 @@ export function initWebMcp(apiUrl: string): void {
       };
     }
 
-    // Skills
-    if (q.includes('skill') || q.includes('tech') || q.includes('angular') || q.includes('react')) {
+    // Skills & Stack
+    if (q.includes('skill') || q.includes('tech') || q.includes('stack') || q.includes('angular') || q.includes('react') || q.includes('typescript') || q.includes('next') || q.includes('node') || q.includes('nest')) {
       references.push('https://www.techiewithbeard.com');
       return {
-        answer: `Vishnu's core competencies span: Angular 22, React 19, TypeScript 5.8+, Nx Monorepos, Native Federation, Microfrontends, LangChain, LangGraph, Streaming UIs, RAG, Playwright, and CI/CD pipelines.`,
+        answer: `Vishnu's core competencies span:\n• Frontend: Angular 22 Signals, React 19, TypeScript 5.8+, Nx Monorepos, Native Federation, WebMCP\n• AI & Agents: LangChain, LangGraph, Streaming UIs, MCP, RAG\n• Backend & DevOps: NestJS 11, Supabase PostgreSQL, Docker, Playwright, CI/CD pipelines`,
         references,
       };
     }
 
     // Contact & Hiring
-    if (q.includes('contact') || q.includes('hire') || q.includes('email') || q.includes('available') || q.includes('role')) {
+    if (q.includes('contact') || q.includes('hire') || q.includes('email') || q.includes('available') || q.includes('role') || q.includes('linkedin') || q.includes('reach')) {
       references.push('https://www.techiewithbeard.com/contact');
       return {
-        answer: `Vishnu Thankappan is currently ${fallbackResume.availability.status} for ${fallbackResume.availability.target}. You can reach him at ${fallbackResume.email}, on LinkedIn at ${fallbackResume.linkedin}, or view his code at ${fallbackResume.github}.`,
+        answer: `Vishnu Thankappan is currently ${fallbackResume.availability.status} for ${fallbackResume.availability.target}.\n• Email: ${fallbackResume.email}\n• LinkedIn: ${fallbackResume.linkedin}\n• GitHub: ${fallbackResume.github}`,
         references,
       };
     }

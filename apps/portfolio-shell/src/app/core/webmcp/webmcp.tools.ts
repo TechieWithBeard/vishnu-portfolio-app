@@ -2,6 +2,35 @@ import { EnvironmentProviders, provideExperimentalWebMcpTools } from '@angular/c
 import { resume, demos } from '../../data/portfolio.data';
 
 /**
+ * Helper to safely extract arguments whether Chrome DevTools passes:
+ * - A parsed JavaScript object: { question: "..." }
+ * - A stringified JSON object: '{"question":"..."}'
+ * - A raw string parameter: "What did you do at AVEVA?"
+ */
+function extractParam(rawArgs: any, key: string, fallbackKey?: string): string {
+  if (!rawArgs) return '';
+  if (typeof rawArgs === 'object') {
+    const val = rawArgs[key] ?? (fallbackKey ? rawArgs[fallbackKey] : '');
+    return typeof val === 'string' ? val.trim() : (val ? String(val) : '');
+  }
+  if (typeof rawArgs === 'string') {
+    const trimmed = rawArgs.trim();
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (parsed && typeof parsed === 'object') {
+          const val = parsed[key] ?? (fallbackKey ? parsed[fallbackKey] : '');
+          return typeof val === 'string' ? val.trim() : (val ? String(val) : '');
+        }
+      } catch {}
+    }
+    // Direct raw string passed in DevTools input field
+    return trimmed;
+  }
+  return '';
+}
+
+/**
  * Official Angular 22 WebMCP Tools Provider
  * Implements https://angular.dev/ai/webmcp
  * Exposes portfolio query capabilities directly to Chrome DevTools (Application > WebMCP)
@@ -17,9 +46,28 @@ export function providePortfolioWebMcp(): EnvironmentProviders {
         properties: {},
       },
       execute: async () => {
-        const data = window.agentAPI ? await window.agentAPI.getProfile() : resume;
+        let profile = resume;
+        if (window.agentAPI) {
+          try {
+            profile = await window.agentAPI.getProfile();
+          } catch {}
+        }
         return {
-          content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              name: profile.name,
+              alias: profile.alias,
+              title: profile.title,
+              tagline: profile.tagline,
+              location: profile.location,
+              availability: profile.availability,
+              email: profile.email,
+              linkedin: profile.linkedin,
+              github: profile.github,
+              summary: profile.summary,
+            }, null, 2),
+          }],
         };
       },
     },
@@ -35,11 +83,30 @@ export function providePortfolioWebMcp(): EnvironmentProviders {
           },
         },
       },
-      execute: async (args: any) => {
-        const company = args?.company;
-        const data = window.agentAPI ? await window.agentAPI.getExperience(company) : resume.experience;
+      execute: async (rawArgs: any) => {
+        const company = extractParam(rawArgs, 'company');
+        let history = resume.experience;
+        if (window.agentAPI) {
+          try {
+            history = await window.agentAPI.getExperience(company || undefined);
+          } catch {}
+        } else if (company) {
+          const filter = company.toLowerCase();
+          history = history.filter((e) => e.company.toLowerCase().includes(filter));
+        }
+
         return {
-          content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+          content: [{
+            type: 'text',
+            text: JSON.stringify(history.map((h) => ({
+              company: h.company,
+              role: h.role,
+              period: h.period,
+              location: h.location,
+              highlights: h.highlights,
+              tech: h.tech,
+            })), null, 2),
+          }],
         };
       },
     },
@@ -55,11 +122,28 @@ export function providePortfolioWebMcp(): EnvironmentProviders {
           },
         },
       },
-      execute: async (args: any) => {
-        const keyword = args?.keyword;
-        const data = window.agentAPI ? await window.agentAPI.getSkills(keyword) : resume.skills;
+      execute: async (rawArgs: any) => {
+        const keyword = extractParam(rawArgs, 'keyword');
+        let skills: Record<string, string[]> = resume.skills;
+        if (window.agentAPI) {
+          try {
+            skills = await window.agentAPI.getSkills(keyword || undefined);
+          } catch {}
+        } else if (keyword) {
+          const kw = keyword.toLowerCase();
+          const filtered: Record<string, string[]> = {};
+          for (const [cat, items] of Object.entries(skills)) {
+            const hits = items.filter((i) => i.toLowerCase().includes(kw));
+            if (hits.length > 0) filtered[cat] = hits;
+          }
+          skills = filtered;
+        }
+
         return {
-          content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+          content: [{
+            type: 'text',
+            text: JSON.stringify(skills, null, 2),
+          }],
         };
       },
     },
@@ -71,9 +155,23 @@ export function providePortfolioWebMcp(): EnvironmentProviders {
         properties: {},
       },
       execute: async () => {
-        const data = window.agentAPI ? await window.agentAPI.getDemos() : demos;
+        let liveDemos = demos;
+        if (window.agentAPI) {
+          try {
+            liveDemos = await window.agentAPI.getDemos();
+          } catch {}
+        }
         return {
-          content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+          content: [{
+            type: 'text',
+            text: JSON.stringify(liveDemos.map((d) => ({
+              id: d.id,
+              title: d.title,
+              description: d.description,
+              type: d.type,
+              url: `https://www.techiewithbeard.com/demos?demo=${d.id}`,
+            })), null, 2),
+          }],
         };
       },
     },
@@ -85,15 +183,24 @@ export function providePortfolioWebMcp(): EnvironmentProviders {
         properties: {
           question: {
             type: 'string',
-            description: "Natural language query about Vishnu's experience or architecture",
+            description: "Natural language query about Vishnu's experience, architecture, or skills",
           },
         },
         required: ['question'],
       },
-      execute: async (args: any) => {
-        const question = args?.question || args?.query || '';
-        const data = window.agentAPI ? await window.agentAPI.ask(question) : { answer: 'Portfolio agent loading...' };
-        const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+      execute: async (rawArgs: any) => {
+        const question = extractParam(rawArgs, 'question', 'query');
+        let answer: any = null;
+        if (window.agentAPI) {
+          try {
+            answer = await window.agentAPI.ask(question);
+          } catch {}
+        }
+
+        const text = typeof answer === 'string'
+          ? answer
+          : JSON.stringify(answer || { answer: 'Portfolio agent answering...', question }, null, 2);
+
         return {
           content: [{ type: 'text', text }],
         };

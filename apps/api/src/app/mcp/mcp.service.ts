@@ -100,8 +100,24 @@ export class McpService {
   }
 
   // Execute an MCP Tool by name with arguments
-  async executeTool(name: string, args: Record<string, any> = {}): Promise<any> {
-    this.logger.log(`Executing MCP Tool: ${name} with args: ${JSON.stringify(args)}`);
+  async executeTool(name: string, rawArgs: any = {}): Promise<any> {
+    this.logger.log(`Executing MCP Tool: ${name} with rawArgs: ${JSON.stringify(rawArgs)}`);
+
+    let args: Record<string, any> = {};
+    if (typeof rawArgs === 'string') {
+      const trimmed = rawArgs.trim();
+      if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+        try {
+          args = JSON.parse(trimmed);
+        } catch {
+          args = { question: trimmed, keyword: trimmed, company: trimmed };
+        }
+      } else {
+        args = { question: trimmed, keyword: trimmed, company: trimmed };
+      }
+    } else if (rawArgs && typeof rawArgs === 'object') {
+      args = rawArgs;
+    }
 
     switch (name) {
       case 'get_architect_profile': {
@@ -123,8 +139,9 @@ export class McpService {
 
       case 'get_work_history': {
         const experience = await this.supabaseService.getExperience();
-        if (args.company) {
-          const filter = args.company.toLowerCase();
+        const companyFilter = args.company || args.filter || '';
+        if (companyFilter) {
+          const filter = companyFilter.toLowerCase();
           return experience.filter((e) => e.company.toLowerCase().includes(filter));
         }
         return experience;
@@ -132,7 +149,7 @@ export class McpService {
 
       case 'search_skills': {
         const skills = await this.supabaseService.getSkills();
-        const kw = (args.keyword || '').toLowerCase();
+        const kw = (args.keyword || args.query || args.skill || '').toLowerCase();
         const matched: { category: string; matchedSkills: string[] }[] = [];
 
         for (const cat of skills) {
@@ -145,9 +162,9 @@ export class McpService {
           }
         }
         return {
-          query: args.keyword,
+          query: args.keyword || args.query || kw,
           foundCount: matched.reduce((acc, curr) => acc + curr.matchedSkills.length, 0),
-          results: matched,
+          results: matched.length > 0 ? matched : skills,
         };
       }
 
@@ -172,7 +189,8 @@ export class McpService {
       }
 
       case 'ask_portfolio_agent': {
-        return await this.answerQuery(args.question || '');
+        const question = args.question || args.query || args.prompt || '';
+        return await this.answerQuery(question);
       }
 
       default:
@@ -182,7 +200,7 @@ export class McpService {
 
   // Natural Language QA Engine over portfolio context
   async answerQuery(question: string): Promise<{ answer: string; references: string[] }> {
-    const q = question.toLowerCase();
+    const q = (question || '').toLowerCase().trim();
     const profile = await this.supabaseService.getProfile();
     const experience = await this.supabaseService.getExperience();
     const demos = await this.supabaseService.getDemos();
@@ -190,18 +208,18 @@ export class McpService {
 
     const references: string[] = [];
 
-    // Experience / Company Queries
-    if (q.includes('aveva') || q.includes('parnasoft') || q.includes('monorepo')) {
+    // 1. AVEVA / Parnasoft
+    if (q.includes('aveva') || q.includes('parnasoft')) {
       const aveva = experience.find((e) => e.company.toLowerCase().includes('aveva')) || experience[0];
       references.push('https://www.techiewithbeard.com/experience');
       return {
-        answer: `At AVEVA (via Parnasoft), Vishnu serves as Lead Frontend Architect. He unified 5+ enterprise Angular applications into an Nx monorepo, cutting CI/CD build times by 30% through affected dependency caching and slashing duplicate UI code by 40%+ using standardized design system tokens. Highlights include: ${aveva?.highlights.slice(0, 2).join(' ')}`,
+        answer: `At AVEVA (via Parnasoft), Vishnu serves as Lead Frontend Architect. He unified 5+ enterprise Angular applications into an Nx monorepo, cutting CI/CD build times by 30% through affected dependency caching and slashing duplicate UI code by 40%+ using standardized design system tokens. Highlights include: ${aveva?.highlights?.slice(0, 3)?.join(' ') || ''}`,
         references,
       };
     }
 
-    if (q.includes('maistering') || q.includes('european')) {
-      const maistering = experience.find((e) => e.company.toLowerCase().includes('maistering'));
+    // 2. Maistering B.V
+    if (q.includes('maistering') || q.includes('european') || q.includes('netherlands')) {
       references.push('https://www.techiewithbeard.com/experience');
       return {
         answer: `At Maistering B.V (European enterprise AI platform), Vishnu was an Expert Frontend Engineer delivering AI-assisted enterprise orchestration platforms using Angular, TypeScript, and NgRx with real-time data sync.`,
@@ -209,7 +227,8 @@ export class McpService {
       };
     }
 
-    if (q.includes('aci') || q.includes('logistix') || q.includes('migration')) {
+    // 3. ACI Logistix
+    if (q.includes('aci') || q.includes('logistix') || q.includes('migration') || q.includes('logistics')) {
       references.push('https://www.techiewithbeard.com/experience');
       return {
         answer: `At ACI Logistix, Vishnu led the end-to-end migration of legacy AngularJS logistics applications to modern Angular (v14+), reducing bundle sizes by 42% with zero downtime, and authored internal NPM design system packages published via Azure Artifacts.`,
@@ -217,8 +236,26 @@ export class McpService {
       };
     }
 
-    // AI & Demos
-    if (q.includes('ai') || q.includes('demo') || q.includes('talentlens') || q.includes('langgraph') || q.includes('rag')) {
+    // 4. Career History & Experience / Timeline
+    if (q.includes('year') || q.includes('how long') || q.includes('experience') || q.includes('career') || q.includes('history') || q.includes('track record') || q.includes('companies') || q.includes('where')) {
+      references.push('https://www.techiewithbeard.com/experience');
+      return {
+        answer: `Vishnu Thankappan has 7+ years of enterprise engineering experience (2019 – Present):\n• AVEVA / Parnasoft (2022 – Present): Lead Frontend Architect\n• Maistering B.V (2021 – 2022): Expert Frontend Engineer (European AI)\n• ACI Logistix (2019 – 2021): Senior Software Engineer\n\nDeeply specialized in Nx monorepos, Native Federation microfrontends, Angular 22 Signals, and streaming AI interfaces.`,
+        references,
+      };
+    }
+
+    // 5. Architecture & Monorepos & Microfrontends
+    if (q.includes('monorepo') || q.includes('nx') || q.includes('federation') || q.includes('microfrontend') || q.includes('architect')) {
+      references.push('https://www.techiewithbeard.com/architecture');
+      return {
+        answer: `As Lead Frontend Architect, Vishnu specializes in:\n• Nx Enterprise Monorepos: Module federation, affected CI/CD caching, and strict module boundary rules (eslint-plugin-nx-enforce-module-boundaries).\n• Native Federation: Framework-agnostic microfrontends sharing Angular 22 and React 19 shells.\n• Design Systems: Centralized Figma-to-code token pipelines reducing duplicate UI code across teams by 40%+.`,
+        references,
+      };
+    }
+
+    // 6. AI & Demos & Projects
+    if (q.includes('ai') || q.includes('demo') || q.includes('project') || q.includes('talentlens') || q.includes('langgraph') || q.includes('rag') || q.includes('llm') || q.includes('agent')) {
       references.push('https://www.techiewithbeard.com/demos');
       const liveDemos = demos.map((d) => `• ${d.title} (${d.type}): https://www.techiewithbeard.com/demos?demo=${d.id}`).join('\n');
       return {
@@ -227,8 +264,8 @@ export class McpService {
       };
     }
 
-    // Skills
-    if (q.includes('skill') || q.includes('tech') || q.includes('angular') || q.includes('react')) {
+    // 7. Skills & Tech Stack
+    if (q.includes('skill') || q.includes('tech') || q.includes('stack') || q.includes('angular') || q.includes('react') || q.includes('typescript') || q.includes('next') || q.includes('node') || q.includes('nest')) {
       references.push('https://www.techiewithbeard.com');
       const allSkills = skills.map((c) => `${c.categoryLabel}: ${c.items.join(', ')}`).join('\n');
       return {
@@ -237,16 +274,25 @@ export class McpService {
       };
     }
 
-    // Contact & Availability
-    if (q.includes('contact') || q.includes('hire') || q.includes('email') || q.includes('available') || q.includes('role')) {
+    // 8. Contact & Availability / Hiring
+    if (q.includes('contact') || q.includes('hire') || q.includes('email') || q.includes('available') || q.includes('role') || q.includes('rate') || q.includes('reach') || q.includes('linkedin')) {
       references.push('https://www.techiewithbeard.com/contact');
       return {
-        answer: `Vishnu Thankappan is currently ${profile.availability.status} for ${profile.availability.target} opportunities. You can reach him at ${profile.email}, on LinkedIn at ${profile.linkedin}, or view his code at ${profile.github}.`,
+        answer: `Vishnu Thankappan is currently ${profile.availability?.status || 'Open'} for ${profile.availability?.target || 'Staff / Lead Frontend Architect'} opportunities.\n• Email: ${profile.email}\n• LinkedIn: ${profile.linkedin}\n• GitHub: ${profile.github}`,
         references,
       };
     }
 
-    // Default Summary
+    // 9. Bio / Overview / Who is Vishnu
+    if (!q || q.includes('who') || q.includes('about') || q.includes('bio') || q.includes('intro') || q.includes('profile') || q.includes('tell me') || q.includes('summary')) {
+      references.push('https://www.techiewithbeard.com');
+      return {
+        answer: `${profile.name} (${profile.alias}) is a ${profile.title} based in ${profile.location}. With 7+ years of enterprise experience, he leads architecture across Nx monorepos, Angular 22, Native Federation microfrontends, and LangGraph AI interfaces.`,
+        references,
+      };
+    }
+
+    // 10. Default contextual answer
     references.push('https://www.techiewithbeard.com');
     return {
       answer: `${profile.name} (${profile.alias}) is a ${profile.title} with 7+ years of enterprise experience. ${profile.summary} He specializes in Nx Monorepos, Angular 22, Native Federation microfrontends, and LangGraph AI interfaces.`,
