@@ -307,6 +307,19 @@ export const projects: Project[] = [
 
 export const demos: Demo[] = [
   {
+    id: 'portfolio-langgraph-agent',
+    title: 'WebMCP & LangGraph Agent Cockpit',
+    description:
+      'Autonomous Model Context Protocol (MCP) tool discovery & stateless LangGraph routing cockpit live on Render with real-time decision-making streaming.',
+    type: 'iframe',
+    url: 'https://vishnu-portfolio-ml.onrender.com',
+    status: 'live',
+    tech: ['LangGraph', 'FastAPI', 'WebMCP', 'Gradio 6', 'Python 3.11'],
+    tags: ['AI', 'LangGraph', 'MCP', 'Live Cockpit'],
+    sandbox: 'allow-scripts allow-same-origin allow-forms allow-popups',
+    orderIndex: 0,
+  },
+  {
     id: 'rag-chat',
     title: 'RAG Document Q&A Assistant',
     description:

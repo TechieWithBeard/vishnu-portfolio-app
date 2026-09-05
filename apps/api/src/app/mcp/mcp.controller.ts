@@ -165,7 +165,8 @@ export class McpController {
       };
     }
 
-    const mlServiceUrl = process.env['ML_SERVICE_URL'];
+    const mlServiceUrl =
+      process.env['ML_SERVICE_URL'] || 'https://vishnu-portfolio-ml.onrender.com';
     if (mlServiceUrl) {
       try {
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
