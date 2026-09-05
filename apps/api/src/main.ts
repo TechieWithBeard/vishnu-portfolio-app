@@ -14,7 +14,9 @@ async function bootstrap() {
   });
 
   const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  app.setGlobalPrefix(globalPrefix, {
+    exclude: ['mcp/sse', 'mcp/messages'],
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);

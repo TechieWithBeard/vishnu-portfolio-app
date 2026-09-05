@@ -139,8 +139,9 @@ export class McpController {
   /**
    * 3. ChatGPT Actions & LLM Full Context Endpoint
    * Returns clean, structured JSON context for Custom GPTs and Perplexity.
+   * Path: /api/agent/context
    */
-  @Get('api/agent/context')
+  @Get('agent/context')
   async getAgentContext() {
     return await this.mcpService.getFullAgentContext();
   }
@@ -148,8 +149,9 @@ export class McpController {
   /**
    * 4. Natural Language Agent Query REST Endpoint
    * Exposes a direct question-answering endpoint for custom agent pipelines.
+   * Path: /api/agent/query
    */
-  @Post('api/agent/query')
+  @Post('agent/query')
   async queryAgent(@Body() body: { question: string }) {
     const question = body.question || '';
     if (!question.trim()) {
@@ -163,8 +165,9 @@ export class McpController {
 
   /**
    * 5. Agent Tools Discovery Endpoint (REST)
+   * Path: /api/agent/tools
    */
-  @Get('api/agent/tools')
+  @Get('agent/tools')
   getAgentTools() {
     return {
       server: 'Vishnu Thankappan Agentic Interface',
