@@ -20,9 +20,14 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
   onClose,
 }) => {
   const isLocalHost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  const [provider, setProvider] = useState<'ollama' | 'openai'>(isLocalHost ? 'ollama' : 'openai');
+  const [provider, setProvider] = useState<'openai' | 'huggingface' | 'ollama'>('openai');
   const [apiKey, setApiKey] = useState<string>('');
+  const [hfToken, setHfToken] = useState<string>('');
+  const [chatModel, setChatModel] = useState<string>('');
+  const [ollamaUrl, setOllamaUrl] = useState<string>('http://localhost:11434');
   const [showKeyModal, setShowKeyModal] = useState<boolean>(false);
+  const [quotaRemaining, setQuotaRemaining] = useState<number | null>(3);
+  const [requiresCustomKey, setRequiresCustomKey] = useState<boolean>(false);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [activeTool, setActiveTool] = useState<string | null>(null);
@@ -38,19 +43,70 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Load session key
+  // Persistent browser session ID
+  const getSessionId = (): string => {
+    try {
+      let sid = localStorage.getItem('portfolio_chat_session_id');
+      if (!sid) {
+        sid =
+          typeof crypto !== 'undefined' && crypto.randomUUID
+            ? crypto.randomUUID()
+            : 'sess_' + Math.random().toString(36).substring(2, 12) + '_' + Date.now();
+        localStorage.setItem('portfolio_chat_session_id', sid);
+      }
+      return sid;
+    } catch {
+      return 'sess_fallback_' + Date.now();
+    }
+  };
+
+  // Load session storage settings
   useEffect(() => {
     try {
+      const savedProvider = sessionStorage.getItem('portfolio_chat_provider') as 'openai' | 'huggingface' | 'ollama';
+      if (savedProvider && (isLocalHost || savedProvider !== 'ollama')) {
+        setProvider(savedProvider);
+      } else if (!isLocalHost && savedProvider === 'ollama') {
+        setProvider('openai');
+      }
+
       const savedKey = sessionStorage.getItem('portfolio_chat_openai_key') || '';
       if (savedKey) setApiKey(savedKey);
-    } catch {}
-  }, []);
 
-  const saveApiKey = (key: string) => {
-    setApiKey(key);
-    try {
-      sessionStorage.setItem('portfolio_chat_openai_key', key);
+      const savedHf = sessionStorage.getItem('portfolio_chat_hf_token') || '';
+      if (savedHf) setHfToken(savedHf);
+
+      const savedModel = sessionStorage.getItem('portfolio_chat_model') || '';
+      if (savedModel) setChatModel(savedModel);
+
+      const savedOllama = sessionStorage.getItem('portfolio_chat_ollama_url') || '';
+      if (savedOllama) setOllamaUrl(savedOllama);
     } catch {}
+  }, [isLocalHost]);
+
+  const hasCustomAuth =
+    (provider === 'openai' && !!apiKey.trim()) ||
+    (provider === 'huggingface' && !!hfToken.trim()) ||
+    (provider === 'ollama');
+
+  const saveSettings = (newProvider: 'openai' | 'huggingface' | 'ollama', key: string, hf: string, model: string, oUrl: string) => {
+    setProvider(newProvider);
+    setApiKey(key);
+    setHfToken(hf);
+    setChatModel(model);
+    setOllamaUrl(oUrl);
+
+    try {
+      sessionStorage.setItem('portfolio_chat_provider', newProvider);
+      sessionStorage.setItem('portfolio_chat_openai_key', key);
+      sessionStorage.setItem('portfolio_chat_hf_token', hf);
+      sessionStorage.setItem('portfolio_chat_model', model);
+      sessionStorage.setItem('portfolio_chat_ollama_url', oUrl);
+    } catch {}
+
+    if ((newProvider === 'openai' && key.trim()) || (newProvider === 'huggingface' && hf.trim()) || newProvider === 'ollama') {
+      setRequiresCustomKey(false);
+    }
     setShowKeyModal(false);
   };
 
@@ -78,7 +134,13 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     const text = (userText || input).trim();
     if (!text || loading) return;
 
-    if (provider === 'openai' && !apiKey && !isLocalHost) {
+    // Check if user needs to enter their credentials
+    if (requiresCustomKey && !hasCustomAuth) {
+      setShowKeyModal(true);
+      return;
+    }
+
+    if (provider === 'huggingface' && !hfToken.trim()) {
       setShowKeyModal(true);
       return;
     }
@@ -103,11 +165,20 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
       const endpoint = `${apiUrl.replace(/\/$/, '')}/api/agent/query`;
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
+        'x-session-id': getSessionId(),
       };
 
-      if (apiKey) {
-        headers['x-openai-key'] = apiKey;
+      if (apiKey.trim()) {
+        headers['x-openai-key'] = apiKey.trim();
       }
+      if (hfToken.trim()) {
+        headers['x-hf-token'] = hfToken.trim();
+      }
+
+      const payloadProvider = provider === 'huggingface' ? 'hugging face' : provider;
+      const defaultModel =
+        provider === 'openai' ? 'gpt-4o-mini' : (provider === 'huggingface' ? 'Qwen/Qwen2.5-7B-Instruct' : 'llama3.2');
+      const payloadModel = chatModel.trim() || defaultModel;
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -115,11 +186,20 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         body: JSON.stringify({
           question: text,
           target_url: 'https://www.techiewithbeard.com',
-          provider,
+          provider: payloadProvider,
+          chat_model: payloadModel,
+          ollama_url: provider === 'ollama' ? ollamaUrl : undefined,
         }),
       });
 
       const data = await response.json();
+
+      if (typeof data.quota_remaining === 'number') {
+        setQuotaRemaining(data.quota_remaining);
+      }
+      if (data.requires_custom_key) {
+        setRequiresCustomKey(true);
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -203,7 +283,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
               Vishnu AI Cockpit
             </div>
             <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-              LangGraph • WebMCP • {provider === 'ollama' ? 'Local Ollama' : 'OpenAI'}
+              LangGraph • WebMCP • {provider === 'openai' ? 'OpenAI' : (provider === 'huggingface' ? 'Hugging Face' : 'Local Ollama')}
             </div>
           </div>
         </div>
@@ -240,7 +320,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
               fontWeight: 600,
             }}
           >
-            ⚙️ {provider === 'openai' ? (apiKey ? 'Key Set' : 'Set Key') : 'Local'}
+            ⚙️ {hasCustomAuth ? 'Key Set' : (requiresCustomKey ? 'Add Key ⚠️' : 'Settings')}
           </button>
 
           {onClose && (
@@ -261,7 +341,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         </div>
       </div>
 
-      {/* Stateless Guarantee Sub-Header */}
+      {/* Quota & Stateless Guarantee Sub-Header */}
       <div
         style={{
           display: 'flex',
@@ -280,13 +360,23 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
               width: '6px',
               height: '6px',
               borderRadius: '50%',
-              background: '#38bdf8',
-              boxShadow: '0 0 6px #38bdf8',
+              background: hasCustomAuth ? '#10b981' : '#f59e0b',
+              boxShadow: hasCustomAuth ? '0 0 6px #10b981' : '0 0 6px #f59e0b',
             }}
           />
-          ⚡ Stateless Mode: 0 history tokens carried over
+          {hasCustomAuth
+            ? '⚡ Unlimited: Personal Key Active'
+            : `🎁 Free Demo: ${quotaRemaining ?? 3}/3 prompts left`}
         </span>
-        <span style={{ color: '#64748b' }}>Independent Queries</span>
+        <span style={{ color: '#64748b' }}>
+          {provider === 'huggingface'
+            ? 'Hugging Face Hub'
+            : provider === 'openai'
+            ? hasCustomAuth
+              ? 'Personal OpenAI'
+              : 'Shared Demo Key'
+            : 'Local Ollama'}
+        </span>
       </div>
 
       {/* Messages Stream */}
@@ -441,6 +531,27 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         ))}
       </div>
 
+      {/* Quota Exceeded Banner */}
+      {requiresCustomKey && !hasCustomAuth && (
+        <div
+          onClick={() => setShowKeyModal(true)}
+          style={{
+            padding: '8px 16px',
+            background: 'rgba(245, 158, 11, 0.15)',
+            borderTop: '1px solid rgba(245, 158, 11, 0.3)',
+            color: '#fef08a',
+            fontSize: '0.74rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span>⚡ Demo quota reached (3/3 prompts used).</span>
+          <span style={{ fontWeight: 700, textDecoration: 'underline' }}>⚙️ Set Personal Key</span>
+        </div>
+      )}
+
       {/* Input Box */}
       <div
         style={{
@@ -457,7 +568,11 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder="Ask about Vishnu's architecture, projects, or hire..."
+          placeholder={
+            requiresCustomKey && !hasCustomAuth
+              ? "Demo quota reached. Click ⚙️ to add your key..."
+              : "Ask about Vishnu's architecture, projects, or hire..."
+          }
           disabled={loading}
           style={{
             flex: 1,
@@ -515,76 +630,228 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
               borderRadius: '12px',
               padding: '20px',
               width: '100%',
-              maxWidth: '360px',
+              maxWidth: '380px',
               display: 'flex',
               flexDirection: 'column',
               gap: '14px',
             }}
           >
-            <div style={{ fontSize: '1rem', fontWeight: 700 }}>⚙️ Agent Provider Settings</div>
+            <div style={{ fontSize: '1rem', fontWeight: 700 }}>⚙️ Agent Provider & Model</div>
             <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-              Select your LLM provider. When using OpenAI, keys are held strictly in your browser session storage.
+              Choose your AI provider. Keys are held strictly in your browser session memory.
             </div>
 
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '6px' }}>
               <button
-                onClick={() => setProvider('ollama')}
-                style={{
-                  flex: 1,
-                  padding: '8px',
-                  borderRadius: '6px',
-                  border: provider === 'ollama' ? '1px solid #38bdf8' : '1px solid #334155',
-                  background: provider === 'ollama' ? 'rgba(56, 189, 248, 0.2)' : '#1e293b',
-                  color: '#f8fafc',
-                  fontSize: '0.8rem',
-                  cursor: 'pointer',
-                }}
-              >
-                Local (Ollama)
-              </button>
-              <button
+                type="button"
                 onClick={() => setProvider('openai')}
                 style={{
                   flex: 1,
-                  padding: '8px',
+                  padding: '8px 4px',
                   borderRadius: '6px',
                   border: provider === 'openai' ? '1px solid #38bdf8' : '1px solid #334155',
                   background: provider === 'openai' ? 'rgba(56, 189, 248, 0.2)' : '#1e293b',
                   color: '#f8fafc',
-                  fontSize: '0.8rem',
+                  fontSize: '0.78rem',
                   cursor: 'pointer',
+                  fontWeight: provider === 'openai' ? 600 : 400,
                 }}
               >
-                OpenAI (Cloud)
+                🟢 OpenAI
               </button>
+              <button
+                type="button"
+                onClick={() => setProvider('huggingface')}
+                style={{
+                  flex: 1,
+                  padding: '8px 4px',
+                  borderRadius: '6px',
+                  border: provider === 'huggingface' ? '1px solid #38bdf8' : '1px solid #334155',
+                  background: provider === 'huggingface' ? 'rgba(56, 189, 248, 0.2)' : '#1e293b',
+                  color: '#f8fafc',
+                  fontSize: '0.78rem',
+                  cursor: 'pointer',
+                  fontWeight: provider === 'huggingface' ? 600 : 400,
+                }}
+              >
+                🤗 Hugging Face
+              </button>
+              {isLocalHost && (
+                <button
+                  type="button"
+                  onClick={() => setProvider('ollama')}
+                  style={{
+                    flex: 1,
+                    padding: '8px 4px',
+                    borderRadius: '6px',
+                    border: provider === 'ollama' ? '1px solid #38bdf8' : '1px solid #334155',
+                    background: provider === 'ollama' ? 'rgba(56, 189, 248, 0.2)' : '#1e293b',
+                    color: '#f8fafc',
+                    fontSize: '0.78rem',
+                    cursor: 'pointer',
+                    fontWeight: provider === 'ollama' ? 600 : 400,
+                  }}
+                >
+                  🦙 Local Ollama
+                </button>
+              )}
             </div>
 
             {provider === 'openai' && (
-              <div>
-                <label style={{ fontSize: '0.74rem', color: '#cbd5e1', marginBottom: '4px', display: 'block' }}>
-                  OpenAI API Key (Session-Stored)
-                </label>
-                <input
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="sk-..."
-                  style={{
-                    width: '100%',
-                    background: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: '6px',
-                    padding: '8px 12px',
-                    color: '#f8fafc',
-                    fontSize: '0.82rem',
-                    boxSizing: 'border-box',
-                  }}
-                />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '0.74rem', color: '#cbd5e1', marginBottom: '4px', display: 'block' }}>
+                    OpenAI API Key (Session-Stored)
+                  </label>
+                  <input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="sk-... (Leave blank to use 3 free demo queries)"
+                    style={{
+                      width: '100%',
+                      background: '#1e293b',
+                      border: '1px solid #334155',
+                      borderRadius: '6px',
+                      padding: '8px 12px',
+                      color: '#f8fafc',
+                      fontSize: '0.82rem',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                  <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: '4px' }}>
+                    {apiKey.trim()
+                      ? '⚡ Personal key active (unlimited queries unlocked).'
+                      : '🎁 Leave blank to use 3 free prompts on the shared demo server.'}
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.74rem', color: '#cbd5e1', marginBottom: '4px', display: 'block' }}>
+                    Model Name Override
+                  </label>
+                  <input
+                    type="text"
+                    value={chatModel}
+                    onChange={(e) => setChatModel(e.target.value)}
+                    placeholder="gpt-4o-mini (default)"
+                    style={{
+                      width: '100%',
+                      background: '#1e293b',
+                      border: '1px solid #334155',
+                      borderRadius: '6px',
+                      padding: '8px 12px',
+                      color: '#f8fafc',
+                      fontSize: '0.82rem',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
               </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '6px' }}>
+            {provider === 'huggingface' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '0.74rem', color: '#cbd5e1', marginBottom: '4px', display: 'block' }}>
+                    Hugging Face Access Token
+                  </label>
+                  <input
+                    type="password"
+                    value={hfToken}
+                    onChange={(e) => setHfToken(e.target.value)}
+                    placeholder="hf_..."
+                    style={{
+                      width: '100%',
+                      background: '#1e293b',
+                      border: '1px solid #334155',
+                      borderRadius: '6px',
+                      padding: '8px 12px',
+                      color: '#f8fafc',
+                      fontSize: '0.82rem',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                  <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: '4px' }}>
+                    Free serverless inference via your personal Hugging Face access token.
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.74rem', color: '#cbd5e1', marginBottom: '4px', display: 'block' }}>
+                    Chat Model Repo ID
+                  </label>
+                  <input
+                    type="text"
+                    value={chatModel}
+                    onChange={(e) => setChatModel(e.target.value)}
+                    placeholder="Qwen/Qwen2.5-7B-Instruct (default)"
+                    style={{
+                      width: '100%',
+                      background: '#1e293b',
+                      border: '1px solid #334155',
+                      borderRadius: '6px',
+                      padding: '8px 12px',
+                      color: '#f8fafc',
+                      fontSize: '0.82rem',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {provider === 'ollama' && isLocalHost && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '0.74rem', color: '#cbd5e1', marginBottom: '4px', display: 'block' }}>
+                    Ollama Base URL
+                  </label>
+                  <input
+                    type="text"
+                    value={ollamaUrl}
+                    onChange={(e) => setOllamaUrl(e.target.value)}
+                    placeholder="http://localhost:11434"
+                    style={{
+                      width: '100%',
+                      background: '#1e293b',
+                      border: '1px solid #334155',
+                      borderRadius: '6px',
+                      padding: '8px 12px',
+                      color: '#f8fafc',
+                      fontSize: '0.82rem',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.74rem', color: '#cbd5e1', marginBottom: '4px', display: 'block' }}>
+                    Ollama Model Name
+                  </label>
+                  <input
+                    type="text"
+                    value={chatModel}
+                    onChange={(e) => setChatModel(e.target.value)}
+                    placeholder="llama3.2 (default)"
+                    style={{
+                      width: '100%',
+                      background: '#1e293b',
+                      border: '1px solid #334155',
+                      borderRadius: '6px',
+                      padding: '8px 12px',
+                      color: '#f8fafc',
+                      fontSize: '0.82rem',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
               <button
+                type="button"
                 onClick={() => setShowKeyModal(false)}
                 style={{
                   background: 'none',
@@ -599,7 +866,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
                 Cancel
               </button>
               <button
-                onClick={() => saveApiKey(apiKey)}
+                type="button"
+                onClick={() => saveSettings(provider, apiKey, hfToken, chatModel, ollamaUrl)}
                 style={{
                   background: '#2563eb',
                   border: 'none',

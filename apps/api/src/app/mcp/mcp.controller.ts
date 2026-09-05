@@ -154,8 +154,18 @@ export class McpController {
    */
   @Post('agent/query')
   async queryAgent(
-    @Body() body: { question: string; target_url?: string; provider?: string; chat_model?: string },
+    @Body()
+    body: {
+      question: string;
+      target_url?: string;
+      provider?: string;
+      chat_model?: string;
+      openai_base_url?: string;
+      ollama_url?: string;
+    },
     @Headers('x-openai-key') openAiKey?: string,
+    @Headers('x-hf-token') hfToken?: string,
+    @Headers('x-session-id') sessionId?: string,
   ) {
     const question = body.question || '';
     if (!question.trim()) {
@@ -171,6 +181,8 @@ export class McpController {
       try {
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
         if (openAiKey) headers['x-openai-key'] = openAiKey;
+        if (hfToken) headers['x-hf-token'] = hfToken;
+        if (sessionId) headers['x-session-id'] = sessionId;
 
         const response = await fetch(`${mlServiceUrl.replace(/\/$/, '')}/agent/query`, {
           method: 'POST',
@@ -180,6 +192,8 @@ export class McpController {
             target_url: body.target_url || 'https://www.techiewithbeard.com',
             provider: body.provider,
             chat_model: body.chat_model,
+            openai_base_url: body.openai_base_url,
+            ollama_url: body.ollama_url,
           }),
         });
 
