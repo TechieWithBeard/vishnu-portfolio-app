@@ -162,12 +162,6 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     const text = (userText || input).trim();
     if (!text || loading) return;
 
-    // Check if user needs to enter their credentials
-    if (requiresCustomKey && !hasCustomAuth) {
-      setShowKeyModal(true);
-      return;
-    }
-
     if (provider === 'huggingface' && !hfToken.trim()) {
       setShowKeyModal(true);
       return;
@@ -183,6 +177,38 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
+
+    // If out of 3 free queries and no custom key is provided:
+    // whatever they type, send the predefined response!
+    if ((requiresCustomKey || (quotaRemaining !== null && quotaRemaining <= 0)) && !hasCustomAuth) {
+      setActiveTool('🔒 Free demo quota completed');
+      setTimeout(() => {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content:
+            "✨ **You've completed your 3 free exploratory questions!**\n\n" +
+            "Thank you for exploring Vishnu's portfolio agent! To ensure this demo stays fast and accessible for everyone, free exploratory queries are capped at 3 per visitor.\n\n" +
+            "To continue chatting and exploring without any limits:\n\n" +
+            "1. Click **Settings (⚙️)** in the top bar (or use the banner below).\n" +
+            "2. Add your personal **OpenAI API Key** (`sk-...`) or free **Hugging Face Token** (`hf_...`).\n" +
+            "3. Your credentials stay strictly in your browser session memory and unlock **unlimited questions**.\n\n" +
+            "You can also explore Vishnu's verified architecture directly at [techiewithbeard.com/experience](https://www.techiewithbeard.com/experience) or get in touch at [techiewithbeard.com/contact](https://www.techiewithbeard.com/contact)!",
+          references: [
+            'https://www.techiewithbeard.com/experience',
+            'https://www.techiewithbeard.com/demos',
+            'https://www.techiewithbeard.com/contact',
+          ],
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+        setLoading(false);
+        setActiveTool(null);
+      }, 450);
+      return;
+    }
+
     setActiveTool('🧭 Routing query intent...');
 
     const phaseTimer1 = setTimeout(() => setActiveTool('🎯 Selecting optimal WebMCP tool...'), 700);
@@ -627,7 +653,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder={
             requiresCustomKey && !hasCustomAuth
-              ? "Free demo completed. Click 'Connect Key' above to continue..."
+              ? "Ask a question (or connect your key in Settings)..."
               : "Ask about Vishnu's architecture, projects, or hire..."
           }
           disabled={loading}

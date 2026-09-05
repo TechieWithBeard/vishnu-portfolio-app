@@ -237,10 +237,15 @@ export class McpController {
             "✨ **You've completed your 3 free exploratory questions!**\n\n" +
             "Thank you for exploring Vishnu's portfolio agent! To ensure this demo stays fast and accessible for everyone, free exploratory queries are capped at 3 per visitor.\n\n" +
             "To continue chatting and exploring without any limits:\n\n" +
-            "1. Click **Settings (⚙️)** in the top bar.\n" +
+            "1. Click **Settings (⚙️)** in the top bar (or use the banner below).\n" +
             "2. Add your personal **OpenAI API Key** (`sk-...`) or free **Hugging Face Token** (`hf_...`).\n" +
-            "3. Your credentials stay strictly in your browser session memory and unlock **unlimited questions**.",
-          references: ['https://www.techiewithbeard.com/experience', 'https://www.techiewithbeard.com/demos'],
+            "3. Your credentials stay strictly in your browser session memory and unlock **unlimited questions**.\n\n" +
+            "You can also explore Vishnu's verified architecture directly at [techiewithbeard.com/experience](https://www.techiewithbeard.com/experience) or get in touch at [techiewithbeard.com/contact](https://www.techiewithbeard.com/contact)!",
+          references: [
+            'https://www.techiewithbeard.com/experience',
+            'https://www.techiewithbeard.com/demos',
+            'https://www.techiewithbeard.com/contact',
+          ],
           quota_remaining: 0,
           is_free_tier: true,
           requires_custom_key: true,
