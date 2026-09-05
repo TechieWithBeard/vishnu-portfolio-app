@@ -54,6 +54,18 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     setShowKeyModal(false);
   };
 
+  const clearChat = () => {
+    setMessages([
+      {
+        id: 'init',
+        role: 'assistant',
+        content:
+          "Chat reset. I am ready for your next question with 0 history tokens carried over.",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+    ]);
+  };
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -191,6 +203,23 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
+            onClick={clearChat}
+            title="Clear Chat (0 History Kept)"
+            style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#f87171',
+              borderRadius: '6px',
+              padding: '4px 8px',
+              fontSize: '0.72rem',
+              cursor: 'pointer',
+              fontWeight: 600,
+            }}
+          >
+            🗑️ Clear
+          </button>
+
+          <button
             onClick={() => setShowKeyModal(true)}
             title="Configure Provider & Session Token"
             style={{
@@ -223,6 +252,34 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             </button>
           )}
         </div>
+      </div>
+
+      {/* Stateless Guarantee Sub-Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '5px 18px',
+          background: 'rgba(15, 23, 42, 0.65)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          fontSize: '0.67rem',
+          color: '#38bdf8',
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              background: '#38bdf8',
+              boxShadow: '0 0 6px #38bdf8',
+            }}
+          />
+          ⚡ Stateless Mode: 0 history tokens carried over
+        </span>
+        <span style={{ color: '#64748b' }}>Independent Queries</span>
       </div>
 
       {/* Messages Stream */}
@@ -317,7 +374,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
                 padding: '0 4px',
               }}
             >
-              {m.timestamp} {m.tokens ? `• ~${m.tokens} tokens` : ''}
+              {m.timestamp} {m.tokens ? `• ~${m.tokens} tokens (stateless: 0 history)` : ''}
             </div>
           </div>
         ))}
