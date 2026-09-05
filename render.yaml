@@ -20,11 +20,13 @@ services:
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
+      - key: ML_SERVICE_URL
+        value: https://vishnu-portfolio-ml.onrender.com
 
   # 2. Angular 22 Portfolio Shell (Static Site)
   - type: static
     name: vishnu-portfolio
-    buildCommand: npm install && npm run build:shell
+    buildCommand: npm install && npm run build:all
     staticPublishPath: dist/apps/portfolio-shell/browser
     routes:
       - type: rewrite
@@ -40,3 +42,19 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+
+  # 4. LangGraph Python ML Service (FastAPI)
+  - type: web
+    name: vishnu-portfolio-ml
+    runtime: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && pip install -e .
+    startCommand: uvicorn techiewithbeard_ai.portfolio_agent.server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: OPENAI_API_KEY
+        sync: false
