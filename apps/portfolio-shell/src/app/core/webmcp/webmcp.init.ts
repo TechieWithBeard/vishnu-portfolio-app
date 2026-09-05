@@ -7,7 +7,31 @@
 
 import { resume as fallbackResume, demos, projects } from '../../data/portfolio.data';
 
+interface WebMcpTool {
+  name: string;
+  description: string;
+  inputSchema: {
+    type: string;
+    properties?: Record<string, any>;
+    required?: string[];
+  };
+  execute: (args?: any) => Promise<any> | any;
+}
+
+interface ModelContextApi {
+  registerTool: (tool: WebMcpTool) => Promise<any> | any;
+  unregisterTool?: (name: string) => Promise<any> | any;
+  listTools?: () => Promise<any> | any;
+}
+
 declare global {
+  interface Navigator {
+    modelContext?: ModelContextApi;
+    modelContextTesting?: any;
+  }
+  interface Document {
+    modelContext?: ModelContextApi;
+  }
   interface Window {
     agentAPI?: {
       getProfile: () => Promise<any>;
@@ -16,7 +40,9 @@ declare global {
       getDemos: () => Promise<any>;
       ask: (question: string) => Promise<any>;
       help: () => void;
+      tools?: WebMcpTool[];
     };
+    modelContext?: ModelContextApi;
   }
 }
 
@@ -183,6 +209,169 @@ export function initWebMcp(apiUrl: string): void {
       `, 'font-weight: bold; font-size: 1.1em; color: #3b82f6;', 'color: #94a3b8;');
     },
   };
+
+  const tools: WebMcpTool[] = [
+    {
+      name: 'get_architect_profile',
+      description: "Retrieve Vishnu Thankappan's architect profile, contact details, availability status, and bio.",
+      inputSchema: {
+        type: 'object',
+        properties: {},
+      },
+      execute: async () => window.agentAPI!.getProfile(),
+    },
+    {
+      name: 'get_work_history',
+      description: "Retrieve Vishnu's enterprise work history and track record at AVEVA, Maistering B.V, and ACI Logistix.",
+      inputSchema: {
+        type: 'object',
+        properties: {
+          company: {
+            type: 'string',
+            description: "Optional company name filter (e.g. 'AVEVA', 'Maistering', 'ACI Logistix')",
+          },
+        },
+      },
+      execute: async (args: any) => window.agentAPI!.getExperience(args?.company),
+    },
+    {
+      name: 'search_skills',
+      description: "Search Vishnu's verified technical skills across Frontend Architecture, AI Interfaces, and DevOps.",
+      inputSchema: {
+        type: 'object',
+        properties: {
+          keyword: {
+            type: 'string',
+            description: "Keyword to filter skills (e.g. 'Angular', 'LangGraph', 'TypeScript')",
+          },
+        },
+      },
+      execute: async (args: any) => window.agentAPI!.getSkills(args?.keyword),
+    },
+    {
+      name: 'get_live_demos',
+      description: "Retrieve all interactive AI and frontend demos with deep-links, live sandboxes, and documentation.",
+      inputSchema: {
+        type: 'object',
+        properties: {},
+      },
+      execute: async () => window.agentAPI!.getDemos(),
+    },
+    {
+      name: 'ask_portfolio_agent',
+      description: "Query Vishnu Thankappan's career, architectural decisions, and projects using natural language.",
+      inputSchema: {
+        type: 'object',
+        properties: {
+          question: {
+            type: 'string',
+            description: "Natural language query about Vishnu's experience or architecture",
+          },
+        },
+        required: ['question'],
+      },
+      execute: async (args: any) => window.agentAPI!.ask(args?.question || args?.query || ''),
+    },
+  ];
+
+  window.agentAPI.tools = tools;
+
+  // 1. Hook up declarative forms in DOM (Chrome DevTools scans these)
+  function bindDeclarativeForms() {
+    const formBindings: Record<string, (fd: FormData) => Promise<any>> = {
+      'webmcp-tool-profile': async () => window.agentAPI!.getProfile(),
+      'webmcp-tool-experience': async (fd) => window.agentAPI!.getExperience(fd.get('company') as string || undefined),
+      'webmcp-tool-skills': async (fd) => window.agentAPI!.getSkills(fd.get('keyword') as string || undefined),
+      'webmcp-tool-demos': async () => window.agentAPI!.getDemos(),
+      'webmcp-tool-ask': async (fd) => window.agentAPI!.ask(fd.get('question') as string || ''),
+    };
+
+    for (const [id, fn] of Object.entries(formBindings)) {
+      const form = document.getElementById(id) as HTMLFormElement;
+      if (form && !form.dataset['bound']) {
+        form.dataset['bound'] = 'true';
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const result = await fn(new FormData(form));
+          console.log(`%c[WebMCP Activity] %c${id} executed:`, 'color: #8b5cf6; font-weight: bold;', 'color: #38bdf8;', result);
+          return result;
+        });
+      }
+    }
+  }
+
+  // 2. Register tools with Chrome's native ModelContext API (document.modelContext or navigator.modelContext)
+  async function registerNativeModelContext() {
+    bindDeclarativeForms();
+
+    const targets: ModelContextApi[] = [];
+    if (document.modelContext && typeof document.modelContext.registerTool === 'function') {
+      targets.push(document.modelContext);
+    }
+    if (navigator.modelContext && typeof navigator.modelContext.registerTool === 'function') {
+      targets.push(navigator.modelContext);
+    }
+    if (window.modelContext && typeof window.modelContext.registerTool === 'function') {
+      targets.push(window.modelContext);
+    }
+
+    // Polyfill / standard shim if browser hasn't attached modelContext yet
+    if (targets.length === 0) {
+      const toolMap = new Map<string, WebMcpTool>();
+      tools.forEach((t) => toolMap.set(t.name, t));
+
+      const standardShim: ModelContextApi = {
+        async registerTool(tool: WebMcpTool) {
+          toolMap.set(tool.name, tool);
+        },
+        async unregisterTool(name: string) {
+          toolMap.delete(name);
+        },
+        async listTools() {
+          return Array.from(toolMap.values());
+        },
+      };
+
+      try {
+        if (!document.modelContext) (document as any).modelContext = standardShim;
+        if (!navigator.modelContext) (navigator as any).modelContext = standardShim;
+        if (!window.modelContext) (window as any).modelContext = standardShim;
+      } catch {}
+
+      targets.push(standardShim);
+    }
+
+    let registeredCount = 0;
+    for (const ctx of targets) {
+      for (const tool of tools) {
+        try {
+          await ctx.registerTool(tool);
+          registeredCount++;
+        } catch {
+          // Ignore if tool already registered
+        }
+      }
+    }
+
+    if (registeredCount > 0) {
+      console.log(
+        `%c⚡ WebMCP Tools Registered in DevTools %c(${tools.length} available tools)`,
+        'background: #10b981; color: #ffffff; padding: 2px 6px; border-radius: 4px; font-weight: bold;',
+        'color: #94a3b8;'
+      );
+    }
+  }
+
+  // Register immediately and on lifecycle events
+  registerNativeModelContext();
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', registerNativeModelContext);
+    }
+    window.addEventListener('load', registerNativeModelContext);
+    setTimeout(registerNativeModelContext, 300);
+    setTimeout(registerNativeModelContext, 1200);
+  }
 
   // Welcome console banner for developers & agents
   console.log(

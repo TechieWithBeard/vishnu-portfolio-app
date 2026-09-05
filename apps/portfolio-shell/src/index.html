@@ -24,6 +24,27 @@
     </script>
   </head>
   <body>
+    <!-- Native Declarative WebMCP Tools for Chrome DevTools (Application > WebMCP) -->
+    <div id="webmcp-declarative-registry" style="display: none;" aria-hidden="true">
+      <form id="webmcp-tool-profile" toolname="get_architect_profile" tooldescription="Retrieve Vishnu Thankappan's architect profile, contact details, and availability status">
+      </form>
+
+      <form id="webmcp-tool-experience" toolname="get_work_history" tooldescription="Retrieve Vishnu's enterprise work history at AVEVA, Maistering B.V, and ACI Logistix">
+        <input type="text" name="company" toolparamdescription="Optional company name to filter (e.g. AVEVA, Maistering, ACI Logistix)" />
+      </form>
+
+      <form id="webmcp-tool-skills" toolname="search_skills" tooldescription="Search Vishnu's verified technical skills across Frontend Architecture and AI">
+        <input type="text" name="keyword" toolparamdescription="Keyword to filter skills (e.g. Angular, LangGraph, TypeScript)" />
+      </form>
+
+      <form id="webmcp-tool-demos" toolname="get_live_demos" tooldescription="Retrieve all interactive AI and frontend demos with deep links and documentation">
+      </form>
+
+      <form id="webmcp-tool-ask" toolname="ask_portfolio_agent" tooldescription="Ask natural language questions about Vishnu Thankappan's experience and architecture">
+        <input type="text" name="question" required toolparamdescription="Natural language question about Vishnu" />
+      </form>
+    </div>
+
     <app-root></app-root>
   </body>
 </html>

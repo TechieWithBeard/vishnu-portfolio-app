@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
 import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
 import { CodeHeroTypingComponent } from '../../ui/code-hero-typing.component';
+import { AppStackComponent } from '../../ui/app-stack.component';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, SkeletonLoaderComponent, CodeHeroTypingComponent],
+  imports: [RouterLink, SkeletonLoaderComponent, CodeHeroTypingComponent, AppStackComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
