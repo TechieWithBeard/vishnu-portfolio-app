@@ -22,25 +22,122 @@
         } catch (e) {}
       })();
     </script>
+
+    <!-- WebMCP Official Runtime (Google Chrome Labs Specification) -->
+    <script src="/webmcp.js"></script>
+
+    <!-- Early WebMCP Native Tool Registration for Chrome DevTools -->
+    <script>
+      (function () {
+        var tools = [
+          {
+            name: 'get_architect_profile',
+            title: 'Get Architect Profile',
+            description: "Retrieve Vishnu Thankappan's architect profile, contact details, availability status, and bio",
+            inputSchema: { type: 'object', properties: {} },
+            execute: async function() { return window.agentAPI ? window.agentAPI.getProfile() : { name: 'Vishnu Thankappan' }; }
+          },
+          {
+            name: 'get_work_history',
+            title: 'Get Enterprise Work History',
+            description: "Retrieve Vishnu's enterprise work history and track record at AVEVA, Maistering B.V, and ACI Logistix",
+            inputSchema: {
+              type: 'object',
+              properties: {
+                company: { type: 'string', description: "Optional company name filter (e.g. 'AVEVA')" }
+              }
+            },
+            execute: async function(args) { return window.agentAPI ? window.agentAPI.getExperience(args && args.company) : []; }
+          },
+          {
+            name: 'search_skills',
+            title: 'Search Technical Skills',
+            description: "Search Vishnu's verified technical skills across Frontend Architecture, AI Interfaces, and DevOps",
+            inputSchema: {
+              type: 'object',
+              properties: {
+                keyword: { type: 'string', description: "Keyword to filter skills (e.g. 'Angular', 'LangGraph')" }
+              }
+            },
+            execute: async function(args) { return window.agentAPI ? window.agentAPI.getSkills(args && args.keyword) : []; }
+          },
+          {
+            name: 'get_live_demos',
+            title: 'Get Interactive Demos',
+            description: "Retrieve all interactive AI and frontend demos with deep-links, live sandboxes, and documentation",
+            inputSchema: { type: 'object', properties: {} },
+            execute: async function() { return window.agentAPI ? window.agentAPI.getDemos() : []; }
+          },
+          {
+            name: 'ask_portfolio_agent',
+            title: 'Ask Portfolio Agent',
+            description: "Query Vishnu Thankappan's career, architectural decisions, and projects using natural language",
+            inputSchema: {
+              type: 'object',
+              properties: {
+                question: { type: 'string', description: 'Natural language query about Vishnu' }
+              },
+              required: ['question']
+            },
+            execute: async function(args) { return window.agentAPI ? window.agentAPI.ask(args && (args.question || args.query)) : 'Loading...'; }
+          }
+        ];
+
+        window.__webmcp_tools__ = tools;
+
+        function registerTools() {
+          var targets = [];
+          if (typeof document !== 'undefined' && document.modelContext && typeof document.modelContext.registerTool === 'function') {
+            targets.push(document.modelContext);
+          }
+          if (typeof navigator !== 'undefined' && navigator.modelContext && typeof navigator.modelContext.registerTool === 'function') {
+            targets.push(navigator.modelContext);
+          }
+          if (typeof window !== 'undefined' && window.modelContext && typeof window.modelContext.registerTool === 'function') {
+            targets.push(window.modelContext);
+          }
+
+          targets.forEach(function(target) {
+            tools.forEach(function(tool) {
+              try {
+                target.registerTool(tool);
+              } catch(e) {}
+            });
+            try {
+              var ev = new CustomEvent('toolchange', { detail: { tools: tools } });
+              target.dispatchEvent(ev);
+            } catch(e) {}
+          });
+        }
+
+        registerTools();
+        if (typeof document !== 'undefined') {
+          document.addEventListener('DOMContentLoaded', registerTools);
+        }
+        if (typeof window !== 'undefined') {
+          window.addEventListener('load', registerTools);
+        }
+      })();
+    </script>
   </head>
   <body>
     <!-- Native Declarative WebMCP Tools for Chrome DevTools (Application > WebMCP) -->
-    <div id="webmcp-declarative-registry" style="display: none;" aria-hidden="true">
-      <form id="webmcp-tool-profile" toolname="get_architect_profile" tooldescription="Retrieve Vishnu Thankappan's architect profile, contact details, and availability status">
+    <div id="webmcp-declarative-registry" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
+      <form id="webmcp-tool-profile" toolname="get_architect_profile" tooldescription="Retrieve Vishnu Thankappan's architect profile, contact details, and availability status" toolautosubmit>
       </form>
 
-      <form id="webmcp-tool-experience" toolname="get_work_history" tooldescription="Retrieve Vishnu's enterprise work history at AVEVA, Maistering B.V, and ACI Logistix">
+      <form id="webmcp-tool-experience" toolname="get_work_history" tooldescription="Retrieve Vishnu's enterprise work history at AVEVA, Maistering B.V, and ACI Logistix" toolautosubmit>
         <input type="text" name="company" toolparamdescription="Optional company name to filter (e.g. AVEVA, Maistering, ACI Logistix)" />
       </form>
 
-      <form id="webmcp-tool-skills" toolname="search_skills" tooldescription="Search Vishnu's verified technical skills across Frontend Architecture and AI">
+      <form id="webmcp-tool-skills" toolname="search_skills" tooldescription="Search Vishnu's verified technical skills across Frontend Architecture and AI" toolautosubmit>
         <input type="text" name="keyword" toolparamdescription="Keyword to filter skills (e.g. Angular, LangGraph, TypeScript)" />
       </form>
 
-      <form id="webmcp-tool-demos" toolname="get_live_demos" tooldescription="Retrieve all interactive AI and frontend demos with deep links and documentation">
+      <form id="webmcp-tool-demos" toolname="get_live_demos" tooldescription="Retrieve all interactive AI and frontend demos with deep links and documentation" toolautosubmit>
       </form>
 
-      <form id="webmcp-tool-ask" toolname="ask_portfolio_agent" tooldescription="Ask natural language questions about Vishnu Thankappan's experience and architecture">
+      <form id="webmcp-tool-ask" toolname="ask_portfolio_agent" tooldescription="Ask natural language questions about Vishnu Thankappan's experience and architecture" toolautosubmit>
         <input type="text" name="question" required toolparamdescription="Natural language question about Vishnu" />
       </form>
     </div>

@@ -8,6 +8,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { appRoutes } from './app.routes';
 import { APP_CONFIG } from './core/config/app-config.token';
 import { environment } from '../environments/environment';
+import { providePortfolioWebMcp } from './core/webmcp/webmcp.tools';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,6 +22,7 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideHttpClient(withFetch()),
+    providePortfolioWebMcp(),
     {
       provide: APP_CONFIG,
       useValue: environment,

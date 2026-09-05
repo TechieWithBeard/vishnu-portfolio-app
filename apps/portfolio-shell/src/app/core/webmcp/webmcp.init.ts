@@ -9,6 +9,7 @@ import { resume as fallbackResume, demos, projects } from '../../data/portfolio.
 
 interface WebMcpTool {
   name: string;
+  title?: string;
   description: string;
   inputSchema: {
     type: string;
@@ -213,15 +214,20 @@ export function initWebMcp(apiUrl: string): void {
   const tools: WebMcpTool[] = [
     {
       name: 'get_architect_profile',
+      title: 'Get Architect Profile',
       description: "Retrieve Vishnu Thankappan's architect profile, contact details, availability status, and bio.",
       inputSchema: {
         type: 'object',
         properties: {},
       },
-      execute: async () => window.agentAPI!.getProfile(),
+      execute: async () => {
+        const res = await window.agentAPI!.getProfile();
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      },
     },
     {
       name: 'get_work_history',
+      title: 'Get Enterprise Work History',
       description: "Retrieve Vishnu's enterprise work history and track record at AVEVA, Maistering B.V, and ACI Logistix.",
       inputSchema: {
         type: 'object',
@@ -232,10 +238,14 @@ export function initWebMcp(apiUrl: string): void {
           },
         },
       },
-      execute: async (args: any) => window.agentAPI!.getExperience(args?.company),
+      execute: async (args: any) => {
+        const res = await window.agentAPI!.getExperience(args?.company);
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      },
     },
     {
       name: 'search_skills',
+      title: 'Search Technical Skills',
       description: "Search Vishnu's verified technical skills across Frontend Architecture, AI Interfaces, and DevOps.",
       inputSchema: {
         type: 'object',
@@ -246,19 +256,27 @@ export function initWebMcp(apiUrl: string): void {
           },
         },
       },
-      execute: async (args: any) => window.agentAPI!.getSkills(args?.keyword),
+      execute: async (args: any) => {
+        const res = await window.agentAPI!.getSkills(args?.keyword);
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      },
     },
     {
       name: 'get_live_demos',
+      title: 'Get Interactive Demos',
       description: "Retrieve all interactive AI and frontend demos with deep-links, live sandboxes, and documentation.",
       inputSchema: {
         type: 'object',
         properties: {},
       },
-      execute: async () => window.agentAPI!.getDemos(),
+      execute: async () => {
+        const res = await window.agentAPI!.getDemos();
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      },
     },
     {
       name: 'ask_portfolio_agent',
+      title: 'Ask Portfolio Agent',
       description: "Query Vishnu Thankappan's career, architectural decisions, and projects using natural language.",
       inputSchema: {
         type: 'object',
@@ -270,7 +288,11 @@ export function initWebMcp(apiUrl: string): void {
         },
         required: ['question'],
       },
-      execute: async (args: any) => window.agentAPI!.ask(args?.question || args?.query || ''),
+      execute: async (args: any) => {
+        const res = await window.agentAPI!.ask(args?.question || args?.query || '');
+        const text = typeof res === 'string' ? res : JSON.stringify(res, null, 2);
+        return { content: [{ type: 'text', text }] };
+      },
     },
   ];
 
@@ -351,6 +373,10 @@ export function initWebMcp(apiUrl: string): void {
           // Ignore if tool already registered
         }
       }
+      try {
+        const ev = new CustomEvent('toolchange', { detail: { tools } });
+        (ctx as any).dispatchEvent?.(ev);
+      } catch {}
     }
 
     if (registeredCount > 0) {
