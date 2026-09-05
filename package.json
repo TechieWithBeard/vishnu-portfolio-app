@@ -6,12 +6,14 @@
     "start:api": "ts-node -P apps/api/tsconfig.app.json apps/api/src/main.ts",
     "start:api:prod": "node dist/apps/api/main.js",
     "start:admin": "vite --config apps/portfolio-admin/vite.config.ts apps/portfolio-admin --port 5173",
+    "start:chat": "vite --config apps/portfolio-chat/vite.config.ts apps/portfolio-chat --port 5174",
     "start:shell": "NX_ISOLATE_PLUGINS=false NX_DAEMON=false nx serve portfolio-shell --port 4200",
     "build:api": "tsc --project apps/api/tsconfig.app.json",
     "build:admin": "vite build --config apps/portfolio-admin/vite.config.ts apps/portfolio-admin",
+    "build:chat": "vite build --config apps/portfolio-chat/vite.config.ts apps/portfolio-chat",
     "build:shell": "NX_ISOLATE_PLUGINS=false NX_DAEMON=false nx build portfolio-shell --skip-nx-cache",
-    "build:all": "npm run build:api && npm run build:admin && npm run build:shell",
-    "typecheck": "tsc --project apps/api/tsconfig.app.json --noEmit && tsc --project apps/portfolio-admin/tsconfig.json --noEmit && tsc --project apps/portfolio-shell/tsconfig.app.json --noEmit"
+    "build:all": "npm run build:api && npm run build:admin && npm run build:chat && npm run build:shell",
+    "typecheck": "tsc --project apps/api/tsconfig.app.json --noEmit && tsc --project apps/portfolio-admin/tsconfig.json --noEmit && tsc --project apps/portfolio-chat/tsconfig.json --noEmit && tsc --project apps/portfolio-shell/tsconfig.app.json --noEmit"
   },
   "private": true,
   "dependencies": {

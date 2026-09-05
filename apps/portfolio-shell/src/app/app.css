@@ -2,9 +2,87 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative;
 }
 
 .app-shell {
   flex: 1;
   width: 100%;
+}
+
+/* Floating Cyberpunk AI Cockpit Button */
+.floating-ai-cockpit-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.95));
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.25);
+  backdrop-filter: blur(12px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-ai-cockpit-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  border-color: rgba(56, 189, 248, 0.8);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.6), 0 0 28px rgba(56, 189, 248, 0.45);
+}
+
+.floating-ai-cockpit-btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.ai-btn-pulse {
+  position: absolute;
+  left: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: radarPulse 2s infinite ease-out;
+}
+
+.ai-btn-icon {
+  font-size: 1.15rem;
+  margin-left: 6px;
+}
+
+.ai-btn-text {
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes radarPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .floating-ai-cockpit-btn {
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 16px;
+    font-size: 0.82rem;
+  }
 }

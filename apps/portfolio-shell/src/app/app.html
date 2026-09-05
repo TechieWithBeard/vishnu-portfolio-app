@@ -3,3 +3,20 @@
   <router-outlet></router-outlet>
 </main>
 <app-footer></app-footer>
+
+<!-- Floating Cyberpunk AI Cockpit Launcher Button -->
+<button
+  class="floating-ai-cockpit-btn"
+  (click)="toggleChat()"
+  title="Ask Vishnu's AI Agent (LangGraph & WebMCP)"
+  aria-label="Open AI Agent Cockpit"
+>
+  <span class="ai-btn-pulse"></span>
+  <span class="ai-btn-icon">🤖</span>
+  <span class="ai-btn-text">Ask Vishnu AI</span>
+</button>
+
+<!-- Federated React 19 Chat Microfrontend Cockpit -->
+@if (isChatOpen()) {
+  <app-portfolio-chat-wrapper (close)="closeChat()"></app-portfolio-chat-wrapper>
+}

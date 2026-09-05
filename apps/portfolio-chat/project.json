@@ -1,0 +1,31 @@
+{
+  "name": "portfolio-chat",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/portfolio-chat/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite build",
+        "cwd": "apps/portfolio-chat"
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite --port 5174",
+        "cwd": "apps/portfolio-chat"
+      }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite preview --port 5174",
+        "cwd": "apps/portfolio-chat"
+      }
+    }
+  }
+}

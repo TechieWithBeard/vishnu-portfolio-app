@@ -150,9 +150,13 @@ export class McpController {
    * 4. Natural Language Agent Query REST Endpoint
    * Exposes a direct question-answering endpoint for custom agent pipelines.
    * Path: /api/agent/query
+   * If ML_SERVICE_URL is set, delegates to the LangGraph ML backend service.
    */
   @Post('agent/query')
-  async queryAgent(@Body() body: { question: string }) {
+  async queryAgent(
+    @Body() body: { question: string; target_url?: string; provider?: string; chat_model?: string },
+    @Headers('x-openai-key') openAiKey?: string,
+  ) {
     const question = body.question || '';
     if (!question.trim()) {
       return {
@@ -160,6 +164,32 @@ export class McpController {
         references: [],
       };
     }
+
+    const mlServiceUrl = process.env['ML_SERVICE_URL'];
+    if (mlServiceUrl) {
+      try {
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (openAiKey) headers['x-openai-key'] = openAiKey;
+
+        const response = await fetch(`${mlServiceUrl.replace(/\/$/, '')}/agent/query`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            question,
+            target_url: body.target_url || 'https://www.techiewithbeard.com',
+            provider: body.provider,
+            chat_model: body.chat_model,
+          }),
+        });
+
+        if (response.ok) {
+          return await response.json();
+        }
+      } catch (err: any) {
+        this.logger.warn(`ML backend call to ${mlServiceUrl} failed, falling back to local engine: ${err.message}`);
+      }
+    }
+
     return await this.mcpService.answerQuery(question);
   }
 

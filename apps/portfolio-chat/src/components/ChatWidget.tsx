@@ -1,0 +1,558 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  references?: string[];
+  selectedTool?: string;
+  tokens?: number;
+  timestamp: string;
+}
+
+interface ChatWidgetProps {
+  apiUrl?: string;
+  onClose?: () => void;
+}
+
+export const ChatWidget: React.FC<ChatWidgetProps> = ({
+  apiUrl = 'https://vishnu-portfolio-api.onrender.com',
+  onClose,
+}) => {
+  const isLocalHost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const [provider, setProvider] = useState<'ollama' | 'openai'>(isLocalHost ? 'ollama' : 'openai');
+  const [apiKey, setApiKey] = useState<string>('');
+  const [showKeyModal, setShowKeyModal] = useState<boolean>(false);
+  const [input, setInput] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [activeTool, setActiveTool] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 'init',
+      role: 'assistant',
+      content:
+        "Hello! I am Vishnu Thankappan's autonomous portfolio agent, powered by LangGraph and Model Context Protocol. Ask me about his 7+ years of enterprise architecture, Angular 22, Native Federation, or live AI applications.",
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    },
+  ]);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Load session key
+  useEffect(() => {
+    try {
+      const savedKey = sessionStorage.getItem('portfolio_chat_openai_key') || '';
+      if (savedKey) setApiKey(savedKey);
+    } catch {}
+  }, []);
+
+  const saveApiKey = (key: string) => {
+    setApiKey(key);
+    try {
+      sessionStorage.setItem('portfolio_chat_openai_key', key);
+    } catch {}
+    setShowKeyModal(false);
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, loading]);
+
+  const handleSend = async (userText?: string) => {
+    const text = (userText || input).trim();
+    if (!text || loading) return;
+
+    if (provider === 'openai' && !apiKey && !isLocalHost) {
+      setShowKeyModal(true);
+      return;
+    }
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: text,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setLoading(true);
+    setActiveTool('Analyzing query intent...');
+
+    try {
+      const endpoint = `${apiUrl.replace(/\/$/, '')}/api/agent/query`;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (apiKey) {
+        headers['x-openai-key'] = apiKey;
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          question: text,
+          target_url: 'https://www.techiewithbeard.com',
+          provider,
+        }),
+      });
+
+      const data = await response.json();
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: data.answer || "I received Vishnu's portfolio data but could not synthesize an answer.",
+        references: data.references || [],
+        selectedTool: data.selected_tool || data.tool,
+        tokens: data.total_tokens,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (err: any) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: `⚠️ Failed to reach agent backend: ${err.message}. Please check your connection.`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+    } finally {
+      setLoading(false);
+      setActiveTool(null);
+    }
+  };
+
+  const quickPrompts = [
+    'Tell me about your AVEVA Monorepo architecture',
+    'Show your interactive LangGraph AI demos',
+    'Angular 22 Signals & Zoneless expertise',
+    'How can I contact or hire Vishnu?',
+  ];
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        maxWidth: '440px',
+        height: '620px',
+        background: 'rgba(7, 10, 17, 0.94)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(56, 189, 248, 0.25)',
+        borderRadius: '16px',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.15)',
+        color: '#f8fafc',
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '14px 18px',
+          background: 'rgba(15, 23, 42, 0.8)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div
+            style={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              background: '#10b981',
+              boxShadow: '0 0 10px #10b981',
+            }}
+          />
+          <div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.5px' }}>
+              Vishnu AI Cockpit
+            </div>
+            <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+              LangGraph • WebMCP • {provider === 'ollama' ? 'Local Ollama' : 'OpenAI'}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            onClick={() => setShowKeyModal(true)}
+            title="Configure Provider & Session Token"
+            style={{
+              background: 'rgba(56, 189, 248, 0.1)',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              color: '#38bdf8',
+              borderRadius: '6px',
+              padding: '4px 8px',
+              fontSize: '0.72rem',
+              cursor: 'pointer',
+              fontWeight: 600,
+            }}
+          >
+            ⚙️ {provider === 'openai' ? (apiKey ? 'Key Set' : 'Set Key') : 'Local'}
+          </button>
+
+          {onClose && (
+            <button
+              onClick={onClose}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#94a3b8',
+                fontSize: '1.2rem',
+                cursor: 'pointer',
+                padding: '2px 6px',
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Messages Stream */}
+      <div
+        style={{
+          flex: 1,
+          padding: '16px',
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '14px',
+        }}
+      >
+        {messages.map((m) => (
+          <div
+            key={m.id}
+            style={{
+              alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+              maxWidth: '86%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px',
+            }}
+          >
+            <div
+              style={{
+                padding: '10px 14px',
+                borderRadius: m.role === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
+                background:
+                  m.role === 'user'
+                    ? 'linear-gradient(135deg, #2563eb, #1d4ed8)'
+                    : 'rgba(30, 41, 59, 0.85)',
+                border: m.role === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                color: '#f8fafc',
+                fontSize: '0.88rem',
+                lineHeight: 1.5,
+                whiteSpace: 'pre-wrap',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+              }}
+            >
+              {m.content}
+
+              {/* Tool Execution Tag */}
+              {m.selectedTool && (
+                <div
+                  style={{
+                    marginTop: '8px',
+                    fontSize: '0.7rem',
+                    color: '#38bdf8',
+                    fontFamily: 'monospace',
+                    background: 'rgba(56, 189, 248, 0.08)',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    display: 'inline-block',
+                  }}
+                >
+                  ⚡ Tool: {m.selectedTool}
+                </div>
+              )}
+
+              {/* References */}
+              {m.references && m.references.length > 0 && (
+                <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {m.references.map((ref, idx) => (
+                    <a
+                      key={idx}
+                      href={ref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        fontSize: '0.68rem',
+                        color: '#60a5fa',
+                        textDecoration: 'none',
+                        background: 'rgba(96, 165, 250, 0.1)',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        border: '1px solid rgba(96, 165, 250, 0.2)',
+                      }}
+                    >
+                      🔗 {ref.replace('https://', '')}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div
+              style={{
+                fontSize: '0.65rem',
+                color: '#64748b',
+                alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+                padding: '0 4px',
+              }}
+            >
+              {m.timestamp} {m.tokens ? `• ~${m.tokens} tokens` : ''}
+            </div>
+          </div>
+        ))}
+
+        {loading && (
+          <div
+            style={{
+              alignSelf: 'flex-start',
+              padding: '10px 14px',
+              borderRadius: '14px 14px 14px 2px',
+              background: 'rgba(30, 41, 59, 0.7)',
+              fontSize: '0.82rem',
+              color: '#38bdf8',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <span style={{ animation: 'spin 1s linear infinite' }}>⚡</span>
+            {activeTool || 'LangGraph reasoning...'}
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Quick Prompts Bar */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '6px',
+          padding: '8px 16px',
+          overflowX: 'auto',
+          background: 'rgba(15, 23, 42, 0.4)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+        }}
+      >
+        {quickPrompts.map((qp, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleSend(qp)}
+            disabled={loading}
+            style={{
+              flexShrink: 0,
+              background: 'rgba(30, 41, 59, 0.8)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '20px',
+              color: '#cbd5e1',
+              padding: '4px 10px',
+              fontSize: '0.72rem',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {qp}
+          </button>
+        ))}
+      </div>
+
+      {/* Input Box */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '12px 16px',
+          background: 'rgba(15, 23, 42, 0.95)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        }}
+      >
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          placeholder="Ask about Vishnu's architecture, projects, or hire..."
+          disabled={loading}
+          style={{
+            flex: 1,
+            background: 'rgba(30, 41, 59, 0.8)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '8px',
+            padding: '10px 14px',
+            color: '#f8fafc',
+            fontSize: '0.86rem',
+            outline: 'none',
+          }}
+        />
+
+        <button
+          onClick={() => handleSend()}
+          disabled={loading || !input.trim()}
+          style={{
+            background: 'linear-gradient(135deg, #38bdf8, #2563eb)',
+            border: 'none',
+            borderRadius: '8px',
+            color: '#ffffff',
+            padding: '10px 16px',
+            fontSize: '0.88rem',
+            fontWeight: 600,
+            cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
+            opacity: loading || !input.trim() ? 0.6 : 1,
+          }}
+        >
+          Send
+        </button>
+      </div>
+
+      {/* Session Key & Provider Modal */}
+      {showKeyModal && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            zIndex: 10,
+          }}
+        >
+          <div
+            style={{
+              background: '#0f172a',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              borderRadius: '12px',
+              padding: '20px',
+              width: '100%',
+              maxWidth: '360px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '14px',
+            }}
+          >
+            <div style={{ fontSize: '1rem', fontWeight: 700 }}>⚙️ Agent Provider Settings</div>
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+              Select your LLM provider. When using OpenAI, keys are held strictly in your browser session storage.
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => setProvider('ollama')}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  borderRadius: '6px',
+                  border: provider === 'ollama' ? '1px solid #38bdf8' : '1px solid #334155',
+                  background: provider === 'ollama' ? 'rgba(56, 189, 248, 0.2)' : '#1e293b',
+                  color: '#f8fafc',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Local (Ollama)
+              </button>
+              <button
+                onClick={() => setProvider('openai')}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  borderRadius: '6px',
+                  border: provider === 'openai' ? '1px solid #38bdf8' : '1px solid #334155',
+                  background: provider === 'openai' ? 'rgba(56, 189, 248, 0.2)' : '#1e293b',
+                  color: '#f8fafc',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                }}
+              >
+                OpenAI (Cloud)
+              </button>
+            </div>
+
+            {provider === 'openai' && (
+              <div>
+                <label style={{ fontSize: '0.74rem', color: '#cbd5e1', marginBottom: '4px', display: 'block' }}>
+                  OpenAI API Key (Session-Stored)
+                </label>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="sk-..."
+                  style={{
+                    width: '100%',
+                    background: '#1e293b',
+                    border: '1px solid #334155',
+                    borderRadius: '6px',
+                    padding: '8px 12px',
+                    color: '#f8fafc',
+                    fontSize: '0.82rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '6px' }}>
+              <button
+                onClick={() => setShowKeyModal(false)}
+                style={{
+                  background: 'none',
+                  border: '1px solid #475569',
+                  borderRadius: '6px',
+                  color: '#cbd5e1',
+                  padding: '6px 12px',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => saveApiKey(apiKey)}
+                style={{
+                  background: '#2563eb',
+                  border: 'none',
+                  borderRadius: '6px',
+                  color: '#ffffff',
+                  padding: '6px 14px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Save & Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
