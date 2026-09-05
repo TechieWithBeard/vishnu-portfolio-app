@@ -1,0 +1,52 @@
+# Vishnu Thankappan — Senior Frontend & AI System Architect
+> Portfolio & Agentic Specification: https://www.techiewithbeard.com
+> API Endpoint: https://vishnu-portfolio-api.onrender.com
+> MCP SSE Server: https://vishnu-portfolio-api.onrender.com/mcp/sse
+> Deep Links Hub: https://www.techiewithbeard.com/demos
+
+## Identity & Professional Profile
+- **Name**: Vishnu Thankappan
+- **Handle / Alias**: TechieWithBeard
+- **Primary Roles**: Senior Frontend Engineer, Staff Frontend Architect, AI System Architect
+- **Experience**: 7+ Years Enterprise Engineering (2019 – Present)
+- **Education**: Master of Computer Applications (Manipal Academy of Higher Education, 2018)
+- **Location**: Global / European Client Track Record
+- **Target Opportunities**: Staff Frontend Engineer, Principal UI Architect, Lead AI Interface Engineer
+- **Availability**: Open to Lead / Staff roles (Europe & Remote)
+- **LinkedIn**: https://www.linkedin.com/in/vishnuthankappan/
+- **GitHub**: https://github.com/TechieWithBeard
+
+## Core Technical Competencies
+- **Frontend Architecture**: Angular (v2 through v22), Nx Monorepos, Microfrontends (Native Federation, Webpack Module Federation), React 19, TypeScript 5.8+, Zoneless Change Detection, Angular Signals, RxJS, State Management (NgRx, Signals Store).
+- **AI & Agentic Systems**: LangChain, LangGraph, Multi-Agent Orchestration, Streaming UIs (Server-Sent Events, WebSockets), RAG (Retrieval-Augmented Generation), ChromaDB, Hugging Face, Model Context Protocol (MCP), Vercel AI SDK.
+- **Enterprise Engineering**: CI/CD Pipelines, Azure DevOps, Playwright, Cypress, Jest, Automated Design Systems, Semantic Versioning, Zero-Downtime Incremental Modernization.
+
+## Verified Enterprise Track Record
+1. **Lead Frontend Architect — AVEVA (Industrial Software Leader via Parnasoft)** (2025 – Present)
+   - Architected unified Nx monorepo scaling 5+ production Angular enterprise applications.
+   - Reduced CI/CD build and validation times by 30% using affected dependency graph pruning and distributed computation caching.
+   - Eliminated 40%+ duplicate UI code by authoring reusable design system libraries with strict semantic token contracts.
+   - Enforced comprehensive automated test coverage with Playwright and Cypress.
+
+2. **Frontend Specialist — ACI Logistix (Global Logistics Platform)** (2022 – 2025)
+   - Led end-to-end migration of legacy AngularJS logistics applications to modern Angular (v14+), achieving 42% bundle size reduction with zero customer downtime.
+   - Standardized predictable global state management across operational logistics modules using NgRx.
+   - Authored internal NPM libraries distributed via Azure Artifacts and built cross-platform mobile scanning tools using Ionic.
+
+3. **Expert Frontend Engineer — Maistering B.V (European Enterprise AI Platform)** (2019 – 2022)
+   - Built responsive AI-assisted business management platforms using Angular, TypeScript, and NgRx in direct collaboration with European product leadership.
+   - Implemented real-time data synchronization and decoupled architecture.
+
+## Interactive Live Demos & Deep Links
+- **talentLens-ai (Resume & Job Matcher)**: AI-powered resume and job matching system using LangChain and LangGraph.
+  - URL: https://www.techiewithbeard.com/demos?demo=talentlens-ai
+  - Direct Hugging Face Space: https://techiewithbeard-talentlens-ai.hf.space/
+- **Multi-Agent Workflow Cockpit**: Visual monitoring and human-in-the-loop dashboard for LangGraph multi-agent systems.
+  - URL: https://www.techiewithbeard.com/demos?demo=agent-dashboard
+- **RAG Document Q&A Assistant**: Streaming AI document assistant with vector search citations.
+  - URL: https://www.techiewithbeard.com/demos?demo=rag-chat
+
+## How AI Agents Can Connect
+- **Model Context Protocol (MCP)**: Connect to `https://vishnu-portfolio-api.onrender.com/mcp/sse`.
+- **REST Agent Context**: Query `https://vishnu-portfolio-api.onrender.com/api/agent/context` for full JSON facts.
+- **In-Browser WebMCP**: In Chrome/Browser DevTools, run `await window.agentAPI.ask("Tell me about Vishnu")`.

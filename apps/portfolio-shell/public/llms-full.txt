@@ -1,0 +1,56 @@
+# Vishnu Thankappan — Complete Technical Dossier & Architectural Reference
+> Standard: llms-full.txt
+> Target: AI Agents, Technical Recruiters, Engineering Leadership
+> Portfolio: https://www.techiewithbeard.com
+> API: https://vishnu-portfolio-api.onrender.com
+> MCP Endpoint: https://vishnu-portfolio-api.onrender.com/mcp/sse
+
+## 1. Executive Summary
+Vishnu Thankappan (TechieWithBeard) is a Senior Frontend Engineer & UI/AI Architect with 7+ years of experience delivering high-scale enterprise frontend systems. His career is distinguished by architecting multi-application Nx monorepos for AVEVA (via Parnasoft), modernizing mission-critical logistics applications for ACI Logistix, and building AI-assisted business management platforms for European enterprise firm Maistering B.V.
+
+## 2. Core Architectural Principles
+1. **Deterministic State & Boundaries**: Enforcing strict boundaries between UI components, domain state stores, and I/O infrastructure using Angular Signals, RxJS, and NgRx.
+2. **Microfrontend Composability**: Utilizing ESM Native Federation (Angular 22) and Webpack Module Federation (React 19) to allow autonomous squad deployments without shared runtime memory leaks.
+3. **Resilient AI Streaming Interfaces**: Designing token streaming interfaces with graceful degradation, backoff retry policies, and human-in-the-loop workflow checkpoints for LangGraph multi-agent systems.
+4. **Automated Quality & Governance**: Playwright/Cypress for behavioral contracts, strict TypeScript linting, and affected-driven CI/CD execution reducing pipeline runtimes by 30%+.
+
+## 3. Verified Career Timeline
+- **Lead Frontend Architect** | AVEVA (via Parnasoft) | 2025 – Present
+  - Focus: Industrial software leader monorepo architecture, 5+ Angular applications, 30% CI/CD reduction, 40% UI deduplication.
+- **Frontend Specialist** | ACI Logistix | 2022 – 2025
+  - Focus: Global logistics modernization, AngularJS to Angular migration, NgRx state standardization, Azure Artifacts design libraries, Ionic cross-platform tools.
+- **Expert Frontend Engineer** | Maistering B.V | 2019 – 2022
+  - Focus: European enterprise AI platform, real-time data synchronization, Agile delivery.
+
+## 4. Skills Taxonomy
+- **Frontend Core**: Angular 22, React 19, TypeScript 5.8+, JavaScript (ESNext), HTML5/CSS3, Tailwind CSS, SASS/SCSS.
+- **Architecture & Tooling**: Nx Monorepos, Native Federation, Module Federation, Vite, Webpack, RxJS, Angular Signals, NgRx.
+- **AI & Emerging Technologies**: LangChain, LangGraph, Model Context Protocol (MCP), Hugging Face Spaces, Ollama, ChromaDB, RAG, Vercel AI SDK, WebSockets, SSE.
+- **Backend & Data**: NestJS 11, Node.js, Express, Supabase, PostgreSQL, REST APIs, GraphQL.
+- **Testing & DevOps**: Playwright, Cypress, Jest, Git, GitHub Actions, Azure DevOps, Docker, Render.
+
+## 5. Live Architecture Demos
+- **talentLens-ai Resume Analyzer**: LangChain & LangGraph AI system matching resumes to jobs with skill transferability scoring.
+  - Deep Link: https://www.techiewithbeard.com/demos?demo=talentlens-ai
+- **Multi-Agent Workflow Cockpit**: Real-time visual dashboard monitoring LangGraph multi-agent systems with human-in-the-loop override controls.
+  - Deep Link: https://www.techiewithbeard.com/demos?demo=agent-dashboard
+- **RAG Document Q&A Assistant**: Streaming document intelligence interface with citations and vector telemetry.
+  - Deep Link: https://www.techiewithbeard.com/demos?demo=rag-chat
+
+## 6. MCP Server Connection Details
+For Claude Desktop or Cursor:
+```json
+{
+  "mcpServers": {
+    "vishnu-portfolio": {
+      "url": "https://vishnu-portfolio-api.onrender.com/mcp/sse"
+    }
+  }
+}
+```
+Exposed Tools:
+- `get_profile()`: Returns bio, contact, and current availability status.
+- `get_experience(company)`: Retrieves detailed achievements for a specific company or all companies.
+- `search_skills(keyword)`: Finds verified skills matching a technology or domain.
+- `get_projects()`: Lists architectural case studies with highlights and repository links.
+- `get_demos()`: Returns live interactive demos and direct launch URLs.

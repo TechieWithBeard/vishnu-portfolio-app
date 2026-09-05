@@ -7,9 +7,11 @@
       @if (loadingProfile()) {
         <app-skeleton-loader type="hero"></app-skeleton-loader>
       } @else {
-        <h1>{{ profile().name }}</h1>
-        <p class="hero-tagline">{{ profile().tagline }}</p>
-        <p class="hero-summary">{{ profile().summary }}</p>
+        <h1 style="margin-bottom: var(--space-2);">{{ profile().name }}</h1>
+        <p class="hero-tagline" style="margin-bottom: var(--space-4);">{{ profile().tagline }}</p>
+        
+        <!-- Live Semantic HTML Code Block with Typewriter Animation -->
+        <app-code-hero-typing></app-code-hero-typing>
       }
 
       <div class="hero-actions">

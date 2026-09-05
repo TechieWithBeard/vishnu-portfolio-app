@@ -8,8 +8,10 @@ import { DemosController } from './controllers/demos.controller';
 import { SkillsController } from './controllers/skills.controller';
 import { SeedController, HealthController } from './controllers/seed.controller';
 
+import { McpModule } from './mcp/mcp.module';
+
 @Module({
-  imports: [],
+  imports: [McpModule],
   controllers: [
     HealthController,
     ProfileController,

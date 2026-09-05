@@ -2,10 +2,11 @@ import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
 import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
+import { CodeHeroTypingComponent } from '../../ui/code-hero-typing.component';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, SkeletonLoaderComponent],
+  imports: [RouterLink, SkeletonLoaderComponent, CodeHeroTypingComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
