@@ -1,11 +1,11 @@
 [
   {
-    "id": "1",
-    "title": "Add your Medium / LinkedIn articles here",
-    "platform": "medium",
-    "url": "https://medium.com/@yourusername/your-article",
-    "publishedAt": "2026-07-01",
-    "summary": "Short description of the article. This will be replaced by live Medium RSS feed later.",
-    "tags": ["Angular", "Architecture"]
+    "id": "webmcp-angular-guide",
+    "title": "How to Turn Your Web App into an AI-Ready Agent with WebMCP & Angular 22",
+    "platform": "linkedin",
+    "url": "https://www.linkedin.com/in/vishnuthankappan/",
+    "publishedAt": "2026-09-05",
+    "summary": "Moving beyond fragile DOM scraping and vision models. A practical guide to integrating WebMCP with Angular 22 provideExperimentalWebMcpTools, DevTools debugging, and tips & tricks.",
+    "tags": ["WebMCP", "Angular 22", "AI Architecture", "Model Context Protocol"]
   }
 ]
