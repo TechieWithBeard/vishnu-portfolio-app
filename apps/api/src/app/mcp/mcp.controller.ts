@@ -7,15 +7,21 @@ import {
   HttpStatus,
   Logger,
   Headers,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { McpService } from './mcp.service';
+import { SupabaseService } from '../supabase/supabase.service';
 
 @Controller()
 export class McpController {
   private readonly logger = new Logger(McpController.name);
 
-  constructor(private readonly mcpService: McpService) {}
+  constructor(
+    private readonly mcpService: McpService,
+    private readonly supabaseService: SupabaseService,
+  ) {}
 
   /**
    * 1. MCP Server-Sent Events (SSE) Endpoint
@@ -147,7 +153,42 @@ export class McpController {
   }
 
   /**
-   * 4. Natural Language Agent Query REST Endpoint
+   * 4. Agent Visitor Quota Query REST Endpoint
+   * Returns current free exploratory quota stored in Supabase.
+   * Path: /api/agent/quota
+   */
+  @Get('agent/quota')
+  async getAgentQuota(
+    @Query('visitor_id') visitorId?: string,
+    @Headers('x-visitor-id') headerVisitorId?: string,
+    @Headers('x-session-id') headerSessionId?: string,
+    @Req() req?: any,
+  ) {
+    const vid = visitorId || headerVisitorId || headerSessionId || 'anonymous';
+    const clientIp =
+      (req?.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req?.socket?.remoteAddress ||
+      'anon';
+    const ipHash =
+      clientIp !== 'anon' ? Buffer.from(clientIp).toString('base64').substring(0, 16) : undefined;
+
+    const quota = await this.supabaseService.getVisitorQuota(vid, ipHash);
+    const maxPrompts = 3;
+    const promptsUsed = quota.promptsUsed || 0;
+    const remaining = Math.max(0, maxPrompts - promptsUsed);
+
+    return {
+      visitor_id: vid,
+      prompts_used: promptsUsed,
+      quota_remaining: remaining,
+      max_prompts: maxPrompts,
+      has_free_quota: remaining > 0,
+      last_prompt_at: quota.lastPromptAt,
+    };
+  }
+
+  /**
+   * 5. Natural Language Agent Query REST Endpoint
    * Exposes a direct question-answering endpoint for custom agent pipelines.
    * Path: /api/agent/query
    * If ML_SERVICE_URL is set, delegates to the LangGraph ML backend service.
@@ -165,7 +206,9 @@ export class McpController {
     },
     @Headers('x-openai-key') openAiKey?: string,
     @Headers('x-hf-token') hfToken?: string,
-    @Headers('x-session-id') sessionId?: string,
+    @Headers('x-visitor-id') visitorIdHeader?: string,
+    @Headers('x-session-id') sessionIdHeader?: string,
+    @Req() req?: any,
   ) {
     const question = body.question || '';
     if (!question.trim()) {
@@ -175,6 +218,43 @@ export class McpController {
       };
     }
 
+    const vid = visitorIdHeader || sessionIdHeader || 'anonymous';
+    const clientIp =
+      (req?.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req?.socket?.remoteAddress ||
+      'anon';
+    const ipHash =
+      clientIp !== 'anon' ? Buffer.from(clientIp).toString('base64').substring(0, 16) : undefined;
+
+    const hasCustomKey = !!(openAiKey?.trim() || hfToken?.trim());
+
+    // Enforce Supabase Persistent Free Quota (3 exploratory queries)
+    if (!hasCustomKey) {
+      const quota = await this.supabaseService.getVisitorQuota(vid, ipHash);
+      if ((quota.promptsUsed || 0) >= 3) {
+        return {
+          answer:
+            "✨ **You've completed your 3 free exploratory questions!**\n\n" +
+            "Thank you for exploring Vishnu's portfolio agent! To ensure this demo stays fast and accessible for everyone, free exploratory queries are capped at 3 per visitor.\n\n" +
+            "To continue chatting and exploring without any limits:\n\n" +
+            "1. Click **Settings (⚙️)** in the top bar.\n" +
+            "2. Add your personal **OpenAI API Key** (`sk-...`) or free **Hugging Face Token** (`hf_...`).\n" +
+            "3. Your credentials stay strictly in your browser session memory and unlock **unlimited questions**.",
+          references: ['https://www.techiewithbeard.com/experience', 'https://www.techiewithbeard.com/demos'],
+          quota_remaining: 0,
+          is_free_tier: true,
+          requires_custom_key: true,
+        };
+      }
+    }
+
+    let remainingQuota: number | undefined;
+
+    if (!hasCustomKey) {
+      const updatedCount = await this.supabaseService.incrementVisitorQuota(vid, ipHash);
+      remainingQuota = Math.max(0, 3 - updatedCount);
+    }
+
     const mlServiceUrl =
       process.env['ML_SERVICE_URL'] || 'https://vishnu-portfolio-ml.onrender.com';
     if (mlServiceUrl) {
@@ -182,7 +262,8 @@ export class McpController {
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
         if (openAiKey) headers['x-openai-key'] = openAiKey;
         if (hfToken) headers['x-hf-token'] = hfToken;
-        if (sessionId) headers['x-session-id'] = sessionId;
+        headers['x-session-id'] = vid;
+        headers['x-visitor-id'] = vid;
 
         const response = await fetch(`${mlServiceUrl.replace(/\/$/, '')}/agent/query`, {
           method: 'POST',
@@ -198,14 +279,26 @@ export class McpController {
         });
 
         if (response.ok) {
-          return await response.json();
+          const data = await response.json();
+          if (!hasCustomKey && remainingQuota !== undefined) {
+            data.quota_remaining = remainingQuota;
+            data.is_free_tier = true;
+            data.requires_custom_key = remainingQuota === 0;
+          }
+          return data;
         }
       } catch (err: any) {
         this.logger.warn(`ML backend call to ${mlServiceUrl} failed, falling back to local engine: ${err.message}`);
       }
     }
 
-    return await this.mcpService.answerQuery(question);
+    const localResult = await this.mcpService.answerQuery(question);
+    return {
+      ...localResult,
+      quota_remaining: remainingQuota,
+      is_free_tier: !hasCustomKey,
+      requires_custom_key: remainingQuota === 0,
+    };
   }
 
   /**

@@ -106,6 +106,16 @@ CREATE TABLE skills (
     order_index INTEGER NOT NULL DEFAULT 0
 );
 
+-- 9. Agent Rate Limits / Persistent Visitor Quota Table
+CREATE TABLE IF NOT EXISTS agent_rate_limits (
+    id TEXT PRIMARY KEY, -- visitor_id (UUID stored in browser localStorage)
+    ip_hash TEXT,
+    prompts_used INTEGER NOT NULL DEFAULT 0,
+    tokens_used INTEGER NOT NULL DEFAULT 0,
+    last_prompt_at TIMESTAMPTZ DEFAULT NOW(),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ==============================================================================
 -- Row-Level Security (RLS) Configuration
 -- ==============================================================================
@@ -116,6 +126,7 @@ ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE writing ENABLE ROW LEVEL SECURITY;
 ALTER TABLE demos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agent_rate_limits ENABLE ROW LEVEL SECURITY;
 
 -- Allow public read access to all portfolio items
 CREATE POLICY "Public profile read" ON profile FOR SELECT USING (true);
@@ -124,6 +135,8 @@ CREATE POLICY "Public projects read" ON projects FOR SELECT USING (true);
 CREATE POLICY "Public writing read" ON writing FOR SELECT USING (true);
 CREATE POLICY "Public demos read" ON demos FOR SELECT USING (true);
 CREATE POLICY "Public skills read" ON skills FOR SELECT USING (true);
+CREATE POLICY "Public read agent_rate_limits" ON agent_rate_limits FOR SELECT USING (true);
+CREATE POLICY "Public insert update agent_rate_limits" ON agent_rate_limits FOR ALL USING (true) WITH CHECK (true);
 
 -- Allow full access to service_role / authenticated admin
 CREATE POLICY "Admin profile full" ON profile FOR ALL USING (true) WITH CHECK (true);
@@ -132,6 +145,7 @@ CREATE POLICY "Admin projects full" ON projects FOR ALL USING (true) WITH CHECK 
 CREATE POLICY "Admin writing full" ON writing FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Admin demos full" ON demos FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Admin skills full" ON skills FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Admin agent_rate_limits full" ON agent_rate_limits FOR ALL USING (true) WITH CHECK (true);
 
 -- ==============================================================================
 -- Initial Seed Data

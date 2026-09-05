@@ -951,4 +951,103 @@ export class SupabaseService implements OnModuleInit {
 
     return { success: true, message: 'Local store seeded successfully' };
   }
+
+  // ============================================================================
+  // Persistent Visitor Quota / Rate Limiting
+  // ============================================================================
+  private visitorQuotaStore: Map<string, { promptsUsed: number; lastPromptAt: string; ipHash?: string }> = new Map();
+
+  public async getVisitorQuota(
+    visitorId: string,
+    ipHash?: string
+  ): Promise<{ promptsUsed: number; lastPromptAt?: string }> {
+    if (!visitorId || visitorId === 'anonymous') {
+      visitorId = ipHash ? `anon_${ipHash}` : 'anonymous';
+    }
+
+    if (this.client) {
+      try {
+        // Query by visitor_id
+        const { data, error } = await this.client
+          .from('agent_rate_limits')
+          .select('prompts_used, last_prompt_at')
+          .eq('id', visitorId)
+          .maybeSingle();
+
+        if (data && !error) {
+          return {
+            promptsUsed: data.prompts_used ?? 0,
+            lastPromptAt: data.last_prompt_at,
+          };
+        }
+
+        // Secondary anti-tamper check by IP hash if visitor ID was newly generated (e.g. Incognito)
+        if (ipHash && ipHash !== 'anon') {
+          const { data: ipData, error: ipError } = await this.client
+            .from('agent_rate_limits')
+            .select('prompts_used, last_prompt_at')
+            .eq('ip_hash', ipHash)
+            .order('prompts_used', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (ipData && !ipError && (ipData.prompts_used || 0) >= 3) {
+            return {
+              promptsUsed: ipData.prompts_used ?? 0,
+              lastPromptAt: ipData.last_prompt_at,
+            };
+          }
+        }
+      } catch (err: any) {
+        this.logger.warn(`Supabase getVisitorQuota notice: ${err.message}. Using local store.`);
+      }
+    }
+
+    // In-memory fallback
+    const local = this.visitorQuotaStore.get(visitorId);
+    if (local) {
+      return { promptsUsed: local.promptsUsed, lastPromptAt: local.lastPromptAt };
+    }
+
+    if (ipHash && ipHash !== 'anon') {
+      for (const entry of this.visitorQuotaStore.values()) {
+        if (entry.ipHash === ipHash && entry.promptsUsed >= 3) {
+          return { promptsUsed: entry.promptsUsed, lastPromptAt: entry.lastPromptAt };
+        }
+      }
+    }
+
+    return { promptsUsed: 0 };
+  }
+
+  public async incrementVisitorQuota(visitorId: string, ipHash?: string): Promise<number> {
+    if (!visitorId || visitorId === 'anonymous') {
+      visitorId = ipHash ? `anon_${ipHash}` : 'anonymous';
+    }
+
+    const now = new Date().toISOString();
+    const existing = await this.getVisitorQuota(visitorId, ipHash);
+    const updatedCount = (existing.promptsUsed || 0) + 1;
+
+    if (this.client) {
+      try {
+        await this.client.from('agent_rate_limits').upsert({
+          id: visitorId,
+          ip_hash: ipHash || 'anon',
+          prompts_used: updatedCount,
+          last_prompt_at: now,
+        });
+      } catch (err: any) {
+        this.logger.warn(`Supabase incrementVisitorQuota notice: ${err.message}. Updated local store.`);
+      }
+    }
+
+    this.visitorQuotaStore.set(visitorId, {
+      promptsUsed: updatedCount,
+      lastPromptAt: now,
+      ipHash,
+    });
+
+    return updatedCount;
+  }
 }

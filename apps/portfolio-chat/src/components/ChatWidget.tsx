@@ -36,29 +36,57 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
       id: 'init',
       role: 'assistant',
       content:
-        "Hello! I am Vishnu Thankappan's autonomous portfolio agent, powered by LangGraph and Model Context Protocol. Ask me about his 7+ years of enterprise architecture, Angular 22, Native Federation, or live AI applications.",
+        "Hello! I am Vishnu Thankappan's autonomous portfolio agent, powered by LangGraph and Model Context Protocol. You have 3 free questions on our shared demo server to explore his enterprise architecture, Angular 22, and live AI apps. Ask me anything!",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Persistent browser session ID
-  const getSessionId = (): string => {
+  // Persistent browser visitor ID stored in localStorage (persists across tab & browser closes)
+  const getVisitorId = (): string => {
     try {
-      let sid = localStorage.getItem('portfolio_chat_session_id');
-      if (!sid) {
-        sid =
+      let vid = localStorage.getItem('portfolio_visitor_id');
+      if (!vid) {
+        vid =
           typeof crypto !== 'undefined' && crypto.randomUUID
             ? crypto.randomUUID()
-            : 'sess_' + Math.random().toString(36).substring(2, 12) + '_' + Date.now();
-        localStorage.setItem('portfolio_chat_session_id', sid);
+            : 'v_' + Math.random().toString(36).substring(2, 12) + '_' + Date.now();
+        localStorage.setItem('portfolio_visitor_id', vid);
       }
-      return sid;
+      return vid;
     } catch {
-      return 'sess_fallback_' + Date.now();
+      return 'v_anon_' + Date.now();
     }
   };
+
+  // Check persisted visitor quota from Supabase on mount
+  useEffect(() => {
+    const vid = getVisitorId();
+    const checkQuota = async () => {
+      try {
+        const resp = await fetch(
+          `${apiUrl.replace(/\/$/, '')}/api/agent/quota?visitor_id=${encodeURIComponent(vid)}`,
+          {
+            headers: {
+              'x-visitor-id': vid,
+            },
+          }
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          if (typeof data.quota_remaining === 'number') {
+            setQuotaRemaining(data.quota_remaining);
+            if (data.quota_remaining === 0) {
+              setRequiresCustomKey(true);
+            }
+          }
+        }
+      } catch {}
+    };
+
+    checkQuota();
+  }, [apiUrl]);
 
   // Load session storage settings
   useEffect(() => {
@@ -162,10 +190,12 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     const phaseTimer3 = setTimeout(() => setActiveTool('✂️ Pruning payload & synthesizing answer...'), 2600);
 
     try {
+      const vid = getVisitorId();
       const endpoint = `${apiUrl.replace(/\/$/, '')}/api/agent/query`;
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'x-session-id': getSessionId(),
+        'x-visitor-id': vid,
+        'x-session-id': vid,
       };
 
       if (apiKey.trim()) {
@@ -360,13 +390,15 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
               width: '6px',
               height: '6px',
               borderRadius: '50%',
-              background: hasCustomAuth ? '#10b981' : '#f59e0b',
-              boxShadow: hasCustomAuth ? '0 0 6px #10b981' : '0 0 6px #f59e0b',
+              background: hasCustomAuth ? '#10b981' : (quotaRemaining === 0 ? '#64748b' : '#38bdf8'),
+              boxShadow: hasCustomAuth ? '0 0 6px #10b981' : (quotaRemaining === 0 ? 'none' : '0 0 6px #38bdf8'),
             }}
           />
           {hasCustomAuth
-            ? '⚡ Unlimited: Personal Key Active'
-            : `🎁 Free Demo: ${quotaRemaining ?? 3}/3 prompts left`}
+            ? '🟢 Personal Key Active • Unlimited'
+            : quotaRemaining === 0
+            ? '✨ Free Exploratory Quota Completed (3/3)'
+            : `🎁 Free Demo: ${quotaRemaining ?? 3}/3 exploratory questions left`}
         </span>
         <span style={{ color: '#64748b' }}>
           {provider === 'huggingface'
@@ -531,24 +563,49 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         ))}
       </div>
 
-      {/* Quota Exceeded Banner */}
+      {/* Quota Exceeded Card - Intuitive & Non-Offensive */}
       {requiresCustomKey && !hasCustomAuth && (
         <div
           onClick={() => setShowKeyModal(true)}
           style={{
-            padding: '8px 16px',
-            background: 'rgba(245, 158, 11, 0.15)',
-            borderTop: '1px solid rgba(245, 158, 11, 0.3)',
-            color: '#fef08a',
-            fontSize: '0.74rem',
+            padding: '10px 16px',
+            background: 'linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(56, 189, 248, 0.12))',
+            borderTop: '1px solid rgba(56, 189, 248, 0.25)',
+            color: '#cbd5e1',
+            fontSize: '0.76rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            gap: '10px',
           }}
         >
-          <span>⚡ Demo quota reached (3/3 prompts used).</span>
-          <span style={{ fontWeight: 700, textDecoration: 'underline' }}>⚙️ Set Personal Key</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '1rem' }}>✨</span>
+            <span>
+              Free exploratory questions completed (3/3). Connect your <strong>OpenAI</strong> or <strong>Hugging Face</strong> key to keep chatting!
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowKeyModal(true);
+            }}
+            style={{
+              background: '#2563eb',
+              border: 'none',
+              color: '#ffffff',
+              borderRadius: '6px',
+              padding: '4px 10px',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Connect Key ⚙️
+          </button>
         </div>
       )}
 
@@ -570,7 +627,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder={
             requiresCustomKey && !hasCustomAuth
-              ? "Demo quota reached. Click ⚙️ to add your key..."
+              ? "Free demo completed. Click 'Connect Key' above to continue..."
               : "Ask about Vishnu's architecture, projects, or hire..."
           }
           disabled={loading}
