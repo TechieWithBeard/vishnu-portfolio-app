@@ -83,18 +83,27 @@ export class PortfolioApiService {
         }),
         tap((data) => {
           if (data) {
+            const cleanLocation = (data.location || fallbackResume.location)
+              .replace(/\s*\([^)]*(?:global|eu|opportunit|relo)[^)]*\)/gi, '')
+              .trim();
+            const cleanAvailability = data.availability ? {
+              status: /open|seeking/i.test(data.availability.status || '') ? fallbackResume.availability.status : (data.availability.status || fallbackResume.availability.status),
+              target: data.availability.target || fallbackResume.availability.target,
+              note: /opportunit|avail/i.test(data.availability.note || '') ? fallbackResume.availability.note : (data.availability.note || fallbackResume.availability.note),
+            } : fallbackResume.availability;
+
             this.profile.set({
               name: data.name || fallbackResume.name,
               alias: data.alias || fallbackResume.alias,
               title: data.title || fallbackResume.title,
               tagline: data.tagline || fallbackResume.tagline,
-              location: data.location || fallbackResume.location,
+              location: cleanLocation,
               email: data.email || fallbackResume.email,
               phone: data.phone || fallbackResume.phone,
               linkedin: data.linkedin || fallbackResume.linkedin,
               github: data.github || fallbackResume.github,
               summary: data.summary || fallbackResume.summary,
-              availability: data.availability || fallbackResume.availability,
+              availability: cleanAvailability,
               experience: this.experience(),
               education: fallbackResume.education,
               skills: data.skills || fallbackResume.skills,
@@ -120,7 +129,13 @@ export class PortfolioApiService {
         }),
         tap((data) => {
           if (data && data.length > 0) {
-            this.experience.set(data);
+            const cleanExp = data.map((item) => ({
+              ...item,
+              location: item.location?.replace(/European (Enterprise|Client) Environment/gi, (m) =>
+                m.includes('Client') ? 'Enterprise AI SaaS (Global)' : 'Industrial SaaS (Global)'
+              ) || item.location,
+            }));
+            this.experience.set(cleanExp);
           } else {
             this.experience.set(fallbackResume.experience);
           }
