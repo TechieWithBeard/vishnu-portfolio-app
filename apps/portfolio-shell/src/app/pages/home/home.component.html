@@ -133,68 +133,6 @@
   <!-- Platform Architecture & Tech Stack Showcase -->
   <app-app-stack></app-app-stack>
 
-  <!-- Featured Projects -->
-  <section class="section">
-    <div class="section-heading">
-      <div>
-        <span class="eyebrow">Selected Work</span>
-        <h2 class="section-title">Architectural Case Studies & AI Systems</h2>
-        <p class="section-subtitle">
-          High-impact engineering solving monorepo scalability, real-time LLM streaming, and enterprise modernization.
-        </p>
-      </div>
-      <a class="btn btn-secondary" routerLink="/projects">All Projects & Case Studies →</a>
-    </div>
-
-    @if (loadingProjects()) {
-      <app-skeleton-loader type="card-grid" [count]="3" [columns]="3"></app-skeleton-loader>
-    } @else {
-      <div class="grid three">
-        @for (project of featuredProjects(); track project.id) {
-          <article class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
-              <span class="tag tag-accent">{{ project.category }}</span>
-              @if (project.demoType) {
-                <span class="tag tag-ai">{{ project.demoType }}</span>
-              }
-            </div>
-
-            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-2);">
-              {{ project.title }}
-            </h3>
-            <p style="font-size: 0.9rem; margin-bottom: var(--space-4); line-height: 1.6; flex: 1;">
-              {{ project.description }}
-            </p>
-
-            <div class="tag-row" style="margin-bottom: var(--space-4);">
-              @for (tech of project.tech; track tech) {
-                <span class="tag">{{ tech }}</span>
-              }
-            </div>
-
-            <div style="display: flex; gap: var(--space-2); margin-top: auto; border-top: 1px solid var(--color-border); padding-top: var(--space-3);">
-              @if (project.liveDemo) {
-                <a class="btn btn-primary btn-sm" [routerLink]="project.liveDemo" style="flex: 1;">
-                  View Demo
-                </a>
-              }
-              @if (project.github && !project.github.includes('YOUR_')) {
-                <a
-                  class="btn btn-secondary btn-sm"
-                  [href]="project.github"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GitHub ↗
-                </a>
-              }
-            </div>
-          </article>
-        }
-      </div>
-    }
-  </section>
-
   <!-- Core Architectural Strength Section -->
   <section class="section" style="border-top: 1px solid var(--color-border); padding-top: var(--space-16);">
     <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--space-12); align-items: start;">

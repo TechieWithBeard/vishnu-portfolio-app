@@ -22,9 +22,6 @@ import { PortfolioApiService } from '../services/portfolio-api.service';
           <a routerLink="/writing">Writing</a>
           <a [href]="profile().linkedin" target="_blank" rel="noreferrer">LinkedIn</a>
           <a [href]="profile().github" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="http://localhost:5173" target="_blank" rel="noreferrer" title="Open Studio Admin UI" style="color: var(--color-accent); font-weight: 600;">
-            ⚙️ Admin Studio
-          </a>
         </nav>
       </div>
       <div style="width: min(1200px, calc(100% - 2.5rem)); margin: 1.5rem auto 0; padding-top: 1rem; border-top: 1px solid var(--color-border); font-size: var(--text-xs); color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
