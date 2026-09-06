@@ -245,7 +245,16 @@ export class McpService {
       };
     }
 
-    // 5. Architecture & Monorepos & Microfrontends
+    // 5. Chat Widget Architecture / React Component Inquiry
+    if ((q.includes('react') || q.includes('chat') || q.includes('widget') || q.includes('cockpit')) && (q.includes('this') || q.includes('how') || q.includes('built') || q.includes('what') || q.includes('angular') || q.includes('mfe') || q.includes('component'))) {
+      references.push('https://www.techiewithbeard.com/architecture');
+      return {
+        answer: `Great architectural observation! ⚛️ This exact AI Chat Cockpit is a **React 19 microfrontend** built with TypeScript and Vite, dynamically mounted inside Vishnu's **Angular 22 enterprise shell** using custom element wrapping and Native Federation! It showcases seamless multi-framework interoperability within an Nx monorepo.`,
+        references,
+      };
+    }
+
+    // 6. Architecture & Monorepos & Microfrontends
     if (q.includes('monorepo') || q.includes('nx') || q.includes('federation') || q.includes('microfrontend') || q.includes('architect')) {
       references.push('https://www.techiewithbeard.com/architecture');
       return {

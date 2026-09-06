@@ -36,7 +36,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
       id: 'init',
       role: 'assistant',
       content:
-        "Hello! I am Vishnu Thankappan's autonomous portfolio agent, powered by LangGraph and Model Context Protocol. You have 3 free questions on our shared demo server to explore his enterprise architecture, Angular 22, and live AI apps. Ask me anything!",
+        "Hello! I am Vishnu Thankappan's autonomous portfolio agent, built as a **React 19 microfrontend** federated inside this Angular 22 shell. Powered by LangGraph and Model Context Protocol. You have 3 free questions on our shared demo server to explore his enterprise architecture, Angular 22, and live AI apps. Ask me anything!",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -339,11 +339,29 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             }}
           />
           <div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.5px' }}>
-              Vishnu AI Cockpit
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>Vishnu AI Cockpit</span>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  background: 'rgba(6, 182, 212, 0.16)',
+                  border: '1px solid rgba(6, 182, 212, 0.4)',
+                  color: '#38bdf8',
+                  borderRadius: '12px',
+                  padding: '1px 7px',
+                  fontSize: '0.64rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.2px',
+                }}
+                title="React 19 Microfrontend mounted inside Angular 22 Enterprise Shell"
+              >
+                ⚛️ React Component
+              </span>
             </div>
             <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-              LangGraph • WebMCP • {provider === 'openai' ? 'OpenAI' : (provider === 'huggingface' ? 'Hugging Face' : 'Local Ollama')}
+              React 19 MFE in Angular Shell • LangGraph • WebMCP
             </div>
           </div>
         </div>

@@ -66,6 +66,21 @@
   -webkit-text-fill-color: transparent;
 }
 
+.ai-btn-react-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(6, 182, 212, 0.16);
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  color: #38bdf8;
+  border-radius: 9999px;
+  padding: 2px 7px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
 @keyframes radarPulse {
   0% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
