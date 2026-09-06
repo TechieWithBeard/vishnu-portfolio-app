@@ -219,10 +219,10 @@ export class McpService {
     }
 
     // 2. Maistering B.V
-    if (q.includes('maistering') || q.includes('european') || q.includes('netherlands')) {
+    if (q.includes('maistering') || q.includes('netherlands')) {
       references.push('https://www.techiewithbeard.com/experience');
       return {
-        answer: `At Maistering B.V (European enterprise AI platform), Vishnu was an Expert Frontend Engineer delivering AI-assisted enterprise orchestration platforms using Angular, TypeScript, and NgRx with real-time data sync.`,
+        answer: `At Maistering B.V (enterprise AI platform), Vishnu was an Expert Frontend Engineer delivering AI-assisted enterprise orchestration platforms using Angular, TypeScript, and NgRx with real-time data sync.`,
         references,
       };
     }
@@ -240,7 +240,7 @@ export class McpService {
     if (q.includes('year') || q.includes('how long') || q.includes('experience') || q.includes('career') || q.includes('history') || q.includes('track record') || q.includes('companies') || q.includes('where')) {
       references.push('https://www.techiewithbeard.com/experience');
       return {
-        answer: `Vishnu Thankappan has 7+ years of enterprise engineering experience (2019 – Present):\n• AVEVA / Parnasoft (2022 – Present): Lead Frontend Architect\n• Maistering B.V (2021 – 2022): Expert Frontend Engineer (European AI)\n• ACI Logistix (2019 – 2021): Senior Software Engineer\n\nDeeply specialized in Nx monorepos, Native Federation microfrontends, Angular 22 Signals, and streaming AI interfaces.`,
+        answer: `Vishnu Thankappan has 7+ years of enterprise engineering experience (2019 – Present):\n• AVEVA / Parnasoft (2022 – Present): Lead Frontend Architect\n• Maistering B.V (2021 – 2022): Expert Frontend Engineer (Enterprise AI)\n• ACI Logistix (2019 – 2021): Senior Software Engineer\n\nDeeply specialized in Nx monorepos, Native Federation microfrontends, Angular 22 Signals, and streaming AI interfaces.`,
         references,
       };
     }
@@ -330,11 +330,11 @@ export class McpService {
       };
     }
 
-    // 9. Contact & Availability / Hiring
-    if (q.includes('contact') || q.includes('hire') || q.includes('email') || q.includes('available') || q.includes('role') || q.includes('rate') || q.includes('reach') || q.includes('linkedin')) {
+    // 9. Contact & Advisory
+    if (q.includes('contact') || q.includes('email') || q.includes('reach') || q.includes('linkedin') || q.includes('connect')) {
       references.push('https://www.techiewithbeard.com/contact');
       return {
-        answer: `Vishnu Thankappan is currently ${profile.availability?.status || 'Open'} for ${profile.availability?.target || 'Staff / Lead Frontend Architect'} opportunities.\n• Email: ${profile.email}\n• LinkedIn: ${profile.linkedin}\n• GitHub: ${profile.github}`,
+        answer: `You can connect with Vishnu Thankappan directly for technical discussions and engineering collaboration:\n• Email: ${profile.email}\n• LinkedIn: ${profile.linkedin}\n• GitHub: ${profile.github}`,
         references,
       };
     }

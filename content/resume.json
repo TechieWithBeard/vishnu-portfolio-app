@@ -1,24 +1,24 @@
 {
   "name": "Vishnu Thankappan",
   "title": "Senior Frontend Engineer",
-  "tagline": "Scalable UI Architecture • AI-Powered Interfaces • Open to Opportunities",
+  "tagline": "Scalable UI Architecture • AI-Powered Interfaces • Design Systems",
   "location": "Bangalore, India",
   "email": "vishnut071@gmail.com",
   "phone": "+91-8373923785",
   "linkedin": "https://www.linkedin.com/in/vishnu-thankappan-7bbb0675/",
-  "github": "https://github.com/YOUR_GITHUB_USERNAME",
-  "summary": "Senior Frontend Engineer with 7+ years of experience building and evolving large-scale, user-facing web platforms. Strong background in frontend architecture, Nx monorepos, reusable design systems, and performance-critical Angular applications. Currently expanding into AI-powered interfaces with LangChain and modern React/Next.js. Proven experience modernizing legacy systems and shipping production-grade features in distributed European client environments.",
+  "github": "https://github.com/TechieWithBeard",
+  "summary": "Senior Frontend Engineer with 7+ years of experience building and evolving large-scale, user-facing web platforms. Strong background in frontend architecture, Nx monorepos, reusable design systems, and performance-critical Angular applications. Currently expanding into AI-powered interfaces with LangChain and modern React/Next.js. Proven experience modernizing legacy systems and shipping production-grade features in distributed global enterprise client environments.",
   "availability": {
-    "status": "Open to opportunities",
-    "target": "Senior Frontend / AI Frontend roles",
-    "note": "Available for remote, hybrid, and relocation-friendly opportunities"
+    "status": "Active Engineering & Architecture",
+    "target": "Enterprise UI Architecture & AI Systems",
+    "note": "Consulting, architectural advisory, and technical collaboration"
   },
   "experience": [
     {
       "role": "Senior Frontend Engineer",
       "company": "Parnasoft Technologies — Client: AVEVA",
       "period": "March 2025 – Present",
-      "location": "European client environment",
+      "location": "Industrial SaaS (Global)",
       "highlights": [
         "Optimized and restructured a large Nx monorepo supporting 5+ Angular applications, reducing build and test times by ~25–35%",
         "Designed and migrated shared widget and UI libraries, reducing duplicated frontend code by ~30–40%",
@@ -42,7 +42,7 @@
       "role": "Expert Frontend Engineer",
       "company": "Maistering B.V",
       "period": "January 2019 – March 2022",
-      "location": "European client environment",
+      "location": "Enterprise AI Platform",
       "highlights": [
         "Developed and maintained frontend applications using Angular and NgRx",
         "Worked on full-stack features involving Angular and .NET",

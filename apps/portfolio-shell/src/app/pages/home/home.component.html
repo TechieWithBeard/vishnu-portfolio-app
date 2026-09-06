@@ -47,41 +47,47 @@
       </div>
     </div>
 
-    <!-- Portrait & Details Card -->
-    <aside class="profile-card" aria-label="Profile Card">
+    <!-- Executive Architect Dossier Card -->
+    <aside class="profile-card" aria-label="Architect Profile Card">
       <figure class="profile-portrait">
         @if (loadingProfile()) {
           <app-skeleton-loader type="avatar"></app-skeleton-loader>
         } @else {
           <img
             src="/profile/vishnu.jpeg"
-            alt="Vishnu Thankappan - Senior Frontend Engineer"
-            width="480"
-            height="560"
+            alt="Vishnu Thankappan - Senior Frontend Engineer & UI/AI Architect"
+            width="136"
+            height="136"
             loading="eager"
           />
         }
       </figure>
 
       <div class="profile-meta-row">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          @if (loadingProfile()) {
-            <app-skeleton-loader type="title" width="60%"></app-skeleton-loader>
-          } @else {
-            <h2 style="font-size: 1.15rem; font-weight: 700;">{{ profile().title }}</h2>
-            <span class="tag tag-accent">{{ profile().alias }}</span>
-          }
-        </div>
         @if (loadingProfile()) {
+          <app-skeleton-loader type="title" width="70%"></app-skeleton-loader>
           <app-skeleton-loader type="custom" height="0.9rem" width="50%"></app-skeleton-loader>
         } @else {
-          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0;">{{ profile().name }}</h2>
+            <span class="tag tag-accent">{{ profile().alias }}</span>
+          </div>
+          <p style="font-size: 0.9rem; color: var(--color-accent); font-weight: 600; margin-bottom: 0;">
+            {{ profile().title }}
+          </p>
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 0;">
             📍 {{ profile().location }}
           </p>
         }
+
+        <div class="profile-chips">
+          <span class="tag tag-accent">Nx Monorepo Lead</span>
+          <span class="tag">Angular 22 & React 19</span>
+          <span class="tag tag-ai">LangGraph AI</span>
+        </div>
       </div>
 
-      <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+      <div style="display: flex; gap: 0.5rem; width: 100%; margin-top: auto;">
         <a
           class="btn btn-secondary btn-sm"
           style="flex: 1; justify-content: center;"
@@ -100,11 +106,18 @@
         >
           GitHub
         </a>
+        <a
+          class="btn btn-secondary btn-sm"
+          style="flex: 1; justify-content: center;"
+          routerLink="/contact"
+        >
+          Connect
+        </a>
       </div>
     </aside>
   </section>
 
-  <!-- European Enterprise Client Context Ribbon -->
+  <!-- Global Enterprise Client Context Ribbon -->
   <section class="section" style="padding-top: 0; padding-bottom: var(--space-8);">
     <div
       class="card"
@@ -117,10 +130,10 @@
         <div>
           <span class="eyebrow" style="margin-bottom: 0.25rem;">Enterprise Pedigree</span>
           <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem;">
-            Proven Track Record Across European & Global Enterprise Environments
+            Proven Track Record Across High-Scale Global Enterprise Environments
           </h3>
           <p style="margin-bottom: 0; font-size: 0.9rem; max-width: 48rem;">
-            Delivered mission-critical frontend architecture for industrial software leader <strong>AVEVA</strong> (via Parnasoft) and European enterprise AI platform <strong>Maistering B.V</strong>, scaling multi-team monorepos, automated testing, and design systems.
+            Delivered mission-critical frontend architecture for industrial software leader <strong>AVEVA</strong> (via Parnasoft) and enterprise AI platform <strong>Maistering B.V</strong>, scaling multi-team monorepos, automated testing, and design systems.
           </p>
         </div>
         <a class="btn btn-secondary btn-sm" routerLink="/experience">

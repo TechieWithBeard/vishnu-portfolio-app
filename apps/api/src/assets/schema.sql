@@ -159,13 +159,13 @@ VALUES (
     '@techiewithbeard',
     'Senior Frontend Engineer',
     'Scalable UI Architecture • AI-Powered Interfaces • Design Systems',
-    'Bangalore, India (Open to Global / EU Opportunities)',
+    'Bangalore, India',
     'vishnuthankappan@techiewithbeard.com',
     '+91-8373923785',
     'https://www.linkedin.com/in/vishnu-thankappan-7bbb0675/',
     'https://github.com/techiewithbeard',
     'Senior Frontend Engineer with 7+ years of experience engineering scalable, high-performance web platforms. Deep specialization in enterprise frontend architecture, Nx monorepos, reusable design systems, and modern Angular/React microfrontends. Actively shipping AI-powered interfaces with streaming LLM responses, LangChain, and LangGraph.',
-    '{"status": "Open to opportunities", "target": "Senior Frontend / UI Architect / AI Frontend roles", "note": "Available for high-impact engineering opportunities"}'::jsonb,
+    '{"status": "Active Engineering & Architecture", "target": "Enterprise UI Architecture & AI Systems", "note": "Consulting, architectural advisory, and technical collaboration"}'::jsonb,
     '{"frontendArchitecture": ["Angular 22", "Nx Monorepos", "Design Systems", "TypeScript", "Microfrontends", "Signals", "RxJS", "NgRx"], "aiInterfaces": ["LangChain", "LangGraph", "RAG Systems", "Streaming UIs", "Vercel AI SDK", "Agentic Workflows"], "testingQuality": ["Playwright", "Cypress", "Jasmine/Karma", "WCAG 2.2 AA A11y", "CI/CD Pipelines"], "tooling": ["Git", "Docker", "Webpack", "Tailwind CSS", "Azure", "REST & GraphQL APIs"], "crossPlatform": ["React", "Next.js", "Ionic", "Xamarin"]}'::jsonb
 ) ON CONFLICT (id) DO UPDATE SET
     name = EXCLUDED.name,
@@ -189,7 +189,7 @@ INSERT INTO experience (id, role, company, period, location, highlights, tech, o
     'Senior Frontend Engineer',
     'Parnasoft Technologies — Client: AVEVA',
     'March 2025 – Present',
-    'European Enterprise Environment',
+    'Industrial SaaS (Global)',
     '["Architected and optimized a large-scale Nx monorepo orchestrating 5+ Angular enterprise applications, slashing CI/CD build & test durations by 25–35%.", "Designed and migrated modular shared UI/widget libraries across teams, cutting duplicated frontend code by 30–40%.", "Established comprehensive frontend test strategy across unit, integration, and E2E tiers utilizing Playwright and Cypress.", "Enforced strict architectural boundaries, code-sharing standards, and performance budgets across distributed engineering squads."]'::jsonb,
     '["Angular 22", "Nx Monorepo", "TypeScript", "Playwright", "Cypress", "Design Systems", "CI/CD"]'::jsonb,
     1
@@ -209,8 +209,8 @@ INSERT INTO experience (id, role, company, period, location, highlights, tech, o
     'Expert Frontend Engineer',
     'Maistering B.V',
     'January 2019 – March 2022',
-    'European Client Environment',
-    '["Built and evolved responsive AI-assisted business management platforms using Angular, TypeScript, and NgRx.", "Collaborated with European product and architecture leaders to deliver high-reliability enterprise features.", "Developed cross-platform mobile experiences with Xamarin and integrated real-time data synchronization.", "Championed clean code practices, component decoupling, and test-driven development in Agile squads."]'::jsonb,
+    'Enterprise AI Platform',
+    '["Built and evolved responsive AI-assisted business management platforms using Angular, TypeScript, and NgRx.", "Collaborated with cross-functional product and architecture leaders to deliver high-reliability enterprise features.", "Developed cross-platform mobile experiences with Xamarin and integrated real-time data synchronization.", "Championed clean code practices, component decoupling, and test-driven development in Agile squads."]'::jsonb,
     '["Angular", "NgRx", "TypeScript", "Xamarin", "Enterprise UI", "Agile"]'::jsonb,
     3
 ) ON CONFLICT (id) DO NOTHING;

@@ -13,7 +13,7 @@ export const initialProfile: ProfileData = {
   alias: '@techiewithbeard',
   title: 'Senior Frontend Engineer',
   tagline: 'Scalable UI Architecture • AI-Powered Interfaces • Design Systems',
-  location: 'Bangalore, India (Open to Global / EU Opportunities)',
+  location: 'Bangalore, India',
   email: 'vishnuthankappan@techiewithbeard.com',
   phone: '+91-8373923785',
   linkedin: 'https://www.linkedin.com/in/vishnu-thankappan-7bbb0675/',
@@ -21,9 +21,9 @@ export const initialProfile: ProfileData = {
   summary:
     'Senior Frontend Engineer with 7+ years of experience engineering scalable, high-performance web platforms. Deep specialization in enterprise frontend architecture, Nx monorepos, reusable design systems, and modern Angular/React microfrontends. Actively shipping AI-powered interfaces with streaming LLM responses, LangChain, and LangGraph.',
   availability: {
-    status: 'Open to opportunities',
-    target: 'Senior Frontend / UI Architect / AI Frontend roles',
-    note: 'Available for high-impact engineering opportunities',
+    status: 'Active Engineering & Architecture',
+    target: 'Enterprise UI Architecture & AI Systems',
+    note: 'Consulting, architectural advisory, and technical collaboration',
   },
   skills: {
     frontendArchitecture: [
@@ -76,7 +76,7 @@ export const initialExperience: ExperienceItem[] = [
     role: 'Senior Frontend Engineer',
     company: 'Parnasoft Technologies — Client: AVEVA',
     period: 'March 2025 – Present',
-    location: 'European Enterprise Environment',
+    location: 'Industrial SaaS (Global)',
     highlights: [
       'Architected and optimized a large-scale Nx monorepo orchestrating 5+ Angular enterprise applications, slashing CI/CD build & test durations by 25–35%.',
       'Designed and migrated modular shared UI/widget libraries across teams, cutting duplicated frontend code by 30–40%.',
@@ -122,10 +122,10 @@ export const initialExperience: ExperienceItem[] = [
     role: 'Expert Frontend Engineer',
     company: 'Maistering B.V',
     period: 'January 2019 – March 2022',
-    location: 'European Client Environment',
+    location: 'Enterprise AI Platform',
     highlights: [
       'Built and evolved responsive AI-assisted business management platforms using Angular, TypeScript, and NgRx.',
-      'Collaborated with European product and architecture leaders to deliver high-reliability enterprise features.',
+      'Collaborated with cross-functional product and architecture leaders to deliver high-reliability enterprise features.',
       'Developed cross-platform mobile experiences with Xamarin and integrated real-time data synchronization.',
       'Championed clean code practices, component decoupling, and test-driven development in Agile squads.',
     ],

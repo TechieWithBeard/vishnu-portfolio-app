@@ -59,7 +59,7 @@ export function initWebMcp(apiUrl: string): void {
     if (!q || q.includes('who') || q.includes('about') || q.includes('bio') || q.includes('profile') || q.includes('intro') || q.includes('yourself')) {
       references.push('https://www.techiewithbeard.com');
       return {
-        answer: `${fallbackResume.name} (${fallbackResume.alias}) is a ${fallbackResume.title} based in ${fallbackResume.location}. He brings 7+ years of enterprise engineering experience (2019 – Present) specializing in Nx monorepos, Angular 22, Native Federation microfrontends, and real-time LangGraph AI streaming interfaces. Currently ${fallbackResume.availability.status} for ${fallbackResume.availability.target}.`,
+        answer: `${fallbackResume.name} (${fallbackResume.alias}) is a ${fallbackResume.title} based in ${fallbackResume.location}. He brings 7+ years of enterprise engineering experience (2019 – Present) specializing in Nx monorepos, Angular 22, Native Federation microfrontends, and real-time LangGraph AI streaming interfaces.`,
         references,
       };
     }
@@ -74,10 +74,10 @@ export function initWebMcp(apiUrl: string): void {
     }
 
     // Maistering B.V
-    if (q.includes('maistering') || q.includes('european') || q.includes('netherlands')) {
+    if (q.includes('maistering') || q.includes('netherlands')) {
       references.push('https://www.techiewithbeard.com/experience');
       return {
-        answer: 'At Maistering B.V (European enterprise AI platform), Vishnu worked as an Expert Frontend Engineer delivering AI-assisted business management platforms using Angular, TypeScript, and NgRx with real-time WebSocket data sync.',
+        answer: 'At Maistering B.V (enterprise AI platform), Vishnu worked as an Expert Frontend Engineer delivering AI-assisted business management platforms using Angular, TypeScript, and NgRx with real-time WebSocket data sync.',
         references,
       };
     }
@@ -95,7 +95,7 @@ export function initWebMcp(apiUrl: string): void {
     if (q.includes('year') || q.includes('how long') || q.includes('experience') || q.includes('career') || q.includes('history') || q.includes('track record')) {
       references.push('https://www.techiewithbeard.com/experience');
       return {
-        answer: 'Vishnu Thankappan has 7+ years of enterprise engineering experience (2019 – Present):\n• AVEVA / Parnasoft (2022 – Present): Lead Frontend Architect\n• Maistering B.V (2021 – 2022): Expert Frontend Engineer (European AI)\n• ACI Logistix (2019 – 2021): Senior Software Engineer',
+        answer: 'Vishnu Thankappan has 7+ years of enterprise engineering experience (2019 – Present):\n• AVEVA / Parnasoft (2022 – Present): Lead Frontend Architect\n• Maistering B.V (2021 – 2022): Expert Frontend Engineer (Enterprise AI)\n• ACI Logistix (2019 – 2021): Senior Software Engineer',
         references,
       };
     }
@@ -119,11 +119,11 @@ export function initWebMcp(apiUrl: string): void {
       };
     }
 
-    // Contact & Hiring
-    if (q.includes('contact') || q.includes('hire') || q.includes('email') || q.includes('available') || q.includes('role') || q.includes('linkedin') || q.includes('reach')) {
+    // Contact & Advisory
+    if (q.includes('contact') || q.includes('email') || q.includes('reach') || q.includes('linkedin') || q.includes('connect')) {
       references.push('https://www.techiewithbeard.com/contact');
       return {
-        answer: `Vishnu Thankappan is currently ${fallbackResume.availability.status} for ${fallbackResume.availability.target}.\n• Email: ${fallbackResume.email}\n• LinkedIn: ${fallbackResume.linkedin}\n• GitHub: ${fallbackResume.github}`,
+        answer: `You can reach Vishnu Thankappan directly for engineering advisory and technical discussions:\n• Email: ${fallbackResume.email}\n• LinkedIn: ${fallbackResume.linkedin}\n• GitHub: ${fallbackResume.github}`,
         references,
       };
     }

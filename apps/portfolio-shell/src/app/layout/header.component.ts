@@ -35,10 +35,6 @@ import { PortfolioApiService } from '../services/portfolio-api.service';
         </nav>
 
         <div class="header-actions">
-          <div class="availability-badge" title="Open to high-impact European & Global opportunities">
-            <span class="pulse-dot"></span>
-            <span class="badge-text">Available</span>
-          </div>
 
           <!-- Theme Toggle with LocalStorage Persistence -->
           <button

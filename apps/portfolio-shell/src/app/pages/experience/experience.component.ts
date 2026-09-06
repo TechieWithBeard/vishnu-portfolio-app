@@ -11,7 +11,7 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
         <span class="eyebrow">Professional History</span>
         <h1 style="margin-bottom: var(--space-3);">Engineering Experience</h1>
         <p class="section-subtitle">
-          Proven track record leading frontend architecture, Nx monorepos, and modernized web platforms across European and global enterprise teams.
+          Proven track record leading frontend architecture, Nx monorepos, and modernized web platforms across high-scale global enterprise teams.
         </p>
       </section>
 
@@ -27,7 +27,7 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
                   <span class="tag tag-accent">{{ item.period }}</span>
                   @if (item.location) {
                     <span class="tag" style="background: var(--color-success-subtle); color: var(--color-success); border-color: color-mix(in srgb, var(--color-success) 30%, transparent);">
-                      🇪🇺 {{ item.location }}
+                      🏢 {{ item.location }}
                     </span>
                   }
                 </div>

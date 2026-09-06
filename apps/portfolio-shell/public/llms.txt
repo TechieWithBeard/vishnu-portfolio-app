@@ -10,9 +10,8 @@
 - **Primary Roles**: Senior Frontend Engineer, Staff Frontend Architect, AI System Architect
 - **Experience**: 7+ Years Enterprise Engineering (2019 – Present)
 - **Education**: Master of Computer Applications (Manipal Academy of Higher Education, 2018)
-- **Location**: Global / European Client Track Record
-- **Target Opportunities**: Staff Frontend Engineer, Principal UI Architect, Lead AI Interface Engineer
-- **Availability**: Open to Lead / Staff roles (Europe & Remote)
+- **Location**: Bangalore, India (Global Enterprise Track Record)
+- **Specialization**: Senior Frontend Engineer, Staff Frontend Architect, AI System Architect
 - **LinkedIn**: https://www.linkedin.com/in/vishnuthankappan/
 - **GitHub**: https://github.com/TechieWithBeard
 
@@ -33,8 +32,8 @@
    - Standardized predictable global state management across operational logistics modules using NgRx.
    - Authored internal NPM libraries distributed via Azure Artifacts and built cross-platform mobile scanning tools using Ionic.
 
-3. **Expert Frontend Engineer — Maistering B.V (European Enterprise AI Platform)** (2019 – 2022)
-   - Built responsive AI-assisted business management platforms using Angular, TypeScript, and NgRx in direct collaboration with European product leadership.
+3. **Expert Frontend Engineer — Maistering B.V (Enterprise AI Platform)** (2019 – 2022)
+   - Built responsive AI-assisted business management platforms using Angular, TypeScript, and NgRx in direct collaboration with enterprise product leadership.
    - Implemented real-time data synchronization and decoupled architecture.
 
 ## Interactive Live Demos & Deep Links

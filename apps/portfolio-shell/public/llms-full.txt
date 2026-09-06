@@ -6,7 +6,7 @@
 > MCP Endpoint: https://vishnu-portfolio-api.onrender.com/mcp/sse
 
 ## 1. Executive Summary
-Vishnu Thankappan (TechieWithBeard) is a Senior Frontend Engineer & UI/AI Architect with 7+ years of experience delivering high-scale enterprise frontend systems. His career is distinguished by architecting multi-application Nx monorepos for AVEVA (via Parnasoft), modernizing mission-critical logistics applications for ACI Logistix, and building AI-assisted business management platforms for European enterprise firm Maistering B.V.
+Vishnu Thankappan (TechieWithBeard) is a Senior Frontend Engineer & UI/AI Architect with 7+ years of experience delivering high-scale enterprise frontend systems. His career is distinguished by architecting multi-application Nx monorepos for AVEVA (via Parnasoft), modernizing mission-critical logistics applications for ACI Logistix, and building AI-assisted business management platforms for enterprise AI firm Maistering B.V.
 
 ## 2. Core Architectural Principles
 1. **Deterministic State & Boundaries**: Enforcing strict boundaries between UI components, domain state stores, and I/O infrastructure using Angular Signals, RxJS, and NgRx.
@@ -20,7 +20,7 @@ Vishnu Thankappan (TechieWithBeard) is a Senior Frontend Engineer & UI/AI Archit
 - **Frontend Specialist** | ACI Logistix | 2022 – 2025
   - Focus: Global logistics modernization, AngularJS to Angular migration, NgRx state standardization, Azure Artifacts design libraries, Ionic cross-platform tools.
 - **Expert Frontend Engineer** | Maistering B.V | 2019 – 2022
-  - Focus: European enterprise AI platform, real-time data synchronization, Agile delivery.
+  - Focus: Enterprise AI platform, real-time data synchronization, Agile delivery.
 
 ## 4. Skills Taxonomy
 - **Frontend Core**: Angular 22, React 19, TypeScript 5.8+, JavaScript (ESNext), HTML5/CSS3, Tailwind CSS, SASS/SCSS.
@@ -49,7 +49,7 @@ For Claude Desktop or Cursor:
 }
 ```
 Exposed Tools:
-- `get_profile()`: Returns bio, contact, and current availability status.
+- `get_profile()`: Returns bio, contact, and core technical profile.
 - `get_experience(company)`: Retrieves detailed achievements for a specific company or all companies.
 - `search_skills(keyword)`: Finds verified skills matching a technology or domain.
 - `get_projects()`: Lists architectural case studies with highlights and repository links.

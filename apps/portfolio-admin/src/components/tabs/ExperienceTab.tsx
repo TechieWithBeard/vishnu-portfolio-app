@@ -47,7 +47,7 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({
     setRole('');
     setCompany('');
     setPeriod('');
-    setLocation('European Enterprise Environment');
+    setLocation('Industrial SaaS (Global)');
     setHighlightsText('');
     setTechText('Angular, TypeScript, Nx');
     setOrderIndex(items.length + 1);
@@ -229,7 +229,7 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({
                 className="form-input"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="European Enterprise Environment"
+                placeholder="Industrial SaaS (Global)"
               />
             </div>
           </div>

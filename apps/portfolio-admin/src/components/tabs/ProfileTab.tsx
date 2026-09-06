@@ -56,7 +56,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({ onShowToast }) => {
         <div>
           <h1 className="page-title">Profile & Basic Details</h1>
           <p className="page-subtitle">
-            Configure your professional title, positioning, bio, contact links, and European availability.
+            Configure your professional title, positioning, bio, and contact links.
           </p>
         </div>
       </div>
@@ -111,7 +111,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({ onShowToast }) => {
               className="form-input"
               value={profile.location}
               onChange={(e) => setProfile({ ...profile, location: e.target.value })}
-              placeholder="e.g. Bangalore, India (Open to Global / EU Opportunities)"
+              placeholder="e.g. Bangalore, India"
             />
           </div>
 

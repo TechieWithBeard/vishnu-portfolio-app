@@ -13,7 +13,6 @@ export interface Resume {
     status: string;
     target: string;
     note?: string;
-    relocation?: string;
   };
   experience: ExperienceItem[];
   education: EducationItem[];

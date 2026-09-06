@@ -9,7 +9,7 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
     <div class="container">
       <section class="section" style="padding-bottom: var(--space-8);">
         <span class="eyebrow">Let's Connect</span>
-        <h1 style="margin-bottom: var(--space-3);">Open for Opportunities</h1>
+        <h1 style="margin-bottom: var(--space-3);">Get in Touch</h1>
         <p class="section-subtitle">
           Interested in discussing frontend architecture, large-scale monorepo design, or AI interface engineering? Reach out directly.
         </p>
@@ -100,40 +100,40 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
 
         <article class="card">
           <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: var(--space-4);">
-            Availability & Engagement
+            Professional Focus & Advisory
           </h2>
 
           <div style="display: flex; flex-direction: column; gap: var(--space-4);">
             <div style="border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3);">
-              <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">CURRENT STATUS</small>
+              <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">CORE SPECIALIZATION</small>
               <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
-                <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-success);"></span>
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-accent);"></span>
                 @if (loadingProfile()) {
                   <app-skeleton-loader type="custom" height="1.1rem" width="12rem"></app-skeleton-loader>
                 } @else {
-                  <strong>{{ profile().availability.status }}</strong>
+                  <strong>Enterprise UI Architecture & AI Systems</strong>
                 }
               </div>
             </div>
 
             <div style="border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3);">
-              <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">TARGET POSITIONS</small>
+              <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">TECHNICAL DISCUSSIONS</small>
               @if (loadingProfile()) {
                 <app-skeleton-loader type="custom" height="1.1rem" width="100%"></app-skeleton-loader>
               } @else {
                 <p style="margin-bottom: 0; color: var(--color-text-primary); font-weight: 500;">
-                  {{ profile().availability.target }}
+                  Available for architectural advisory, code reviews, and open-source collaboration.
                 </p>
               }
             </div>
 
             <div>
-              <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">NOTES</small>
+              <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">RESPONSE TIME</small>
               @if (loadingProfile()) {
                 <app-skeleton-loader type="custom" height="1.1rem" width="100%"></app-skeleton-loader>
               } @else {
                 <p style="margin-bottom: 0; color: var(--color-text-secondary); font-size: 0.95rem;">
-                  {{ profile().availability.note }}
+                  Typically responds within 24–48 hours for engineering and technical inquiries.
                 </p>
               }
             </div>
