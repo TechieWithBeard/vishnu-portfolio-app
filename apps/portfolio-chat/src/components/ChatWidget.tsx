@@ -233,7 +233,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
 
       const payloadProvider = provider === 'huggingface' ? 'hugging face' : provider;
       const defaultModel =
-        provider === 'openai' ? 'gpt-4o-mini' : (provider === 'huggingface' ? 'Qwen/Qwen2.5-7B-Instruct' : 'llama3.2');
+        provider === 'openai' ? 'gpt-5-nano' : (provider === 'huggingface' ? 'Qwen/Qwen2.5-7B-Instruct' : 'llama3.2');
       const payloadModel = chatModel.trim() || defaultModel;
 
       const response = await fetch(endpoint, {
@@ -817,7 +817,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
                     type="text"
                     value={chatModel}
                     onChange={(e) => setChatModel(e.target.value)}
-                    placeholder="gpt-4o-mini (default)"
+                    placeholder="gpt-5-nano (default)"
                     style={{
                       width: '100%',
                       background: '#1e293b',
