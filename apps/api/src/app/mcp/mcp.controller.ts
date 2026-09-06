@@ -218,13 +218,6 @@ export class McpController {
       };
     }
 
-    if (question.length > 100) {
-      return {
-        answer: `Queries are limited to a maximum of 100 characters (your question has ${question.length} characters). Please ask a shorter, focused question!`,
-        references: [],
-      };
-    }
-
     const vid = visitorIdHeader || sessionIdHeader || 'anonymous';
     const clientIp =
       (req?.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
@@ -233,7 +226,18 @@ export class McpController {
     const ipHash =
       clientIp !== 'anon' ? Buffer.from(clientIp).toString('base64').substring(0, 16) : undefined;
 
-    const hasCustomKey = !!(openAiKey?.trim() || hfToken?.trim());
+    const hasCustomKey = !!(openAiKey?.trim() || hfToken?.trim() || body.provider === 'ollama');
+
+    // 100 character restriction applies ONLY to free tier!
+    const maxChars = hasCustomKey ? 1000 : 100;
+    if (question.length > maxChars) {
+      return {
+        answer: hasCustomKey
+          ? `Queries are limited to a maximum of 1,000 characters (your question has ${question.length} characters). Please ask a more focused question!`
+          : `Queries on the free tier are limited to a maximum of 100 characters (your question has ${question.length} characters). Connect your API key in Settings (⚙️) for longer queries and unlimited chats!`,
+        references: [],
+      };
+    }
 
     // Enforce Supabase Persistent Free Quota (3 exploratory queries)
     if (!hasCustomKey) {

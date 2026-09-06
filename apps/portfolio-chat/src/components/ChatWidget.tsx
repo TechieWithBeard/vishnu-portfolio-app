@@ -162,8 +162,9 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     let text = (userText || input).trim();
     if (!text || loading) return;
 
-    if (text.length > 100) {
-      text = text.slice(0, 100).trim();
+    const maxChars = hasCustomAuth ? 1000 : 100;
+    if (text.length > maxChars) {
+      text = text.slice(0, maxChars).trim();
     }
 
     if (provider === 'huggingface' && !hfToken.trim()) {
@@ -702,7 +703,10 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             alignItems: 'center',
             gap: '8px',
             background: 'rgba(30, 41, 59, 0.65)',
-            border: input.length >= 100 ? '1px solid rgba(248, 113, 113, 0.5)' : '1px solid rgba(255, 255, 255, 0.1)',
+            border:
+              input.length >= (hasCustomAuth ? 1000 : 100)
+                ? '1px solid rgba(248, 113, 113, 0.5)'
+                : '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '24px',
             padding: '4px 6px 4px 14px',
             transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
@@ -711,12 +715,14 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
           <input
             type="text"
             value={input}
-            maxLength={100}
+            maxLength={hasCustomAuth ? 1000 : 100}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder={
               requiresCustomKey && !hasCustomAuth
                 ? "Ask a question (or connect key in Settings)..."
+                : !hasCustomAuth
+                ? "Ask Vishnu AI anything (max 100 chars on free tier)..."
                 : "Ask Vishnu AI anything..."
             }
             disabled={loading}
@@ -735,12 +741,17 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             <span
               style={{
                 fontSize: '0.66rem',
-                color: input.length >= 100 ? '#f87171' : input.length >= 80 ? '#fbbf24' : '#64748b',
-                fontWeight: input.length >= 90 ? 600 : 400,
+                color:
+                  input.length >= (hasCustomAuth ? 1000 : 100)
+                    ? '#f87171'
+                    : input.length >= (hasCustomAuth ? 800 : 80)
+                    ? '#fbbf24'
+                    : '#64748b',
+                fontWeight: input.length >= (hasCustomAuth ? 900 : 90) ? 600 : 400,
                 userSelect: 'none',
               }}
             >
-              {input.length}/100
+              {input.length}/{hasCustomAuth ? 1000 : 100}
             </span>
           )}
 
@@ -803,7 +814,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
           >
             <div style={{ fontSize: '1rem', fontWeight: 700 }}>⚙️ Agent Provider & Model</div>
             <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-              Choose your AI provider. Keys are held strictly in your browser session memory.
+              Choose your AI provider. Connecting your own key lifts the 100-character free-tier limit (up to 1,000 chars) and unlocks unlimited queries.
             </div>
 
             <div style={{ display: 'flex', gap: '6px' }}>
