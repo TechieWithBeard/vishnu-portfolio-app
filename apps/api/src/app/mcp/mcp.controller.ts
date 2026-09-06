@@ -210,10 +210,17 @@ export class McpController {
     @Headers('x-session-id') sessionIdHeader?: string,
     @Req() req?: any,
   ) {
-    const question = body.question || '';
-    if (!question.trim()) {
+    const question = (body.question || '').trim();
+    if (!question) {
       return {
         answer: 'Please provide a question about Vishnu Thankappan’s experience, architecture, or skills.',
+        references: [],
+      };
+    }
+
+    if (question.length > 100) {
+      return {
+        answer: `Queries are limited to a maximum of 100 characters (your question has ${question.length} characters). Please ask a shorter, focused question!`,
         references: [],
       };
     }

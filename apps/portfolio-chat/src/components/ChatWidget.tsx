@@ -159,8 +159,12 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
   }, [messages, loading]);
 
   const handleSend = async (userText?: string) => {
-    const text = (userText || input).trim();
+    let text = (userText || input).trim();
     if (!text || loading) return;
+
+    if (text.length > 100) {
+      text = text.slice(0, 100).trim();
+    }
 
     if (provider === 'huggingface' && !hfToken.trim()) {
       setShowKeyModal(true);
@@ -646,28 +650,47 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
           borderTop: '1px solid rgba(255, 255, 255, 0.08)',
         }}
       >
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder={
-            requiresCustomKey && !hasCustomAuth
-              ? "Ask a question (or connect your key in Settings)..."
-              : "Ask about Vishnu's architecture, projects, or hire..."
-          }
-          disabled={loading}
-          style={{
-            flex: 1,
-            background: 'rgba(30, 41, 59, 0.8)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '8px',
-            padding: '10px 14px',
-            color: '#f8fafc',
-            fontSize: '0.86rem',
-            outline: 'none',
-          }}
-        />
+        <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+          <input
+            type="text"
+            value={input}
+            maxLength={100}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            placeholder={
+              requiresCustomKey && !hasCustomAuth
+                ? "Ask a question (or connect your key in Settings)..."
+                : "Ask about Vishnu's architecture, projects, or hire..."
+            }
+            disabled={loading}
+            style={{
+              width: '100%',
+              background: 'rgba(30, 41, 59, 0.8)',
+              border: input.length >= 100 ? '1px solid rgba(248, 113, 113, 0.6)' : '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '8px',
+              padding: '10px 52px 10px 14px',
+              color: '#f8fafc',
+              fontSize: '0.86rem',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+          {input.length > 0 && (
+            <span
+              style={{
+                position: 'absolute',
+                right: '10px',
+                fontSize: '0.68rem',
+                color: input.length >= 100 ? '#f87171' : input.length >= 80 ? '#fbbf24' : '#64748b',
+                fontWeight: input.length >= 90 ? 600 : 400,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              }}
+            >
+              {input.length}/100
+            </span>
+          )}
+        </div>
 
         <button
           onClick={() => handleSend()}
