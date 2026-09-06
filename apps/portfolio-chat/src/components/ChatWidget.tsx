@@ -306,112 +306,171 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         width: '100%',
         maxWidth: '440px',
         height: '620px',
-        background: 'rgba(7, 10, 17, 0.94)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(56, 189, 248, 0.25)',
-        borderRadius: '16px',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.15)',
+        background: 'rgba(10, 15, 29, 0.95)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '20px',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05)',
         color: '#f8fafc',
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif",
         overflow: 'hidden',
         position: 'relative',
       }}
     >
-      {/* Header */}
+      {/* Refined Minimalist Header */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '14px 18px',
-          background: 'rgba(15, 23, 42, 0.8)',
+          padding: '12px 16px',
+          background: 'rgba(15, 23, 42, 0.85)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div
             style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              background: '#10b981',
-              boxShadow: '0 0 10px #10b981',
+              width: '32px',
+              height: '32px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #0ea5e9, #2563eb)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1rem',
+              color: '#ffffff',
+              boxShadow: '0 0 14px rgba(14, 165, 233, 0.35)',
+              flexShrink: 0,
             }}
-          />
+          >
+            ✦
+          </div>
           <div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>Vishnu AI Cockpit</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '0.92rem', fontWeight: 700, letterSpacing: '0.2px', color: '#f8fafc' }}>
+                Vishnu AI
+              </span>
               <span
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '4px',
-                  background: 'rgba(6, 182, 212, 0.16)',
-                  border: '1px solid rgba(6, 182, 212, 0.4)',
+                  background: 'rgba(6, 182, 212, 0.15)',
+                  border: '1px solid rgba(6, 182, 212, 0.35)',
                   color: '#38bdf8',
-                  borderRadius: '12px',
-                  padding: '1px 7px',
-                  fontSize: '0.64rem',
+                  borderRadius: '9999px',
+                  padding: '1px 6px',
+                  fontSize: '0.62rem',
                   fontWeight: 600,
                   letterSpacing: '0.2px',
                 }}
-                title="React 19 Microfrontend mounted inside Angular 22 Enterprise Shell"
+                title="React 19 Microfrontend mounted dynamically inside Angular 22 Shell"
               >
-                ⚛️ React Component
+                ⚛️ React 19
               </span>
             </div>
-            <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-              React 19 MFE in Angular Shell • LangGraph • WebMCP
+            <div style={{ fontSize: '0.69rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: hasCustomAuth ? '#10b981' : (quotaRemaining === 0 ? '#64748b' : '#38bdf8'),
+                  boxShadow: hasCustomAuth ? '0 0 6px #10b981' : (quotaRemaining === 0 ? 'none' : '0 0 6px #38bdf8'),
+                }}
+              />
+              <span>
+                {hasCustomAuth
+                  ? 'Personal Key Active'
+                  : quotaRemaining === 0
+                  ? 'Demo Completed (3/3)'
+                  : `${quotaRemaining ?? 3}/3 Free Questions`}
+              </span>
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <button
             onClick={clearChat}
-            title="Clear Chat (0 History Kept)"
+            title="Reset Chat"
             style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#f87171',
-              borderRadius: '6px',
-              padding: '4px 8px',
-              fontSize: '0.72rem',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              color: '#94a3b8',
+              borderRadius: '8px',
+              width: '30px',
+              height: '30px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.82rem',
               cursor: 'pointer',
-              fontWeight: 600,
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#f8fafc';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#94a3b8';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
             }}
           >
-            🗑️ Clear
+            ↺
           </button>
 
           <button
             onClick={() => setShowKeyModal(true)}
-            title="Configure Provider & Session Token"
+            title="Configure Provider & API Key"
             style={{
-              background: 'rgba(56, 189, 248, 0.1)',
-              border: '1px solid rgba(56, 189, 248, 0.3)',
-              color: '#38bdf8',
-              borderRadius: '6px',
-              padding: '4px 8px',
-              fontSize: '0.72rem',
+              background: hasCustomAuth ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+              border: hasCustomAuth ? '1px solid rgba(16, 185, 129, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
+              color: hasCustomAuth ? '#34d399' : '#94a3b8',
+              borderRadius: '8px',
+              width: '30px',
+              height: '30px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.85rem',
               cursor: 'pointer',
-              fontWeight: 600,
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#f8fafc';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = hasCustomAuth ? '#34d399' : '#94a3b8';
+              e.currentTarget.style.background = hasCustomAuth ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)';
             }}
           >
-            ⚙️ {hasCustomAuth ? 'Key Set' : (requiresCustomKey ? 'Add Key ⚠️' : 'Settings')}
+            ⚙
           </button>
 
           {onClose && (
             <button
               onClick={onClose}
+              title="Close"
               style={{
                 background: 'none',
                 border: 'none',
                 color: '#94a3b8',
-                fontSize: '1.2rem',
+                borderRadius: '8px',
+                width: '30px',
+                height: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.05rem',
                 cursor: 'pointer',
-                padding: '2px 6px',
+                transition: 'all 0.15s ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#f8fafc')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
             >
               ✕
             </button>
@@ -419,45 +478,28 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         </div>
       </div>
 
-      {/* Quota & Stateless Guarantee Sub-Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '5px 18px',
-          background: 'rgba(15, 23, 42, 0.65)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-          fontSize: '0.67rem',
-          color: '#38bdf8',
-        }}
-      >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span
-            style={{
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              background: hasCustomAuth ? '#10b981' : (quotaRemaining === 0 ? '#64748b' : '#38bdf8'),
-              boxShadow: hasCustomAuth ? '0 0 6px #10b981' : (quotaRemaining === 0 ? 'none' : '0 0 6px #38bdf8'),
-            }}
-          />
-          {hasCustomAuth
-            ? '🟢 Personal Key Active • Unlimited'
-            : quotaRemaining === 0
-            ? '✨ Free Exploratory Quota Completed (3/3)'
-            : `🎁 Free Demo: ${quotaRemaining ?? 3}/3 exploratory questions left`}
-        </span>
-        <span style={{ color: '#64748b' }}>
-          {provider === 'huggingface'
-            ? 'Hugging Face Hub'
-            : provider === 'openai'
-            ? hasCustomAuth
-              ? 'Personal OpenAI'
-              : 'Shared Demo Key'
-            : 'Local Ollama'}
-        </span>
-      </div>
+      {/* Subtle Quota Alert */}
+      {requiresCustomKey && !hasCustomAuth && (
+        <div
+          onClick={() => setShowKeyModal(true)}
+          style={{
+            padding: '7px 16px',
+            background: 'rgba(30, 41, 59, 0.7)',
+            borderBottom: '1px solid rgba(56, 189, 248, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontSize: '0.72rem',
+            color: '#94a3b8',
+            cursor: 'pointer',
+          }}
+        >
+          <span>✨ 3 free questions completed</span>
+          <span style={{ color: '#38bdf8', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+            Connect Key ⚙️ →
+          </span>
+        </div>
+      )}
 
       {/* Messages Stream */}
       <div
@@ -467,7 +509,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
           overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          gap: '14px',
+          gap: '12px',
         }}
       >
         {messages.map((m) => (
@@ -475,7 +517,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             key={m.id}
             style={{
               alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
-              maxWidth: '86%',
+              maxWidth: m.role === 'user' ? '82%' : '90%',
               display: 'flex',
               flexDirection: 'column',
               gap: '4px',
@@ -484,17 +526,17 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             <div
               style={{
                 padding: '10px 14px',
-                borderRadius: m.role === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
+                borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                 background:
                   m.role === 'user'
                     ? 'linear-gradient(135deg, #2563eb, #1d4ed8)'
-                    : 'rgba(30, 41, 59, 0.85)',
+                    : 'rgba(30, 41, 59, 0.6)',
                 border: m.role === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
                 color: '#f8fafc',
-                fontSize: '0.88rem',
-                lineHeight: 1.5,
+                fontSize: '0.86rem',
+                lineHeight: 1.55,
                 whiteSpace: 'pre-wrap',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+                boxShadow: m.role === 'user' ? '0 2px 8px rgba(37, 99, 235, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.15)',
               }}
             >
               {m.content}
@@ -504,7 +546,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
                 <div
                   style={{
                     marginTop: '8px',
-                    fontSize: '0.7rem',
+                    fontSize: '0.68rem',
                     color: '#38bdf8',
                     fontFamily: 'monospace',
                     background: 'rgba(56, 189, 248, 0.08)',
@@ -517,158 +559,155 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
                 </div>
               )}
 
-              {/* References */}
+              {/* Reference Links */}
               {m.references && m.references.length > 0 && (
-                <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  {m.references.map((ref, idx) => (
-                    <a
-                      key={idx}
-                      href={ref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        fontSize: '0.68rem',
-                        color: '#60a5fa',
-                        textDecoration: 'none',
-                        background: 'rgba(96, 165, 250, 0.1)',
-                        padding: '2px 6px',
-                        borderRadius: '4px',
-                        border: '1px solid rgba(96, 165, 250, 0.2)',
-                      }}
-                    >
-                      🔗 {ref.replace('https://', '')}
-                    </a>
-                  ))}
+                <div
+                  style={{
+                    marginTop: '10px',
+                    paddingTop: '8px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.07)',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '6px',
+                  }}
+                >
+                  {m.references.map((ref, idx) => {
+                    const clean = ref.replace('https://www.techiewithbeard.com', '').replace('https://techiewithbeard.com', '') || '/';
+                    const label = clean === '/' ? 'Home' : clean.replace(/^\//, '').charAt(0).toUpperCase() + clean.replace(/^\//, '').slice(1);
+                    return (
+                      <a
+                        key={idx}
+                        href={ref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          fontSize: '0.7rem',
+                          color: '#38bdf8',
+                          textDecoration: 'none',
+                          background: 'rgba(56, 189, 248, 0.08)',
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          border: '1px solid rgba(56, 189, 248, 0.2)',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                          fontWeight: 500,
+                        }}
+                      >
+                        ↗ {label}
+                      </a>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
             <div
               style={{
-                fontSize: '0.65rem',
+                fontSize: '0.62rem',
                 color: '#64748b',
                 alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
                 padding: '0 4px',
               }}
             >
-              {m.timestamp} {m.tokens ? `• ~${m.tokens} tokens (stateless: 0 history)` : ''}
+              {m.timestamp}
             </div>
           </div>
         ))}
+
+        {/* Suggested Prompts - Shown initially */}
+        {messages.length === 1 && !loading && (
+          <div style={{ marginTop: '2px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div
+              style={{
+                fontSize: '0.68rem',
+                color: '#64748b',
+                fontWeight: 600,
+                letterSpacing: '0.4px',
+                textTransform: 'uppercase',
+                paddingLeft: '2px',
+              }}
+            >
+              Suggested Questions
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              {quickPrompts.map((qp, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSend(qp)}
+                  style={{
+                    background: 'rgba(30, 41, 59, 0.45)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '10px',
+                    color: '#cbd5e1',
+                    padding: '9px 11px',
+                    fontSize: '0.74rem',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    lineHeight: 1.35,
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.35)';
+                    e.currentTarget.style.color = '#f8fafc';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(30, 41, 59, 0.45)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                    e.currentTarget.style.color = '#cbd5e1';
+                  }}
+                >
+                  {qp}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {loading && (
           <div
             style={{
               alignSelf: 'flex-start',
-              padding: '10px 14px',
-              borderRadius: '14px 14px 14px 2px',
-              background: 'rgba(30, 41, 59, 0.7)',
-              fontSize: '0.82rem',
+              padding: '8px 12px',
+              borderRadius: '12px 12px 12px 2px',
+              background: 'rgba(30, 41, 59, 0.5)',
+              border: '1px solid rgba(56, 189, 248, 0.2)',
+              fontSize: '0.78rem',
               color: '#38bdf8',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
             }}
           >
-            <span style={{ animation: 'spin 1s linear infinite' }}>⚡</span>
-            {activeTool || 'LangGraph reasoning...'}
+            <span style={{ display: 'inline-block', animation: 'spin 1.5s linear infinite' }}>✦</span>
+            <span>{activeTool || 'Thinking...'}</span>
           </div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Prompts Bar */}
+      {/* Modern Floating-Style Input Bar */}
       <div
         style={{
-          display: 'flex',
-          gap: '6px',
-          padding: '8px 16px',
-          overflowX: 'auto',
-          background: 'rgba(15, 23, 42, 0.4)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-        }}
-      >
-        {quickPrompts.map((qp, idx) => (
-          <button
-            key={idx}
-            onClick={() => handleSend(qp)}
-            disabled={loading}
-            style={{
-              flexShrink: 0,
-              background: 'rgba(30, 41, 59, 0.8)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '20px',
-              color: '#cbd5e1',
-              padding: '4px 10px',
-              fontSize: '0.72rem',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {qp}
-          </button>
-        ))}
-      </div>
-
-      {/* Quota Exceeded Card - Intuitive & Non-Offensive */}
-      {requiresCustomKey && !hasCustomAuth && (
-        <div
-          onClick={() => setShowKeyModal(true)}
-          style={{
-            padding: '10px 16px',
-            background: 'linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(56, 189, 248, 0.12))',
-            borderTop: '1px solid rgba(56, 189, 248, 0.25)',
-            color: '#cbd5e1',
-            fontSize: '0.76rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '10px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '1rem' }}>✨</span>
-            <span>
-              Free exploratory questions completed (3/3). Connect your <strong>OpenAI</strong> or <strong>Hugging Face</strong> key to keep chatting!
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowKeyModal(true);
-            }}
-            style={{
-              background: '#2563eb',
-              border: 'none',
-              color: '#ffffff',
-              borderRadius: '6px',
-              padding: '4px 10px',
-              fontSize: '0.72rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Connect Key ⚙️
-          </button>
-        </div>
-      )}
-
-      {/* Input Box */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
           padding: '12px 16px',
-          background: 'rgba(15, 23, 42, 0.95)',
+          background: 'rgba(15, 23, 42, 0.85)',
           borderTop: '1px solid rgba(255, 255, 255, 0.08)',
         }}
       >
-        <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(30, 41, 59, 0.65)',
+            border: input.length >= 100 ? '1px solid rgba(248, 113, 113, 0.5)' : '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '24px',
+            padding: '4px 6px 4px 14px',
+            transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+          }}
+        >
           <input
             type="text"
             value={input}
@@ -677,56 +716,58 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder={
               requiresCustomKey && !hasCustomAuth
-                ? "Ask a question (or connect your key in Settings)..."
-                : "Ask about Vishnu's architecture, projects, or hire..."
+                ? "Ask a question (or connect key in Settings)..."
+                : "Ask Vishnu AI anything..."
             }
             disabled={loading}
             style={{
-              width: '100%',
-              background: 'rgba(30, 41, 59, 0.8)',
-              border: input.length >= 100 ? '1px solid rgba(248, 113, 113, 0.6)' : '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '8px',
-              padding: '10px 52px 10px 14px',
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
               color: '#f8fafc',
               fontSize: '0.86rem',
               outline: 'none',
-              boxSizing: 'border-box',
+              padding: '6px 0',
             }}
           />
+
           {input.length > 0 && (
             <span
               style={{
-                position: 'absolute',
-                right: '10px',
-                fontSize: '0.68rem',
+                fontSize: '0.66rem',
                 color: input.length >= 100 ? '#f87171' : input.length >= 80 ? '#fbbf24' : '#64748b',
                 fontWeight: input.length >= 90 ? 600 : 400,
-                pointerEvents: 'none',
                 userSelect: 'none',
               }}
             >
               {input.length}/100
             </span>
           )}
-        </div>
 
-        <button
-          onClick={() => handleSend()}
-          disabled={loading || !input.trim()}
-          style={{
-            background: 'linear-gradient(135deg, #38bdf8, #2563eb)',
-            border: 'none',
-            borderRadius: '8px',
-            color: '#ffffff',
-            padding: '10px 16px',
-            fontSize: '0.88rem',
-            fontWeight: 600,
-            cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
-            opacity: loading || !input.trim() ? 0.6 : 1,
-          }}
-        >
-          Send
-        </button>
+          <button
+            onClick={() => handleSend()}
+            disabled={loading || !input.trim()}
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: loading || !input.trim() ? 'rgba(255, 255, 255, 0.08)' : 'linear-gradient(135deg, #0ea5e9, #2563eb)',
+              border: 'none',
+              color: loading || !input.trim() ? '#64748b' : '#ffffff',
+              fontSize: '0.9rem',
+              fontWeight: 700,
+              cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              flexShrink: 0,
+            }}
+            title="Send (Enter)"
+          >
+            ↑
+          </button>
+        </div>
       </div>
 
       {/* Session Key & Provider Modal */}
