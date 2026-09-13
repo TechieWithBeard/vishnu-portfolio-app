@@ -1,59 +1,4 @@
-// Cloud Boot HUD & Dev Arcade
-.cloud-pill-wrapper {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  z-index: 990;
-  transform: translateY(calc(-1 * var(--footer-lift, 0px)));
-  transition: transform 0.08s ease-out;
-  animation: floatIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.cloud-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  border-radius: 9999px;
-  color: #f8fafc;
-  font-size: 0.82rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  cursor: pointer;
-  transition: all 0.25s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: rgba(56, 189, 248, 0.6);
-  }
-
-  &.warming {
-    border-color: rgba(251, 191, 36, 0.45);
-    .pill-dot { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; animation: pulseWarm 1.5s infinite; }
-  }
-
-  &.connected {
-    border-color: rgba(52, 211, 153, 0.45);
-    .pill-dot { background: #34d399; box-shadow: 0 0 8px #34d399; }
-  }
-}
-
-.pill-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.pill-text { strong { color: #f8fafc; font-weight: 600; } color: #94a3b8; }
-.pill-action-badge {
-  padding: 3px 8px;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: 9999px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #38bdf8;
-  transition: all 0.18s ease;
-  &:hover { background: rgba(56, 189, 248, 0.28); transform: scale(1.04); }
-}
-
+// Cloud Boot HUD Modal
 .hud-backdrop {
   position: fixed;
   inset: 0;
@@ -341,7 +286,6 @@
 @keyframes scaleUp { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 
 @media (max-width: 640px) {
-  .cloud-pill-wrapper { bottom: 80px; left: 14px; }
   .hud-header { flex-direction: column; }
   .hud-header-actions { width: 100%; justify-content: space-between; }
   .topology-grid { grid-template-columns: 1fr 1fr; }
