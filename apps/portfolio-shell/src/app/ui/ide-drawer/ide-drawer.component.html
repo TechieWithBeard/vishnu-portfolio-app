@@ -1,0 +1,253 @@
+<div class="ide-drawer" [class.collapsed]="isCollapsed()">
+  <!-- VS Code-style Drawer Tab Bar -->
+  <div class="drawer-header" role="tablist" aria-label="IDE Integrated Terminal Tabs">
+    <div class="drawer-tabs">
+      <!-- Tab 1: Problems -->
+      <button
+        type="button"
+        class="drawer-tab"
+        [class.active]="activeTab() === 'problems' && !isCollapsed()"
+        (click)="setTab('problems')"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'problems' && !isCollapsed()"
+      >
+        <span>PROBLEMS</span>
+        <span class="tab-badge">0</span>
+      </button>
+
+      <!-- Tab 2: Output -->
+      <button
+        type="button"
+        class="drawer-tab"
+        [class.active]="activeTab() === 'output' && !isCollapsed()"
+        (click)="setTab('output')"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'output' && !isCollapsed()"
+      >
+        <span>OUTPUT</span>
+      </button>
+
+      <!-- Tab 3: Cloud Terminal -->
+      <button
+        type="button"
+        class="drawer-tab"
+        [class.active]="activeTab() === 'terminal' && !isCollapsed()"
+        (click)="setTab('terminal')"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'terminal' && !isCollapsed()"
+      >
+        <span class="tab-icon">🐳</span>
+        <span>TERMINAL</span>
+        @if (cloudStatus() === 'warming') {
+          <span class="tab-status-chip warming">
+            <span class="mini-pulse"></span>
+            Warming ({{ elapsedSeconds() }}s)
+          </span>
+        } @else {
+          <span class="tab-status-chip connected">🟢 200 OK</span>
+        }
+      </button>
+
+      <!-- Tab 4: Packet Runner Arcade -->
+      <button
+        type="button"
+        class="drawer-tab arcade-tab"
+        [class.active]="activeTab() === 'arcade' && !isCollapsed()"
+        (click)="setTab('arcade')"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'arcade' && !isCollapsed()"
+      >
+        <span class="tab-icon">🎮</span>
+        <span>PACKET RUNNER</span>
+        <span class="tab-badge game-badge">Play</span>
+      </button>
+    </div>
+
+    <!-- Drawer Window Actions on Right -->
+    <div class="drawer-actions">
+      <button
+        type="button"
+        class="drawer-btn"
+        (click)="toggleCollapse()"
+        [title]="isCollapsed() ? 'Expand panel' : 'Collapse panel'"
+        [attr.aria-label]="isCollapsed() ? 'Expand drawer' : 'Collapse drawer'"
+      >
+        {{ isCollapsed() ? '⌃ Expand' : '⌄ Collapse' }}
+      </button>
+      <button
+        type="button"
+        class="drawer-btn close-btn"
+        (click)="toggleCollapse()"
+        title="Hide panel"
+        aria-label="Close drawer"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <!-- Drawer Body Pane (Collapsed / Expanded) -->
+  @if (!isCollapsed()) {
+    <div class="drawer-content">
+      <!-- 1. TERMINAL VIEW -->
+      @if (activeTab() === 'terminal') {
+        <div class="terminal-pane">
+          <!-- Quick Status & Progress Header -->
+          <div class="terminal-status-strip">
+            <div class="status-nodes">
+              <span class="status-node" title="Client Browser">
+                <span class="dot green"></span> Browser
+              </span>
+              <span class="status-node" [title]="servicesStatus().render">
+                <span class="dot" [class.amber]="cloudStatus() === 'warming'" [class.green]="cloudStatus() === 'connected'"></span>
+                Render API
+              </span>
+              <span class="status-node" [title]="servicesStatus().supabase">
+                <span class="dot green"></span> Supabase
+              </span>
+              <span class="status-node" [title]="servicesStatus().langgraph">
+                <span class="dot green"></span> LangGraph
+              </span>
+            </div>
+
+            @if (cloudStatus() === 'warming') {
+              <button
+                type="button"
+                class="switch-arcade-btn"
+                (click)="setTab('arcade')"
+                title="Play mini-game while waiting"
+              >
+                🎮 Play Packet Runner while booting →
+              </button>
+            }
+          </div>
+
+          <!-- Progress Bar (while warming) -->
+          @if (cloudStatus() === 'warming') {
+            <div class="terminal-progress-track">
+              <div class="terminal-progress-fill" [style.width.%]="bootProgress()"></div>
+            </div>
+          }
+
+          <!-- Live Log Lines Output -->
+          <div class="terminal-output" #terminalOutput>
+            <div class="terminal-line init-line">
+              <span class="log-prompt">$</span> render container logs --tail --follow
+            </div>
+            @for (log of bootLogs(); track $index) {
+              <div class="terminal-line" [class]="'level-' + log.type">
+                <span class="log-time">[{{ log.timestamp }}]</span>
+                <span class="log-msg">{{ log.message }}</span>
+              </div>
+            }
+            @if (cloudStatus() === 'warming') {
+              <div class="terminal-line warming-cursor">
+                <span class="log-time">[...]</span>
+                <span class="log-msg">Warming container in cold standby... ({{ elapsedSeconds() }}s elapsed)</span>
+                <span class="cursor-block">█</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- 2. PACKET RUNNER ARCADE VIEW -->
+      @if (activeTab() === 'arcade') {
+        <div class="arcade-pane">
+          <!-- Compact Game Controls Header -->
+          <div class="arcade-controls-bar">
+            <div class="arcade-stats">
+              <span class="stat-pill">Score: <strong>{{ gameScore() }}</strong></span>
+              <span class="stat-pill">High: <strong>{{ gameHighScore() }}</strong></span>
+            </div>
+
+            <div class="arcade-tip">
+              <span class="key-tag">SPACE</span> or <span class="key-tag">TAP</span> to jump (Double-jump supported)
+            </div>
+
+            <div class="arcade-actions">
+              <button
+                type="button"
+                class="arcade-action-btn"
+                (click)="toggleSound()"
+                [title]="soundEnabled() ? 'Mute 8-bit sound' : 'Enable 8-bit sound'"
+              >
+                {{ soundEnabled() ? '🔊 Audio: ON' : '🔇 Audio: OFF' }}
+              </button>
+              @if (gameState() !== 'playing') {
+                <button
+                  type="button"
+                  class="arcade-action-btn play-btn"
+                  (click)="handleCanvasClick()"
+                >
+                  ▶ Start Run
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Canvas Game Viewport -->
+          <div class="canvas-viewport" (click)="handleCanvasClick()">
+            <canvas #gameCanvas width="520" height="160"></canvas>
+
+            <!-- Overlay: Ready -->
+            @if (gameState() === 'ready') {
+              <div class="canvas-overlay">
+                <div class="overlay-modal">
+                  <div class="overlay-icon">🎮</div>
+                  <div class="overlay-title">PACKET RUNNER</div>
+                  <div class="overlay-sub">Jump over 404s & Memory Leaks • Collect Signals & Nx Cache</div>
+                  <div class="overlay-prompt">Click canvas or press <kbd>SPACE</kbd> to launch</div>
+                </div>
+              </div>
+            }
+
+            <!-- Overlay: Game Over -->
+            @if (gameState() === 'gameover') {
+              <div class="canvas-overlay gameover">
+                <div class="overlay-modal">
+                  <div class="overlay-icon">💥</div>
+                  <div class="overlay-title danger">PACKET DROPPED!</div>
+                  <div class="overlay-sub">Crash reason: <code>{{ lastKillerObstacle() }}</code></div>
+                  <div class="overlay-score">Score: {{ gameScore() }} | High: {{ gameHighScore() }}</div>
+                  <div class="overlay-prompt">Click canvas or press <kbd>SPACE</kbd> to retry</div>
+                </div>
+              </div>
+            }
+
+            <!-- Ready Toast when connected -->
+            @if (cloudStatus() === 'connected') {
+              <div class="cloud-synced-pill" title="Live data hydrated">
+                ✨ Cloud live! HTTP 200 Synced
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- 3. PROBLEMS VIEW -->
+      @if (activeTab() === 'problems') {
+        <div class="static-pane problems-pane">
+          <div class="status-msg">
+            <span class="icon success">✓</span>
+            <span>No problems have been detected in workspace <strong>vishnu-portfolio-app</strong>.</span>
+          </div>
+          <div class="tech-footnote">
+            Nx Monorepo • TypeScript 5.8 • Angular 22 Zoneless Signals • Zero compilation issues
+          </div>
+        </div>
+      }
+
+      <!-- 4. OUTPUT VIEW -->
+      @if (activeTab() === 'output') {
+        <div class="static-pane output-pane">
+          <pre class="output-pre"><code>[nx] Running target "build" for project "portfolio-shell" with Native Federation
+[vite] Bundled "portfolio-chat" (React 19 remote) in 360ms
+[federation] Linked remote: @vishnu-portfolio-app/portfolio-chat -> http://localhost:4200
+[angular] Zoneless change detection enabled (provideExperimentalZonelessChangeDetection)
+[ready] Application shell active at 60fps with zero layout shift</code></pre>
+        </div>
+      }
+    </div>
+  }
+</div>

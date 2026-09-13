@@ -5,7 +5,10 @@ import {
   inject,
   OnInit,
   signal,
+  ViewChild,
 } from '@angular/core';
+import { IdeDrawerComponent } from './ide-drawer/ide-drawer.component';
+import { PortfolioApiService } from '../services/portfolio-api.service';
 
 interface CodeToken {
   type: 'bracket' | 'tag' | 'attr-name' | 'punct' | 'attr-val' | 'text' | 'comment';
@@ -15,6 +18,7 @@ interface CodeToken {
 @Component({
   selector: 'app-code-hero-typing',
   standalone: true,
+  imports: [IdeDrawerComponent],
   template: `
     <div class="code-window" role="region" aria-label="Interactive Code Bio">
       <!-- Window Top Bar -->
@@ -32,6 +36,16 @@ interface CodeToken {
         </div>
 
         <div class="window-actions">
+          <button
+            type="button"
+            class="code-btn drawer-toggle-btn"
+            (click)="toggleDrawer()"
+            title="Toggle Cloud Terminal & Dev Arcade drawer"
+          >
+            <span class="btn-dot" [class.amber]="cloudStatus() === 'warming'" [class.green]="cloudStatus() === 'connected'">●</span>
+            Terminal & Arcade
+          </button>
+
           @if (!isFinished()) {
             <button
               type="button"
@@ -80,16 +94,35 @@ interface CodeToken {
         </div>
       </div>
 
+      <!-- Integrated VS Code-Style Bottom Terminal & Dev Arcade Drawer -->
+      <app-ide-drawer></app-ide-drawer>
+
       <!-- Window Status Bar -->
       <div class="window-status-bar">
         <div class="status-left">
           <span class="status-indicator" [class.ready]="isFinished()">●</span>
           <span>{{ isFinished() ? 'DOM Tree Rendered' : 'Streaming AST Tokens...' }}</span>
+          <button
+            type="button"
+            class="status-drawer-btn"
+            (click)="toggleDrawer()"
+            title="Toggle Cloud Terminal & Packet Runner"
+          >
+            🐳 {{ cloudStatus() === 'warming' ? 'Render Warming (' + elapsedSeconds() + 's)' : 'Cloud Online' }}
+          </button>
         </div>
         <div class="status-right">
           <span>UTF-8</span>
           <span>Angular 22</span>
           <span>Ln {{ currentLineNumber() }}, Col {{ currentColNumber() }}</span>
+          <button
+            type="button"
+            class="status-arcade-link"
+            (click)="openArcadeDrawer()"
+            title="Play Packet Runner Mini-Game"
+          >
+            🎮 Arcade
+          </button>
         </div>
       </div>
     </div>
@@ -188,13 +221,33 @@ interface CodeToken {
         border-color: var(--color-accent);
       }
 
+      .drawer-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(56, 189, 248, 0.12);
+        border-color: rgba(56, 189, 248, 0.35);
+        color: #38bdf8;
+      }
+      .drawer-toggle-btn:hover {
+        background: rgba(56, 189, 248, 0.22);
+        border-color: #38bdf8;
+        color: #f8fafc;
+      }
+      .btn-dot {
+        font-size: 0.55rem;
+      }
+      .btn-dot.amber { color: #fbbf24; }
+      .btn-dot.green { color: #34d399; }
+
       /* Editor Body with Gutter & Code */
       .editor-body {
         display: flex;
-        padding: 1rem 0;
+        padding: 0.75rem 0;
         background: #080c15;
-        overflow-x: auto;
-        min-height: 290px;
+        overflow-y: auto;
+        min-height: 180px;
+        max-height: 230px;
       }
 
       .gutter {
@@ -302,6 +355,40 @@ interface CodeToken {
         color: #22c55e;
       }
 
+      .status-drawer-btn {
+        background: transparent;
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        color: #38bdf8;
+        font-family: inherit;
+        font-size: 0.64rem;
+        padding: 1px 6px;
+        border-radius: 3px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        transition: all 0.15s ease;
+      }
+      .status-drawer-btn:hover {
+        background: rgba(56, 189, 248, 0.15);
+        color: #f8fafc;
+      }
+
+      .status-arcade-link {
+        background: transparent;
+        border: none;
+        color: #38bdf8;
+        font-family: inherit;
+        font-size: 0.64rem;
+        cursor: pointer;
+        padding: 0;
+        transition: color 0.15s ease;
+      }
+      .status-arcade-link:hover {
+        color: #f8fafc;
+        text-decoration: underline;
+      }
+
       @media (max-width: 640px) {
         .window-bar {
           padding: 0.5rem 0.75rem;
@@ -314,14 +401,21 @@ interface CodeToken {
         .tab-lang {
           display: none;
         }
+        .drawer-toggle-btn {
+          font-size: 0.65rem;
+          padding: 0.15rem 0.4rem;
+        }
         .editor-body {
-          min-height: 260px;
+          min-height: 160px;
+          max-height: 200px;
         }
         .code-pre {
           font-size: 0.75rem;
         }
         .window-status-bar {
           font-size: 0.62rem;
+          flex-wrap: wrap;
+          gap: 6px;
         }
       }
     `,
@@ -522,5 +616,19 @@ export class CodeHeroTypingComponent implements OnInit {
       this.copied.set(true);
       setTimeout(() => this.copied.set(false), 2200);
     }
+  }
+
+  // --- Integrated VS Code Drawer Methods ---
+  @ViewChild(IdeDrawerComponent) ideDrawer?: IdeDrawerComponent;
+  private readonly apiService = inject(PortfolioApiService);
+  readonly cloudStatus = this.apiService.cloudStatus;
+  readonly elapsedSeconds = this.apiService.elapsedSeconds;
+
+  toggleDrawer(): void {
+    this.ideDrawer?.toggleCollapse();
+  }
+
+  openArcadeDrawer(): void {
+    this.ideDrawer?.openTab('arcade');
   }
 }
