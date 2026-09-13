@@ -74,17 +74,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </li>
         ))}
       </ul>
-
-      <div className="sidebar-footer">
-        <div className="nav-section-title">Live Portfolio</div>
-        <a
-          href="/"
-          className="btn btn-secondary btn-sm"
-          style={{ width: '100%', justifyContent: 'center' }}
-        >
-          <span>🌐</span> View Portfolio Overview
-        </a>
-      </div>
     </aside>
   );
 };
