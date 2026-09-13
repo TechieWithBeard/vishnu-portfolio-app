@@ -1,11 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { NgClass, TitleCasePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
 import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
 
 @Component({
   selector: 'app-writing',
-  imports: [NgClass, TitleCasePipe, SkeletonLoaderComponent],
+  imports: [NgClass, TitleCasePipe, SkeletonLoaderComponent, RouterLink],
   template: `
     <div class="container">
       <section class="section" style="padding-bottom: var(--space-8);">
@@ -29,9 +30,57 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
         }
       </div>
 
-      <!-- Articles Grid -->
+      <!-- Articles Grid & Witty Empty State -->
       @if (loadingWriting() && writing().length === 0) {
         <app-skeleton-loader type="article-grid" [count]="4" [columns]="2"></app-skeleton-loader>
+      } @else if (filteredArticles().length === 0) {
+        <div class="empty-state-container">
+          <div class="empty-badge">
+            <span class="brewing-indicator"></span>
+            <code>git commit -m "WIP: drafts brewing at 60fps"</code>
+          </div>
+
+          <div class="empty-avatar-wrap">
+            <span class="coffee-icon">☕</span>
+          </div>
+
+          <h2 class="empty-title">
+            @if (selectedPlatform() !== 'All') {
+              No {{ selectedPlatform() }} Articles Found
+            } @else {
+              Drafts Brewing in the Architecture Lab...
+            }
+          </h2>
+
+          <p class="empty-text">
+            @if (selectedPlatform() !== 'All') {
+              No published articles found under <strong>{{ selectedPlatform() }}</strong> yet.
+              The keys are clacking, caffeine levels are optimal, and new deep-dives are currently compiling!
+            } @else {
+              Vishnu is currently caffeinating and converting enterprise architectural battles into deep-dive technical essays.
+              Fresh thought leadership on Angular 22, WebMCP, and multi-agent AI systems are coming up soon!
+            }
+          </p>
+
+          <div class="empty-actions">
+            @if (selectedPlatform() !== 'All') {
+              <button class="btn btn-secondary btn-sm" (click)="selectPlatform('All')">
+                <span>🔄</span> Reset to All Platforms
+              </button>
+            }
+            <a
+              class="btn btn-primary btn-sm"
+              href="https://www.linkedin.com/in/vishnuthankappan/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span>💼</span> Connect on LinkedIn
+            </a>
+            <a class="btn btn-secondary btn-sm" routerLink="/demos">
+              <span>⚡</span> Explore Live AI Demos
+            </a>
+          </div>
+        </div>
       } @else {
         <section class="grid two">
           @for (item of filteredArticles(); track item.id) {
@@ -77,6 +126,108 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
       }
     </div>
   `,
+  styles: [
+    `
+      .empty-state-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        background: var(--color-bg-elevated);
+        border: 1px dashed var(--color-border-strong);
+        border-radius: var(--radius-2xl);
+        padding: var(--space-12) var(--space-6);
+        margin: var(--space-4) auto var(--space-12);
+        max-width: 680px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .empty-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(59, 130, 246, 0.08);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        padding: 0.3rem 0.85rem;
+        border-radius: var(--radius-full);
+        font-size: var(--text-xs);
+        color: var(--color-accent);
+        margin-bottom: var(--space-4);
+      }
+
+      .brewing-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--color-accent);
+        box-shadow: 0 0 10px var(--color-accent);
+        animation: pulseBrew 1.8s infinite ease-in-out;
+      }
+
+      .empty-avatar-wrap {
+        width: 76px;
+        height: 76px;
+        border-radius: var(--radius-full);
+        background: var(--color-bg-subtle);
+        border: 1px solid var(--color-border);
+        display: grid;
+        place-items: center;
+        margin-bottom: var(--space-4);
+        box-shadow: var(--shadow-md);
+      }
+
+      .coffee-icon {
+        font-size: 2.2rem;
+        animation: floatBrew 3s ease-in-out infinite;
+      }
+
+      .empty-title {
+        font-size: clamp(1.35rem, 3vw, 1.75rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--color-text-primary);
+        margin: 0 0 var(--space-2);
+      }
+
+      .empty-text {
+        font-size: var(--text-base);
+        color: var(--color-text-secondary);
+        line-height: 1.65;
+        max-width: 520px;
+        margin: 0 0 var(--space-6);
+      }
+
+      .empty-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-3);
+        flex-wrap: wrap;
+      }
+
+      @keyframes pulseBrew {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(0.85);
+        }
+      }
+
+      @keyframes floatBrew {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+    `,
+  ],
 })
 export class WritingComponent {
   private readonly apiService = inject(PortfolioApiService);
@@ -111,3 +262,4 @@ export class WritingComponent {
     }
   }
 }
+
