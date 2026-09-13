@@ -242,13 +242,23 @@ export const DemosTab: React.FC<DemosTabProps> = ({
                 )}
               </div>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.5rem' }}>
                 {item.tech.map((t) => (
                   <span key={t} className="badge">
                     {t}
                   </span>
                 ))}
               </div>
+
+              {item.tags && item.tags.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '1rem' }}>
+                  {item.tags.map((t) => (
+                    <span key={t} className="badge" style={{ background: 'rgba(59, 130, 246, 0.12)', color: '#60a5fa' }}>
+                      🏷️ {t}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: 'auto', borderTop: '1px solid var(--color-border)', paddingTop: '0.75rem' }}>
                 <button className="btn btn-secondary btn-sm" onClick={() => handleOpenEdit(item)}>
@@ -391,14 +401,49 @@ export const DemosTab: React.FC<DemosTabProps> = ({
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Tech Stack (comma separated)</label>
-            <input
-              className="form-input"
-              value={techText}
-              onChange={(e) => setTechText(e.target.value)}
-              placeholder="Angular 22, LangChain, LangGraph, Python, Ollama"
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Tech Stack (comma separated)</label>
+              <input
+                className="form-input"
+                value={techText}
+                onChange={(e) => setTechText(e.target.value)}
+                placeholder="Gradio 6.25, Python 3.12, LangGraph, Qwen 3 (8B)"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Tags (comma separated)</label>
+              <input
+                className="form-input"
+                value={tagsText}
+                onChange={(e) => setTagsText(e.target.value)}
+                placeholder="AI, Gradio, Hugging Face, RAG, LangGraph"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Display Order</label>
+              <input
+                type="number"
+                className="form-input"
+                value={orderIndex}
+                onChange={(e) => setOrderIndex(parseInt(e.target.value, 10) || 1)}
+                min={0}
+              />
+            </div>
+            {type === 'iframe' && (
+              <div className="form-group">
+                <label className="form-label">Iframe Sandbox Permissions</label>
+                <input
+                  className="form-input"
+                  value={sandbox}
+                  onChange={(e) => setSandbox(e.target.value)}
+                  placeholder="allow-scripts allow-same-origin allow-forms allow-popups"
+                />
+              </div>
+            )}
           </div>
 
           <div className="modal-footer" style={{ margin: '1rem -1.5rem -1.5rem -1.5rem' }}>
