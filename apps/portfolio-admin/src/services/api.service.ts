@@ -120,7 +120,7 @@ export const AdminApi = {
         counts: {
           experience: state.experience ? state.experience.length : 3,
           projects: state.projects ? state.projects.length : 4,
-          writing: state.writing ? state.writing.length : 3,
+          writing: state.writing ? state.writing.length : 0,
           demos: state.demos ? state.demos.length : 3,
           skillCategories: state.skills ? state.skills.length : 5,
         },

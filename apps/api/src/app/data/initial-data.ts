@@ -220,47 +220,7 @@ export const initialProjects: ProjectItem[] = [
   },
 ];
 
-export const initialWriting: WritingItem[] = [
-  {
-    id: 'article-1',
-    title: 'Architecting Large-Scale Angular Applications with Nx Monorepos & Native Federation',
-    platform: 'medium',
-    url: 'https://medium.com/@techiewithbeard/architecting-large-scale-angular-apps-with-nx-and-native-federation',
-    publishedAt: '2026-06-15',
-    summary:
-      'A deep dive into structuring enterprise Angular monorepos, optimizing CI build graphs with Nx affected, and deploying microfrontends using Native Federation.',
-    tags: ['Angular', 'Nx Monorepo', 'Microfrontends', 'Architecture'],
-    readTime: '7 min read',
-    featured: true,
-    orderIndex: 1,
-  },
-  {
-    id: 'article-2',
-    title: 'Building Responsive Streaming AI Interfaces with LangChain and Angular Signals',
-    platform: 'dev.to',
-    url: 'https://dev.to/techiewithbeard/building-responsive-streaming-ai-interfaces-with-langchain-and-angular-signals',
-    publishedAt: '2026-05-20',
-    summary:
-      'How to handle real-time LLM token streams in Angular using modern Signals, error boundaries, and accessible markdown rendering.',
-    tags: ['AI', 'LangChain', 'Angular', 'Signals', 'Frontend'],
-    readTime: '6 min read',
-    featured: true,
-    orderIndex: 2,
-  },
-  {
-    id: 'article-3',
-    title: 'From AngularJS to Angular 22: Enterprise Modernization Strategies That Actually Work',
-    platform: 'linkedin',
-    url: 'https://www.linkedin.com/pulse/enterprise-angularjs-modernization-strategies-vishnu-thankappan/',
-    publishedAt: '2026-04-10',
-    summary:
-      'Key lessons, architectural patterns, and risk-mitigation strategies learned from migrating legacy enterprise suites to modern reactive frameworks.',
-    tags: ['Enterprise', 'Angular', 'Migration', 'SoftwareEngineering'],
-    readTime: '5 min read',
-    featured: true,
-    orderIndex: 3,
-  },
-];
+export const initialWriting: WritingItem[] = [];
 
 export const initialDemos: DemoItem[] = [
   {
