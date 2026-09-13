@@ -226,7 +226,9 @@ export class CloudBootHudComponent implements OnDestroy {
     }
   }
 
-  // --- Keyboard Handler ---
+  private lastTouchTimestamp = 0;
+
+  // --- Keyboard & Touch Handlers ---
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent): void {
     if (!this.isHudOpen() || this.activeTab() !== 'arcade') return;
@@ -237,7 +239,23 @@ export class CloudBootHudComponent implements OnDestroy {
     }
   }
 
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (this.isHudOpen() && this.activeTab() === 'arcade') {
+      this.recalibrateCanvas();
+    }
+  }
+
+  handlePointerDown(event: PointerEvent): void {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+    this.lastTouchTimestamp = Date.now();
+    this.handlePlayerAction();
+  }
+
   handleCanvasClick(): void {
+    if (Date.now() - this.lastTouchTimestamp < 350) return;
     this.handlePlayerAction();
   }
 
@@ -274,6 +292,35 @@ export class CloudBootHudComponent implements OnDestroy {
   }
 
   // --- Game Engine ---
+  private recalibrateCanvas(): void {
+    const canvas = this.canvasRef?.nativeElement;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const newWidth = Math.round(rect.width * dpr);
+    const newHeight = Math.round(rect.height * dpr);
+
+    if (canvas.width !== newWidth || canvas.height !== newHeight) {
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      this.canvasWidth = newWidth;
+      this.canvasHeight = newHeight;
+      this.groundY = this.canvasHeight - 38 * dpr;
+
+      this.player.width = 26 * dpr;
+      this.player.height = 26 * dpr;
+      this.player.x = 40 * dpr;
+      this.player.gravity = 0.55 * dpr;
+      this.player.jumpStrength = -10.5 * dpr;
+      if (this.player.isGrounded) {
+        this.player.y = this.groundY - this.player.height;
+      }
+    }
+  }
+
   private initCanvasGame(): void {
     const canvas = this.canvasRef?.nativeElement;
     if (!canvas) return;

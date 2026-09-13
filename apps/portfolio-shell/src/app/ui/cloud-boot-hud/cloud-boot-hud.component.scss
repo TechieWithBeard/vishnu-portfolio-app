@@ -245,7 +245,26 @@
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  canvas { width: 100%; height: 100%; display: block; }
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+  }
+}
+
+.tab-lbl-mobile,
+.btn-lbl-mobile {
+  display: none;
+}
+.tab-lbl-desktop,
+.btn-lbl-desktop {
+  display: inline;
 }
 
 .arcade-controls-guide {
@@ -286,8 +305,44 @@
 @keyframes scaleUp { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 
 @media (max-width: 640px) {
-  .hud-header { flex-direction: column; }
-  .hud-header-actions { width: 100%; justify-content: space-between; }
-  .topology-grid { grid-template-columns: 1fr 1fr; }
-  .canvas-container { height: 165px; }
+  .tab-lbl-desktop,
+  .btn-lbl-desktop {
+    display: none;
+  }
+  .tab-lbl-mobile,
+  .btn-lbl-mobile {
+    display: inline;
+  }
+
+  .hud-modal {
+    width: 96%;
+    padding: 12px;
+    max-height: 94vh;
+    gap: 10px;
+  }
+  .hud-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .hud-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .hud-tabs {
+    gap: 4px;
+  }
+  .tab-btn {
+    padding: 4px 7px;
+    font-size: 0.68rem;
+  }
+  .topology-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .canvas-container {
+    height: 155px;
+  }
+  .arcade-controls-guide {
+    font-size: 0.62rem;
+    padding: 5px 8px;
+  }
 }

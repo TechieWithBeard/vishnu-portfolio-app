@@ -11,7 +11,8 @@
         role="tab"
         [attr.aria-selected]="activeTab() === 'problems' && !isCollapsed()"
       >
-        <span>PROBLEMS</span>
+        <span class="tab-lbl-desktop">PROBLEMS</span>
+        <span class="tab-lbl-mobile">ISSUES</span>
         <span class="tab-badge">0</span>
       </button>
 
@@ -41,10 +42,14 @@
         @if (cloudStatus() === 'warming') {
           <span class="tab-status-chip warming">
             <span class="mini-pulse"></span>
-            Warming ({{ elapsedSeconds() }}s)
+            <span class="chip-lbl-desktop">Warming ({{ elapsedSeconds() }}s)</span>
+            <span class="chip-lbl-mobile">{{ elapsedSeconds() }}s</span>
           </span>
         } @else {
-          <span class="tab-status-chip connected">🟢 200 OK</span>
+          <span class="tab-status-chip connected">
+            <span class="chip-lbl-desktop">🟢 200 OK</span>
+            <span class="chip-lbl-mobile">🟢 200</span>
+          </span>
         }
       </button>
 
@@ -58,7 +63,8 @@
         [attr.aria-selected]="activeTab() === 'arcade' && !isCollapsed()"
       >
         <span class="tab-icon">🎮</span>
-        <span>PACKET RUNNER</span>
+        <span class="tab-lbl-desktop">PACKET RUNNER</span>
+        <span class="tab-lbl-mobile">ARCADE</span>
         <span class="tab-badge game-badge">Play</span>
       </button>
     </div>
@@ -67,12 +73,13 @@
     <div class="drawer-actions">
       <button
         type="button"
-        class="drawer-btn"
+        class="drawer-btn collapse-toggle-btn"
         (click)="toggleCollapse()"
         [title]="isCollapsed() ? 'Expand panel' : 'Collapse panel'"
         [attr.aria-label]="isCollapsed() ? 'Expand drawer' : 'Collapse drawer'"
       >
-        {{ isCollapsed() ? '⌃ Expand' : '⌄ Collapse' }}
+        <span class="btn-lbl-desktop">{{ isCollapsed() ? '⌃ Expand' : '⌄ Collapse' }}</span>
+        <span class="btn-lbl-mobile">{{ isCollapsed() ? '⌃' : '⌄' }}</span>
       </button>
       <button
         type="button"
@@ -100,7 +107,7 @@
               </span>
               <span class="status-node" [title]="servicesStatus().render">
                 <span class="dot" [class.amber]="cloudStatus() === 'warming'" [class.green]="cloudStatus() === 'connected'"></span>
-                Render API
+                Render
               </span>
               <span class="status-node" [title]="servicesStatus().supabase">
                 <span class="dot green"></span> Supabase
@@ -117,7 +124,8 @@
                 (click)="setTab('arcade')"
                 title="Play mini-game while waiting"
               >
-                🎮 Play Packet Runner while booting →
+                <span class="btn-lbl-desktop">🎮 Play Packet Runner while booting →</span>
+                <span class="btn-lbl-mobile">🎮 Play Runner →</span>
               </button>
             }
           </div>
@@ -158,14 +166,19 @@
           <div class="arcade-controls-bar">
             <div class="arcade-stats">
               <span class="stat-pill">Score: <strong>{{ gameScore() }}</strong></span>
-              <span class="stat-pill" title="Current session high score">Session: <strong>{{ gameHighScore() }}</strong></span>
+              <span class="stat-pill session-stat" title="Current session high score">
+                <span class="stat-lbl-desktop">Session: </span>
+                <span class="stat-lbl-mobile">Best: </span>
+                <strong>{{ gameHighScore() }}</strong>
+              </span>
               <span class="stat-pill global-high" title="Global all-time high score stored in Supabase">
-                🏆 Global: <strong>{{ globalHighScore() }}</strong>
+                🏆 <span class="stat-lbl-desktop">Global: </span><strong>{{ globalHighScore() }}</strong>
               </span>
             </div>
 
             <div class="arcade-tip">
-              <span class="key-tag">SPACE</span> or <span class="key-tag">TAP</span> to jump (Double-jump supported)
+              <span class="tip-lbl-desktop"><span class="key-tag">SPACE</span> or <span class="key-tag">TAP</span> to jump (Double-jump supported)</span>
+              <span class="tip-lbl-mobile">Tap to jump (Double-jump enabled)</span>
             </div>
 
             <div class="arcade-actions">
@@ -175,22 +188,27 @@
                 (click)="toggleSound()"
                 [title]="soundEnabled() ? 'Mute 8-bit sound' : 'Enable 8-bit sound'"
               >
-                {{ soundEnabled() ? '🔊 Audio: ON' : '🔇 Audio: OFF' }}
+                <span class="btn-lbl-desktop">{{ soundEnabled() ? '🔊 Audio: ON' : '🔇 Audio: OFF' }}</span>
+                <span class="btn-lbl-mobile">{{ soundEnabled() ? '🔊' : '🔇' }}</span>
               </button>
               @if (gameState() !== 'playing') {
                 <button
                   type="button"
                   class="arcade-action-btn play-btn"
-                  (click)="handleCanvasClick()"
+                  (click)="handlePlayerAction()"
                 >
-                  ▶ Start Run
+                  ▶ <span class="btn-lbl-desktop">Start Run</span><span class="btn-lbl-mobile">Play</span>
                 </button>
               }
             </div>
           </div>
 
-          <!-- Canvas Game Viewport -->
-          <div class="canvas-viewport" (click)="handleCanvasClick()">
+          <!-- Canvas Game Viewport with Zero-Latency Touch Handling -->
+          <div
+            class="canvas-viewport"
+            (pointerdown)="handlePointerDown($event)"
+            (click)="handleCanvasClick()"
+          >
             <canvas #gameCanvas width="520" height="160"></canvas>
 
             <!-- Overlay: Ready -->
@@ -201,7 +219,10 @@
                   <div class="overlay-title">PACKET RUNNER</div>
                   <div class="overlay-sub">Jump over 404s & Memory Leaks • Collect Signals & Nx Cache</div>
                   <div class="overlay-score global-ref">🏆 All-Time Record: {{ globalHighScore() }} (Supabase)</div>
-                  <div class="overlay-prompt">Click canvas or press <kbd>SPACE</kbd> to launch</div>
+                  <div class="overlay-prompt">
+                    <span class="prompt-lbl-desktop">Click canvas or press <kbd>SPACE</kbd> to launch</span>
+                    <span class="prompt-lbl-mobile">Tap canvas to launch & jump</span>
+                  </div>
                 </div>
               </div>
             }
@@ -217,7 +238,10 @@
                   @if (isNewRecord()) {
                     <div class="record-badge">🎉 NEW RECORD SAVED TO SUPABASE!</div>
                   }
-                  <div class="overlay-prompt">Click canvas or press <kbd>SPACE</kbd> to retry</div>
+                  <div class="overlay-prompt">
+                    <span class="prompt-lbl-desktop">Click canvas or press <kbd>SPACE</kbd> to retry</span>
+                    <span class="prompt-lbl-mobile">Tap canvas to retry</span>
+                  </div>
                 </div>
               </div>
             }

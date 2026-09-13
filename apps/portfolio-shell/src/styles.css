@@ -914,6 +914,42 @@ iframe {
   }
 }
 
+@media (max-width: 640px) {
+  .container {
+    padding: 0 var(--space-4);
+  }
+
+  .hero {
+    padding: var(--space-4) 0 var(--space-8);
+    gap: var(--space-6);
+  }
+
+  .hero-tagline {
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+  }
+
+  .metrics-strip {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .profile-card {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .profile-portrait {
+    width: 110px;
+    height: 110px;
+  }
+}
+
 @media (max-width: 540px) {
   .metrics-strip {
     grid-template-columns: repeat(2, 1fr);
@@ -925,5 +961,16 @@ iframe {
 
   .hero-actions .btn {
     width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .hero-actions .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
   }
 }

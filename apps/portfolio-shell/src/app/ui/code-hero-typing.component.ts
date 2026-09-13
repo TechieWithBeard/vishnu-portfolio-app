@@ -43,7 +43,8 @@ interface CodeToken {
             title="Toggle Cloud Terminal & Dev Arcade drawer"
           >
             <span class="btn-dot" [class.amber]="cloudStatus() === 'warming'" [class.green]="cloudStatus() === 'connected'">●</span>
-            Terminal & Arcade
+            <span class="lbl-desktop">Terminal & Arcade</span>
+            <span class="lbl-mobile">Terminal</span>
           </button>
 
           @if (!isFinished()) {
@@ -53,7 +54,8 @@ interface CodeToken {
               (click)="skipAnimation()"
               title="Skip typing animation"
             >
-              ⚡ Skip
+              <span class="lbl-desktop">⚡ Skip</span>
+              <span class="lbl-mobile">⚡</span>
             </button>
           } @else {
             <button
@@ -62,7 +64,8 @@ interface CodeToken {
               (click)="replayAnimation()"
               title="Replay typing animation"
             >
-              ↻ Retype
+              <span class="lbl-desktop">↻ Retype</span>
+              <span class="lbl-mobile">↻</span>
             </button>
           }
 
@@ -72,7 +75,8 @@ interface CodeToken {
             (click)="copyCode()"
             title="Copy HTML to clipboard"
           >
-            {{ copied() ? '✓ Copied!' : '📋 Copy' }}
+            <span class="lbl-desktop">{{ copied() ? '✓ Copied!' : '📋 Copy' }}</span>
+            <span class="lbl-mobile">{{ copied() ? '✓' : '📋' }}</span>
           </button>
         </div>
       </div>
@@ -101,20 +105,21 @@ interface CodeToken {
       <div class="window-status-bar">
         <div class="status-left">
           <span class="status-indicator" [class.ready]="isFinished()">●</span>
-          <span>{{ isFinished() ? 'DOM Tree Rendered' : 'Streaming AST Tokens...' }}</span>
+          <span class="status-ast-text">{{ isFinished() ? 'DOM Ready' : 'Streaming AST...' }}</span>
           <button
             type="button"
             class="status-drawer-btn"
             (click)="toggleDrawer()"
             title="Toggle Cloud Terminal & Packet Runner"
           >
-            🐳 {{ cloudStatus() === 'warming' ? 'Render Warming (' + elapsedSeconds() + 's)' : 'Cloud Online' }}
+            🐳 <span class="lbl-desktop">{{ cloudStatus() === 'warming' ? 'Render Warming (' + elapsedSeconds() + 's)' : 'Cloud Online' }}</span>
+            <span class="lbl-mobile">{{ cloudStatus() === 'warming' ? elapsedSeconds() + 's' : 'Online' }}</span>
           </button>
         </div>
         <div class="status-right">
-          <span>UTF-8</span>
-          <span>Angular 22</span>
-          <span>Ln {{ currentLineNumber() }}, Col {{ currentColNumber() }}</span>
+          <span class="stat-extra">UTF-8</span>
+          <span class="stat-extra">Angular 22</span>
+          <span class="stat-extra">Ln {{ currentLineNumber() }}, Col {{ currentColNumber() }}</span>
           <button
             type="button"
             class="status-arcade-link"
@@ -389,33 +394,81 @@ interface CodeToken {
         text-decoration: underline;
       }
 
+      .lbl-mobile { display: none; }
+      .lbl-desktop { display: inline; }
+
       @media (max-width: 640px) {
+        .lbl-desktop { display: none; }
+        .lbl-mobile { display: inline; }
+        .stat-extra { display: none; }
+
         .window-bar {
-          padding: 0.5rem 0.75rem;
+          padding: 0.4rem 0.6rem;
+          gap: 0.4rem;
         }
         .window-tab {
-          max-width: 140px;
+          max-width: 125px;
+          padding: 0.2rem 0.5rem;
+          font-size: 0.7rem;
+        }
+        .tab-name {
           overflow: hidden;
           text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .tab-lang {
           display: none;
         }
+        .code-btn {
+          font-size: 0.68rem;
+          padding: 0.18rem 0.45rem;
+        }
         .drawer-toggle-btn {
-          font-size: 0.65rem;
-          padding: 0.15rem 0.4rem;
+          font-size: 0.68rem;
+          padding: 0.18rem 0.45rem;
         }
         .editor-body {
-          min-height: 160px;
-          max-height: 200px;
+          padding: 0.5rem 0;
+          min-height: 115px;
+          max-height: 155px;
+        }
+        .gutter {
+          padding: 0 0.4rem 0 0.6rem;
+        }
+        .line-num {
+          font-size: 0.72rem;
+          line-height: 1.45;
+        }
+        .code-content {
+          padding: 0 0.6rem 0 0.4rem;
         }
         .code-pre {
-          font-size: 0.75rem;
+          font-size: 0.72rem;
+          line-height: 1.45;
         }
         .window-status-bar {
+          padding: 0.25rem 0.6rem;
           font-size: 0.62rem;
-          flex-wrap: wrap;
-          gap: 6px;
+          gap: 4px;
+        }
+        .status-left, .status-right {
+          gap: 0.4rem;
+        }
+        .status-drawer-btn {
+          font-size: 0.62rem;
+          padding: 1px 4px;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .window-controls {
+          display: none;
+        }
+        .window-tab {
+          max-width: 110px;
+        }
+        .status-ast-text {
+          display: none;
         }
       }
     `,

@@ -24,6 +24,14 @@
   align-items: center;
   gap: 2px;
   overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-width: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .drawer-tab {
@@ -98,6 +106,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .drawer-btn {
@@ -295,11 +304,16 @@
   background: #070a12;
   cursor: pointer;
   overflow: hidden;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 
   canvas {
     width: 100%;
     height: 100%;
     display: block;
+    touch-action: none;
   }
 }
 
@@ -416,8 +430,111 @@
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
+.tab-lbl-mobile,
+.chip-lbl-mobile,
+.btn-lbl-mobile,
+.stat-lbl-mobile,
+.tip-lbl-mobile,
+.prompt-lbl-mobile {
+  display: none;
+}
+.tab-lbl-desktop,
+.chip-lbl-desktop,
+.btn-lbl-desktop,
+.stat-lbl-desktop,
+.tip-lbl-desktop,
+.prompt-lbl-desktop {
+  display: inline;
+}
+
 @media (max-width: 640px) {
-  .arcade-tip { display: none; }
-  .status-nodes { gap: 6px; }
-  .drawer-content { height: 175px; }
+  .tab-lbl-desktop,
+  .chip-lbl-desktop,
+  .btn-lbl-desktop,
+  .stat-lbl-desktop,
+  .tip-lbl-desktop,
+  .prompt-lbl-desktop {
+    display: none;
+  }
+  .tab-lbl-mobile,
+  .chip-lbl-mobile,
+  .btn-lbl-mobile,
+  .stat-lbl-mobile,
+  .tip-lbl-mobile,
+  .prompt-lbl-mobile {
+    display: inline;
+  }
+
+  .drawer-header {
+    padding: 0 0.35rem;
+    min-height: 30px;
+  }
+  .drawer-tab {
+    font-size: 0.65rem;
+    padding: 4px 6px;
+    gap: 3px;
+  }
+  .drawer-btn {
+    padding: 2px 5px;
+    font-size: 0.62rem;
+  }
+  .drawer-content {
+    height: 165px;
+  }
+  .terminal-status-strip {
+    padding: 3px 6px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .status-nodes {
+    gap: 6px;
+    font-size: 0.62rem;
+  }
+  .switch-arcade-btn {
+    font-size: 0.62rem;
+    padding: 2px 6px;
+  }
+  .terminal-output {
+    padding: 4px 8px;
+    font-size: 0.68rem;
+  }
+  .arcade-controls-bar {
+    padding: 2px 6px;
+    font-size: 0.62rem;
+  }
+  .arcade-stats {
+    gap: 5px;
+  }
+  .arcade-actions {
+    gap: 4px;
+  }
+  .arcade-action-btn {
+    padding: 2px 6px;
+    font-size: 0.62rem;
+  }
+  .overlay-modal {
+    padding: 6px 10px;
+  }
+  .overlay-title {
+    font-size: 0.78rem;
+  }
+  .overlay-sub {
+    font-size: 0.62rem;
+  }
+}
+
+@media (max-width: 440px) {
+  .session-stat {
+    display: none;
+  }
+  .overlay-sub code {
+    display: inline-block;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+  }
+  .drawer-content {
+    height: 155px;
+  }
 }

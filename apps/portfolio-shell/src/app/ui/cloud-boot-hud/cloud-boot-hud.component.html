@@ -29,7 +29,8 @@
               [class.active]="activeTab() === 'terminal'"
               (click)="switchTab('terminal')"
             >
-              🖥️ Mission Control
+              <span class="tab-lbl-desktop">🖥️ Mission Control</span>
+              <span class="tab-lbl-mobile">🖥️ Control</span>
             </button>
             <button
               type="button"
@@ -37,7 +38,8 @@
               [class.active]="activeTab() === 'arcade'"
               (click)="switchTab('arcade')"
             >
-              🎮 Packet Runner Arcade
+              <span class="tab-lbl-desktop">🎮 Packet Runner Arcade</span>
+              <span class="tab-lbl-mobile">🎮 Arcade</span>
             </button>
           </div>
 
@@ -199,13 +201,18 @@
                 (click)="toggleSound()"
                 [attr.aria-label]="soundEnabled() ? 'Mute 8-bit sound' : 'Unmute 8-bit sound'"
               >
-                {{ soundEnabled() ? '🔊 Sound: ON' : '🔇 Sound: OFF' }}
+                <span class="btn-lbl-desktop">{{ soundEnabled() ? '🔊 Sound: ON' : '🔇 Sound: OFF' }}</span>
+                <span class="btn-lbl-mobile">{{ soundEnabled() ? '🔊' : '🔇' }}</span>
               </button>
             </div>
           </div>
 
-          <!-- Interactive Canvas Viewport -->
-          <div class="canvas-container" (click)="handleCanvasClick()">
+          <!-- Interactive Canvas Viewport with Zero-Latency Touch -->
+          <div
+            class="canvas-container"
+            (pointerdown)="handlePointerDown($event)"
+            (click)="handleCanvasClick()"
+          >
             <canvas #gameCanvas></canvas>
           </div>
 

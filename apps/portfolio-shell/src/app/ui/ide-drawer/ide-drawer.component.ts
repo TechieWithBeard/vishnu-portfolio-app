@@ -237,7 +237,9 @@ export class IdeDrawerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // --- Keyboard & Click Handlers ---
+  private lastTouchTimestamp = 0;
+
+  // --- Keyboard & Touch/Click Handlers ---
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent): void {
     if (this.isCollapsed() || this.activeTab() !== 'arcade') return;
@@ -248,11 +250,28 @@ export class IdeDrawerComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleCanvasClick(): void {
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (this.activeTab() === 'arcade' && !this.isCollapsed()) {
+      this.recalibrateCanvas();
+    }
+  }
+
+  handlePointerDown(event: PointerEvent): void {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+    this.lastTouchTimestamp = Date.now();
     this.handlePlayerAction();
   }
 
-  private handlePlayerAction(): void {
+  handleCanvasClick(): void {
+    // Avoid double execution from synthetic click following pointerdown
+    if (Date.now() - this.lastTouchTimestamp < 350) return;
+    this.handlePlayerAction();
+  }
+
+  protected handlePlayerAction(): void {
     if (this.gameState() === 'ready') {
       this.startGame();
     } else if (this.gameState() === 'gameover') {
@@ -304,6 +323,35 @@ export class IdeDrawerComponent implements OnInit, OnDestroy {
     this.collectibleTimer = 0;
     this.gameScore.set(0);
     this.gameState.set('ready');
+  }
+
+  private recalibrateCanvas(): void {
+    const canvas = this.canvasRef?.nativeElement;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const newWidth = Math.round(rect.width * dpr);
+    const newHeight = Math.round(rect.height * dpr);
+
+    if (canvas.width !== newWidth || canvas.height !== newHeight) {
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      this.canvasWidth = newWidth;
+      this.canvasHeight = newHeight;
+      this.groundY = this.canvasHeight - 26 * dpr;
+
+      this.player.width = 22 * dpr;
+      this.player.height = 22 * dpr;
+      this.player.x = 32 * dpr;
+      this.player.gravity = 0.52 * dpr;
+      this.player.jumpStrength = -9.8 * dpr;
+      if (this.player.isGrounded) {
+        this.player.y = this.groundY - this.player.height;
+      }
+    }
   }
 
   private stopGameLoop(): void {
