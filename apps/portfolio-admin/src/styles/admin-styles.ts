@@ -1,7 +1,16 @@
-/* ============================================================
-   Portfolio Admin Studio - Design System & Styles
-   ============================================================ */
+/**
+ * Portfolio Admin Studio - Scoped Design System & Styles
+ *
+ * Injected dynamically at runtime into document.head when the React 19
+ * microfrontend is mounted. Scoped strictly under .admin-native-mount,
+ * .app-container, and modal overlays to prevent any CSS bleed into the
+ * Angular host shell while guaranteeing 100% style fidelity.
+ */
 
+export const adminStylesCss = `
+/* ============================================================
+   Design Tokens & CSS Variables
+   ============================================================ */
 :root,
 .admin-native-mount,
 .app-container,
@@ -44,6 +53,7 @@
   --shadow-lg: 0 12px 30px rgba(0,0,0,0.5);
 }
 
+/* Base reset scoped to Admin mount and container */
 .admin-native-mount,
 .admin-native-mount *,
 .app-container,
@@ -55,16 +65,6 @@
   box-sizing: border-box;
 }
 
-body:has(.app-container) {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-
 .admin-native-mount,
 .app-container {
   font-family: var(--font-sans);
@@ -74,7 +74,9 @@ body:has(.app-container) {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Layout */
+/* ============================================================
+   Layout
+   ============================================================ */
 .app-container {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -82,7 +84,9 @@ body:has(.app-container) {
   width: 100%;
 }
 
-/* Sidebar */
+/* ============================================================
+   Sidebar
+   ============================================================ */
 .app-container .sidebar {
   background: var(--bg-surface);
   border-right: 1px solid var(--border-subtle);
@@ -200,7 +204,9 @@ body:has(.app-container) {
   gap: 0.5rem;
 }
 
-/* Main Content Area & Topbar */
+/* ============================================================
+   Main Content Area & Topbar
+   ============================================================ */
 .app-container .main-content {
   display: flex;
   flex-direction: column;
@@ -230,7 +236,9 @@ body:has(.app-container) {
   margin: 0 auto;
 }
 
-/* Typography & Headings */
+/* ============================================================
+   Typography & Headings
+   ============================================================ */
 .app-container .page-header {
   display: flex;
   justify-content: space-between;
@@ -253,7 +261,9 @@ body:has(.app-container) {
   margin: 0;
 }
 
-/* Buttons */
+/* ============================================================
+   Buttons
+   ============================================================ */
 .app-container .btn {
   display: inline-flex;
   align-items: center;
@@ -319,7 +329,9 @@ body:has(.app-container) {
   font-size: 0.8rem;
 }
 
-/* Cards & Status Badges */
+/* ============================================================
+   Cards & Status Badges
+   ============================================================ */
 .app-container .card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -377,7 +389,9 @@ body:has(.app-container) {
   background: currentColor;
 }
 
-/* Forms & Inputs */
+/* ============================================================
+   Forms & Inputs
+   ============================================================ */
 .app-container .form-group {
   margin-bottom: 1.25rem;
 }
@@ -423,7 +437,9 @@ body:has(.app-container) {
   gap: 1rem;
 }
 
-/* Modals */
+/* ============================================================
+   Modals
+   ============================================================ */
 .modal-overlay,
 .app-container .modal-overlay {
   position: fixed;
@@ -477,7 +493,9 @@ body:has(.app-container) {
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
 
-/* Toasts */
+/* ============================================================
+   Toasts
+   ============================================================ */
 .toast-container,
 .app-container .toast-container {
   position: fixed;
@@ -508,7 +526,9 @@ body:has(.app-container) {
 .toast.error, .app-container .toast.error { border-color: var(--danger); }
 .toast.info, .app-container .toast.info { border-color: var(--accent-primary); }
 
-/* Grids & Item Cards */
+/* ============================================================
+   Grids & Item Cards
+   ============================================================ */
 .app-container .items-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -576,7 +596,9 @@ body:has(.app-container) {
   border-color: rgba(255, 0, 0, 0.3);
 }
 
-/* Animations & Responsive Breakpoints */
+/* ============================================================
+   Animations & Responsive Breakpoints
+   ============================================================ */
 @keyframes adminFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -601,4 +623,19 @@ body:has(.app-container) {
     height: auto;
     min-height: auto;
   }
+}
+`;
+
+/**
+ * Dynamically injects the admin styles into document.head if not already present.
+ */
+export function injectAdminStyles(): void {
+  if (typeof document === 'undefined') return;
+  const styleId = 'portfolio-admin-styles';
+  if (document.getElementById(styleId)) return;
+
+  const styleEl = document.createElement('style');
+  styleEl.id = styleId;
+  styleEl.textContent = adminStylesCss;
+  document.head.appendChild(styleEl);
 }
