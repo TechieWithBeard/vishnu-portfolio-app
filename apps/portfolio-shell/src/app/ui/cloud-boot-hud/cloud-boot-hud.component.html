@@ -1,0 +1,279 @@
+<!-- Floating Bottom-Left Pill (Visible when warming, connected, or when HUD opened) -->
+@if (cloudStatus() === 'warming' || cloudStatus() === 'connected' || isHudOpen()) {
+  <aside class="cloud-pill-wrapper" aria-label="Cloud Container Status">
+    <button
+      type="button"
+      class="cloud-status-pill"
+      [class.warming]="cloudStatus() === 'warming'"
+      [class.connected]="cloudStatus() === 'connected'"
+      (click)="openHud('terminal')"
+      [attr.aria-label]="cloudStatus() === 'warming' ? 'Cloud container warming up. Click to view mission control.' : 'Cloud microservices online. Click to view architecture.'"
+    >
+      <span class="pill-dot"></span>
+      @if (cloudStatus() === 'warming') {
+        <span class="pill-text">
+          <strong>🐳 Render Waking Up</strong> ({{ elapsedSeconds() }}s)
+        </span>
+        <span
+          class="pill-action-badge"
+          role="button"
+          tabindex="0"
+          (click)="$event.stopPropagation(); openHud('arcade')"
+          (keydown.enter)="$event.stopPropagation(); openHud('arcade')"
+          (keydown.space)="$event.stopPropagation(); openHud('arcade')"
+        >
+          🎮 Play Dev Runner
+        </span>
+      } @else {
+        <span class="pill-text">
+          <strong>🟢 Cloud Live</strong> (HTTP 200)
+        </span>
+        <span
+          class="pill-action-badge"
+          role="button"
+          tabindex="0"
+          (click)="$event.stopPropagation(); openHud('arcade')"
+          (keydown.enter)="$event.stopPropagation(); openHud('arcade')"
+          (keydown.space)="$event.stopPropagation(); openHud('arcade')"
+        >
+          🎮 Arcade
+        </span>
+      }
+    </button>
+  </aside>
+}
+
+<!-- Expanded Mission Control & Arcade Modal -->
+@if (isHudOpen()) {
+  <div class="hud-backdrop" (click)="closeHud()">
+    <div
+      class="hud-modal"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="hud-modal-title"
+    >
+      <!-- Header -->
+      <header class="hud-header">
+        <div class="hud-title-area">
+          <div class="hud-title-row">
+            <span class="hud-icon">⚡</span>
+            <h2 id="hud-modal-title">Cloud Cold-Start Mission Control</h2>
+          </div>
+          <p class="hud-subtitle">
+            Render container spin-up & real-time architecture synchronization monitor.
+          </p>
+        </div>
+
+        <div class="hud-header-actions">
+          <!-- Navigation Tabs -->
+          <div class="hud-tabs">
+            <button
+              type="button"
+              class="tab-btn"
+              [class.active]="activeTab() === 'terminal'"
+              (click)="switchTab('terminal')"
+            >
+              🖥️ Mission Control
+            </button>
+            <button
+              type="button"
+              class="tab-btn"
+              [class.active]="activeTab() === 'arcade'"
+              (click)="switchTab('arcade')"
+            >
+              🎮 Packet Runner Arcade
+            </button>
+          </div>
+
+          <!-- Close Button -->
+          <button
+            type="button"
+            class="close-btn"
+            (click)="closeHud()"
+            aria-label="Close dialog"
+          >
+            ✕
+          </button>
+        </div>
+      </header>
+
+      <!-- Tab 1: Mission Control -->
+      @if (activeTab() === 'terminal') {
+        <div class="tab-content terminal-tab">
+          <!-- Progress Bar Strip -->
+          <div class="progress-section">
+            <div class="progress-label-row">
+              <span>
+                Status:
+                <strong [style.color]="cloudStatus() === 'connected' ? '#34d399' : '#fbbf24'">
+                  {{ cloudStatus() === 'connected' ? 'Container Active & Ready' : 'Spinning Up Container...' }}
+                </strong>
+              </span>
+              <span>{{ bootProgress() }}% (Elapsed: {{ elapsedSeconds() }}s)</span>
+            </div>
+            <div class="progress-track" role="progressbar" [attr.aria-valuenow]="bootProgress()" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-fill" [style.width.%]="bootProgress()"></div>
+            </div>
+          </div>
+
+          <!-- Live Diagnostic Terminal -->
+          <div class="terminal-card">
+            <div class="terminal-bar">
+              <div class="window-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="terminal-title">bash — render-cold-start-diagnostics.log</span>
+            </div>
+            <div class="terminal-body" #terminalBody>
+              @for (log of bootLogs(); track $index) {
+                <div class="log-line" [class]="log.type">
+                  <span class="log-time">[{{ log.timestamp }}]</span>
+                  <span class="log-msg">{{ log.message }}</span>
+                </div>
+              }
+              @if (cloudStatus() === 'warming') {
+                <div class="log-line pending">
+                  <span class="cursor-pulse">▋</span> Waiting for HTTP 200 handshake...
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Microservices Topology Checklist -->
+          <div class="topology-grid">
+            <div class="topo-node online">
+              <span class="node-icon">💻</span>
+              <div class="node-info">
+                <strong>Client Browser</strong>
+                <small>Hydrated (Offline-First 0ms)</small>
+              </div>
+              <span class="node-status">🟢 ONLINE</span>
+            </div>
+
+            <div
+              class="topo-node"
+              [class.online]="servicesStatus().render === 'online'"
+              [class.warming]="servicesStatus().render === 'warming'"
+            >
+              <span class="node-icon">🐳</span>
+              <div class="node-info">
+                <strong>Render API Gateway</strong>
+                <small>NestJS Monorepo API</small>
+              </div>
+              <span class="node-status">
+                {{ servicesStatus().render === 'online' ? '🟢 ONLINE' : '🟡 WAKING...' }}
+              </span>
+            </div>
+
+            <div
+              class="topo-node"
+              [class.online]="servicesStatus().supabase === 'online'"
+              [class.standby]="servicesStatus().supabase === 'standby'"
+            >
+              <span class="node-icon">🗄️</span>
+              <div class="node-info">
+                <strong>Supabase PostgreSQL</strong>
+                <small>Cloud Database & Pool</small>
+              </div>
+              <span class="node-status">
+                {{ servicesStatus().supabase === 'online' ? '🟢 READY' : '🟡 STANDBY' }}
+              </span>
+            </div>
+
+            <div
+              class="topo-node"
+              [class.online]="servicesStatus().langgraph === 'online'"
+              [class.standby]="servicesStatus().langgraph === 'standby'"
+            >
+              <span class="node-icon">🧠</span>
+              <div class="node-info">
+                <strong>LangGraph ML Agent</strong>
+                <small>Python Agentic RAG</small>
+              </div>
+              <span class="node-status">
+                {{ servicesStatus().langgraph === 'online' ? '🟢 READY' : '🟡 STANDBY' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Architectural Callout for Recruiters & Tech Leads -->
+          <div class="recruiter-note">
+            <span class="note-icon">💡</span>
+            <div class="note-body">
+              <strong>Architectural Context for Tech Leads & Recruiters:</strong>
+              <p>
+                Render's free-tier containers hibernate after 15 minutes of inactivity to optimize cloud resources.
+                To eliminate visitor wait times, this portfolio implements an
+                <strong>offline-first stale-while-revalidate architecture</strong>: complete verified career data is rendered
+                on <strong>frame 1 (0ms FCP)</strong> while live cloud microservices synchronize asynchronously in the background.
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Action to Play Game -->
+          <div class="terminal-footer-action">
+            <button type="button" class="arcade-cta-btn" (click)="switchTab('arcade')">
+              🎮 Pass the time: Play Packet Runner Mini-Game →
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Tab 2: Packet Runner Arcade -->
+      @if (activeTab() === 'arcade') {
+        <div class="tab-content arcade-tab">
+          <div class="arcade-top-bar">
+            <div class="arcade-status-tag">
+              @if (cloudStatus() === 'warming') {
+                <span class="badge warming">🐳 Container Boot: {{ bootProgress() }}% ({{ elapsedSeconds() }}s)</span>
+              } @else {
+                <span class="badge connected">🎉 Container is LIVE (HTTP 200)</span>
+              }
+            </div>
+
+            <div class="arcade-actions">
+              <button
+                type="button"
+                class="sound-btn"
+                (click)="toggleSound()"
+                [attr.aria-label]="soundEnabled() ? 'Mute 8-bit sound' : 'Unmute 8-bit sound'"
+              >
+                {{ soundEnabled() ? '🔊 Sound: ON' : '🔇 Sound: OFF' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive Canvas Viewport -->
+          <div class="canvas-container" (click)="handleCanvasClick()">
+            <canvas #gameCanvas></canvas>
+          </div>
+
+          <!-- Controls Guide Strip -->
+          <div class="arcade-controls-guide">
+            <div class="guide-item">
+              <kbd>SPACE</kbd> or <kbd>↑</kbd> or <strong>TAP CANVAS</strong> to Jump (Double-jump supported!)
+            </div>
+            <div class="guide-item">
+              <span>Avoid: <strong>Memory Leaks, 404s, Merge Conflicts</strong></span>
+            </div>
+            <div class="guide-item">
+              <span>Collect: <strong>⚡ Signals (+50), 💎 Nx Cache (+100)</strong></span>
+            </div>
+          </div>
+
+          @if (cloudStatus() === 'connected') {
+            <div class="game-live-notice">
+              <span>✨ Cloud synchronization completed! You can close anytime or keep chasing the high score!</span>
+              <button type="button" class="btn btn-secondary btn-sm" (click)="closeHud()">
+                Close & View Portfolio
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

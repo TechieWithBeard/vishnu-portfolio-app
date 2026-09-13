@@ -17,7 +17,7 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
 
       <!-- Experience Timeline -->
       <section class="timeline">
-        @if (loadingExperience()) {
+        @if (loadingExperience() && experience().length === 0) {
           <app-skeleton-loader type="timeline-grid" [count]="3"></app-skeleton-loader>
         } @else {
           @for (item of experience(); track item.id) {

@@ -4,9 +4,16 @@ import { RouterModule } from '@angular/router';
 import { FooterComponent } from './layout/footer.component';
 import { HeaderComponent } from './layout/header.component';
 import { PortfolioChatWrapperComponent } from './ui/portfolio-chat-wrapper.component';
+import { CloudBootHudComponent } from './ui/cloud-boot-hud/cloud-boot-hud.component';
 
 @Component({
-  imports: [FooterComponent, HeaderComponent, RouterModule, PortfolioChatWrapperComponent],
+  imports: [
+    FooterComponent,
+    HeaderComponent,
+    RouterModule,
+    PortfolioChatWrapperComponent,
+    CloudBootHudComponent,
+  ],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',

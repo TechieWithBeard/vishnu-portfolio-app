@@ -22,7 +22,7 @@
   </div>
 
   <!-- Uniform Demos Grid -->
-  @if (loadingDemos()) {
+  @if (loadingDemos() && demos().length === 0) {
     <app-skeleton-loader type="card-grid" [count]="4" [columns]="2"></app-skeleton-loader>
   } @else {
     <section class="demos-grid">

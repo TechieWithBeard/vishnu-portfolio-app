@@ -23,6 +23,19 @@ export interface SkillCategory {
   orderIndex: number;
 }
 
+export interface BootLogItem {
+  timestamp: string;
+  message: string;
+  type: 'info' | 'warn' | 'success';
+}
+
+export interface ServicesStatus {
+  client: 'online';
+  render: 'warming' | 'online' | 'error';
+  supabase: 'standby' | 'online';
+  langgraph: 'standby' | 'online';
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -34,27 +47,149 @@ export class PortfolioApiService {
     return this.config.apiUrl;
   }
 
-  // State Signals
-  readonly profile = signal<Resume>(fallbackResume);
-  readonly experience = signal<ExperienceItem[]>([]);
-  readonly projects = signal<Project[]>([]);
-  readonly writing = signal<WritingItem[]>([]);
-  readonly demos = signal<Demo[]>([]);
-  readonly skills = signal<SkillCategory[]>([]);
+  readonly defaultSkills: SkillCategory[] = [
+    { id: 'cat-1', category: 'frontendArchitecture', categoryLabel: 'Frontend Architecture & Frameworks', items: fallbackResume.skills['frontendArchitecture'] || [], orderIndex: 1 },
+    { id: 'cat-2', category: 'aiInterfaces', categoryLabel: 'AI & Intelligent Interfaces', items: fallbackResume.skills['aiInterfaces'] || [], orderIndex: 2 },
+    { id: 'cat-3', category: 'testingQuality', categoryLabel: 'Testing, Quality & Accessibility', items: fallbackResume.skills['testingQuality'] || [], orderIndex: 3 },
+    { id: 'cat-4', category: 'tooling', categoryLabel: 'Tooling, Cloud & Ecosystem', items: fallbackResume.skills['tooling'] || [], orderIndex: 4 },
+  ];
 
-  // Granular Loading State Signals for Skeletons
-  readonly loading = signal<boolean>(true);
-  readonly loadingProfile = signal<boolean>(true);
-  readonly loadingExperience = signal<boolean>(true);
-  readonly loadingProjects = signal<boolean>(true);
-  readonly loadingWriting = signal<boolean>(true);
-  readonly loadingDemos = signal<boolean>(true);
-  readonly loadingSkills = signal<boolean>(true);
+  // State Signals (pre-hydrated with local-first verified data for 0ms FCP)
+  readonly profile = signal<Resume>(fallbackResume);
+  readonly experience = signal<ExperienceItem[]>(fallbackResume.experience);
+  readonly projects = signal<Project[]>(fallbackProjects);
+  readonly writing = signal<WritingItem[]>(fallbackWriting);
+  readonly demos = signal<Demo[]>(fallbackDemos);
+  readonly skills = signal<SkillCategory[]>(this.defaultSkills);
+
+  // Granular Loading State Signals (false initially for instant 0ms FCP rendering)
+  readonly loading = signal<boolean>(false);
+  readonly loadingProfile = signal<boolean>(false);
+  readonly loadingExperience = signal<boolean>(false);
+  readonly loadingProjects = signal<boolean>(false);
+  readonly loadingWriting = signal<boolean>(false);
+  readonly loadingDemos = signal<boolean>(false);
+  readonly loadingSkills = signal<boolean>(false);
 
   readonly apiConnected = signal<boolean>(false);
 
+  // Cloud Cold-Start & Warming State
+  readonly cloudStatus = signal<'idle' | 'warming' | 'connected' | 'offline'>('idle');
+  readonly elapsedSeconds = signal<number>(0);
+  readonly bootProgress = signal<number>(0);
+  readonly bootLogs = signal<BootLogItem[]>([]);
+  readonly servicesStatus = signal<ServicesStatus>({
+    client: 'online',
+    render: 'warming',
+    supabase: 'standby',
+    langgraph: 'standby',
+  });
+
+  readonly isHudOpen = signal<boolean>(false);
+  readonly activeHudTab = signal<'terminal' | 'arcade'>('terminal');
+
+  private timerInterval: any = null;
+  private warmupCheckTimeout: any = null;
+
   constructor() {
+    this.startCloudWarmupTracking();
     this.fetchAllData();
+  }
+
+  openHud(tab: 'terminal' | 'arcade' = 'terminal'): void {
+    this.activeHudTab.set(tab);
+    this.isHudOpen.set(true);
+  }
+
+  closeHud(): void {
+    this.isHudOpen.set(false);
+  }
+
+  toggleHud(): void {
+    this.isHudOpen.update((open) => !open);
+  }
+
+  setHudTab(tab: 'terminal' | 'arcade'): void {
+    this.activeHudTab.set(tab);
+  }
+
+  private startCloudWarmupTracking(): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    if (this.warmupCheckTimeout) clearTimeout(this.warmupCheckTimeout);
+
+    this.elapsedSeconds.set(0);
+    this.bootProgress.set(5);
+    this.bootLogs.set([
+      {
+        timestamp: '00:01',
+        message: '⚡ Probing Render cloud container status...',
+        type: 'info',
+      },
+    ]);
+
+    // Check after 2.5 seconds: if still not connected, Render is in cold sleep (30-50s spin-up)
+    this.warmupCheckTimeout = setTimeout(() => {
+      if (!this.apiConnected()) {
+        this.cloudStatus.set('warming');
+        this.appendBootLog('00:03', '💤 Render container idle in cold sleep. Initiating cloud spin-up...', 'warn');
+
+        this.timerInterval = setInterval(() => {
+          this.elapsedSeconds.update((s) => s + 1);
+          const s = this.elapsedSeconds();
+
+          // Smoothly interpolate progress up to 95% over ~50 seconds
+          const progress = Math.min(95, Math.round(5 + (s / 50) * 90));
+          this.bootProgress.set(progress);
+
+          if (s === 12) {
+            this.appendBootLog('00:12', '🐳 Allocating container resources & starting NestJS application server...', 'info');
+            this.servicesStatus.update((curr) => ({ ...curr, render: 'warming' }));
+          } else if (s === 24) {
+            this.appendBootLog('00:24', '🗄️ Handshake with Supabase PostgreSQL connection pool...', 'info');
+            this.servicesStatus.update((curr) => ({ ...curr, supabase: 'online' }));
+          } else if (s === 36) {
+            this.appendBootLog('00:36', '🧠 Initializing LangGraph AI Agent & WebMCP tools...', 'info');
+            this.servicesStatus.update((curr) => ({ ...curr, langgraph: 'online' }));
+          } else if (s === 48) {
+            this.appendBootLog('00:48', '⏳ Finalizing HTTP readiness probe & SSL handshake...', 'info');
+          }
+        }, 1000);
+      }
+    }, 2500);
+  }
+
+  private appendBootLog(timestamp: string, message: string, type: 'info' | 'warn' | 'success'): void {
+    this.bootLogs.update((logs) => [...logs, { timestamp, message, type }]);
+  }
+
+  private onCloudConnected(source: string): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+    if (this.warmupCheckTimeout) {
+      clearTimeout(this.warmupCheckTimeout);
+      this.warmupCheckTimeout = null;
+    }
+
+    const elapsed = this.elapsedSeconds() || 1;
+    const timeStr = elapsed < 10 ? `00:0${elapsed}` : `00:${elapsed}`;
+    
+    this.apiConnected.set(true);
+    this.cloudStatus.set('connected');
+    this.bootProgress.set(100);
+    this.servicesStatus.set({
+      client: 'online',
+      render: 'online',
+      supabase: 'online',
+      langgraph: 'online',
+    });
+
+    this.appendBootLog(
+      timeStr,
+      `🚀 Container alive! HTTP 200 OK (${source}). Live cloud data synchronized.`,
+      'success'
+    );
   }
 
   refresh(): void {
@@ -109,6 +244,7 @@ export class PortfolioApiService {
               skills: data.skills || fallbackResume.skills,
             });
             this.apiConnected.set(true);
+            this.onCloudConnected('Live API Synced');
           } else {
             this.profile.set(fallbackResume);
           }
@@ -136,6 +272,9 @@ export class PortfolioApiService {
               ) || item.location,
             }));
             this.experience.set(cleanExp);
+            if (!this.apiConnected()) {
+              this.onCloudConnected('Experience Synced');
+            }
           } else {
             this.experience.set(fallbackResume.experience);
           }
@@ -157,6 +296,9 @@ export class PortfolioApiService {
         tap((data) => {
           if (data && data.length > 0) {
             this.projects.set(data);
+            if (!this.apiConnected()) {
+              this.onCloudConnected('Projects Synced');
+            }
           } else {
             this.projects.set(fallbackProjects);
           }

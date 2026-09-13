@@ -30,7 +30,7 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
       </div>
 
       <!-- Projects Grid -->
-      @if (loadingProjects()) {
+      @if (loadingProjects() && projects().length === 0) {
         <app-skeleton-loader type="card-grid" [count]="4" [columns]="2"></app-skeleton-loader>
       } @else {
         <section class="grid two">

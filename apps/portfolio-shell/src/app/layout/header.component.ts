@@ -87,7 +87,7 @@ export class HeaderComponent {
   protected readonly links = [
     { path: '/', label: 'Overview' },
     { path: '/experience', label: 'Experience' },
-    { path: '/projects', label: 'Architecture & Projects' },
+    { path: '/projects', label: 'Projects' },
     { path: '/demos', label: 'Live Demos' },
     { path: '/writing', label: 'Articles' },
     { path: '/contact', label: 'Contact' },

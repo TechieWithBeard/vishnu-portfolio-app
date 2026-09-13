@@ -58,6 +58,16 @@ import { PortfolioApiService } from '../services/portfolio-api.service';
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" aria-hidden="true"><path d="M11.4 2.5H2v19h4.8V7.3h4.6V2.5z" fill="#46E3B7"/><path d="M17.8 2.5H13v14.2H8.2v4.8H22V2.5h-4.2z" fill="#10B981"/></svg>
             Render
           </span>
+          <!-- Cloud HUD & Dev Arcade Link -->
+          <button
+            type="button"
+            class="footer-tech-chip footer-arcade-btn"
+            (click)="openArcade()"
+            title="Open Cloud Cold-Start Monitor & Packet Runner Mini-Game"
+            style="cursor: pointer; background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.3); color: #38bdf8;"
+          >
+            🎮 Cloud HUD & Arcade
+          </button>
         </div>
       </div>
     </footer>
@@ -88,4 +98,8 @@ export class FooterComponent {
   private readonly apiService = inject(PortfolioApiService);
   protected readonly profile = this.apiService.profile;
   readonly currentYear = new Date().getFullYear();
+
+  openArcade(): void {
+    this.apiService.openHud('arcade');
+  }
 }
