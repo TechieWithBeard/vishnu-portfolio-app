@@ -9,7 +9,7 @@
 
     <h1 style="margin-bottom: var(--space-3);">Enterprise Admin Studio</h1>
     <p class="section-subtitle">
-      A decoupled <strong>React 19 + TypeScript + Vite</strong> microfrontend seamlessly integrated within this <strong>Angular 22 Nx Monorepo</strong> host shell. Demonstrating cross-framework coexistence, shared domain contracts, and robust state isolation.
+      A native <strong>React 19 + TypeScript + Vite</strong> microfrontend mounted directly into this <strong>Angular 22 Nx Monorepo</strong> host shell. Demonstrating cross-framework coexistence, shared domain contracts, and robust state isolation.
     </p>
 
     <!-- Technical Architecture Badges & Specifications -->
@@ -19,8 +19,8 @@
         <span class="spec-value">Angular 22 (Zoneless + Signals)</span>
       </div>
       <div class="spec-card">
-        <span class="spec-label">Remote Microfrontend</span>
-        <span class="spec-value">React 19 (TypeScript 5.8 + Vite)</span>
+        <span class="spec-label">Mounted Microfrontend</span>
+        <span class="spec-value">React 19 (ReactDOM.createRoot)</span>
       </div>
       <div class="spec-card">
         <span class="spec-label">Monorepo Orchestration</span>
@@ -46,82 +46,31 @@
           type="button"
           class="btn btn-secondary btn-sm"
           (click)="reloadSandbox()"
-          title="Reload Sandbox Frame"
+          title="Reset and reload React sandbox"
         >
           <span>↺</span> Reload Sandbox
         </button>
-        <a
-          class="btn btn-primary btn-sm"
-          [href]="adminUrl() | safeUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Open React 19 app in standalone fullscreen tab"
-        >
-          <span>↗</span> Standalone Tab
-        </a>
       </div>
     </div>
   </section>
 
-  <!-- Embedded React Admin Studio Window -->
-  <section class="studio-window-section">
-    <div class="browser-window">
-      <!-- Window Chrome -->
-      <div class="browser-chrome">
-        <div class="traffic-lights">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-        </div>
-
-        <div class="address-bar">
-          <span class="lock-icon">🔒</span>
-          <span class="url-text">https://www.techiewithbeard.com/admin/?demo=true</span>
-          <span class="sandbox-pill">SANDBOX MODE</span>
-        </div>
-
-        <div class="chrome-actions">
-          <button
-            type="button"
-            class="chrome-btn"
-            (click)="reloadSandbox()"
-            title="Reload sandbox window"
-            aria-label="Reload sandbox"
-          >
-            ↺
-          </button>
-          <a
-            class="chrome-btn"
-            [href]="adminUrl() | safeUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Open in new tab"
-            aria-label="Open in new tab"
-          >
-            ↗
-          </a>
-        </div>
+  <!-- Seamless Direct React 19 Mounting Canvas -->
+  <section class="studio-canvas-section">
+    @if (!isMounted() && !mountError()) {
+      <div class="studio-loading-state">
+        <div class="spinner"></div>
+        <span>Mounting React 19 Microfrontend in Angular 22 DOM...</span>
       </div>
+    }
 
-      <!-- Iframe Container -->
-      <div class="browser-body">
-        @if (!iframeLoaded()) {
-          <div class="studio-loading-overlay">
-            <div class="spinner"></div>
-            <span>Mounting React 19 Microfrontend...</span>
-          </div>
-        }
-
-        <iframe
-          #adminIframe
-          class="studio-iframe"
-          [src]="adminUrl() | safeResourceUrl"
-          (load)="onIframeLoad()"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-          loading="eager"
-          title="React 19 Portfolio Admin Microfrontend"
-        ></iframe>
+    @if (mountError()) {
+      <div class="studio-error-state">
+        <p>⚠️ Unable to mount React 19 Microfrontend: {{ mountError() }}</p>
+        <button type="button" class="btn btn-primary btn-sm" (click)="reloadSandbox()">Try Again</button>
       </div>
-    </div>
+    }
+
+    <!-- The React 19 Microfrontend mounts directly inside this element -->
+    <div class="admin-native-mount" #adminContainer></div>
   </section>
 </div>

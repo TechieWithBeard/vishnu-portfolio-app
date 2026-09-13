@@ -1,34 +1,62 @@
-import { Component, computed, ElementRef, inject, signal, ViewChild } from "@angular/core";
-import { SafeResourceUrlPipe, SafeUrlPipe } from "../../core/pipes/safe-resource-url.pipe";
-import { PortfolioApiService } from "../../services/portfolio-api.service";
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+} from "@angular/core";
 
 @Component({
   selector: "app-admin-studio",
-  imports: [SafeResourceUrlPipe, SafeUrlPipe],
   templateUrl: "./admin-studio.component.html",
   styleUrls: ["./admin-studio.component.scss"],
 })
-export class AdminStudioComponent {
-  private readonly apiService = inject(PortfolioApiService);
-  protected readonly profile = this.apiService.profile;
+export class AdminStudioComponent implements OnInit, OnDestroy {
+  @ViewChild("adminContainer", { static: true })
+  protected adminContainer!: ElementRef<HTMLDivElement>;
 
-  @ViewChild("adminIframe")
-  protected adminIframeRef?: ElementRef<HTMLIFrameElement>;
+  protected readonly isMounted = signal<boolean>(false);
+  protected readonly mountError = signal<string | null>(null);
+  private unmountFn?: () => void;
 
-  protected readonly iframeLoaded = signal<boolean>(false);
-  protected readonly iframeReloadKey = signal<number>(1);
+  async ngOnInit(): Promise<void> {
+    await this.mountApp();
+  }
 
-  // Computes embed URL for the React Admin app with safe demo flag
-  protected readonly adminUrl = computed(() => {
-    return "/admin/index.html?demo=true";
-  });
+  protected async mountApp(): Promise<void> {
+    try {
+      this.isMounted.set(false);
+      this.mountError.set(null);
 
-  protected onIframeLoad(): void {
-    this.iframeLoaded.set(true);
+      const { mountAdmin } = await import("../../../../../portfolio-admin/src/mount");
+      if (this.adminContainer?.nativeElement) {
+        if (this.unmountFn) {
+          this.unmountFn();
+        }
+        this.unmountFn = mountAdmin(this.adminContainer.nativeElement, {
+          demoMode: true,
+        });
+        this.isMounted.set(true);
+      }
+    } catch (err: any) {
+      console.error("Failed to mount React 19 Admin Microfrontend:", err);
+      this.mountError.set(err?.message || "Error mounting React microfrontend");
+    }
   }
 
   protected reloadSandbox(): void {
-    this.iframeLoaded.set(false);
-    this.iframeReloadKey.update((k) => k + 1);
+    if (this.unmountFn) {
+      this.unmountFn();
+      this.unmountFn = undefined;
+    }
+    this.mountApp();
+  }
+
+  ngOnDestroy(): void {
+    if (this.unmountFn) {
+      this.unmountFn();
+      this.unmountFn = undefined;
+    }
   }
 }
