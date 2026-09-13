@@ -4,15 +4,11 @@
     <div class="hero-content">
       <span class="eyebrow">Senior Frontend Engineer • UI & AI Architect</span>
 
-      @if (loadingProfile()) {
-        <app-skeleton-loader type="hero"></app-skeleton-loader>
-      } @else {
-        <h1 style="margin-bottom: var(--space-2);">{{ profile().name }}</h1>
-        <p class="hero-tagline" style="margin-bottom: var(--space-4);">{{ profile().tagline }}</p>
-        
-        <!-- Live Semantic HTML Code Block with Typewriter Animation -->
-        <app-code-hero-typing></app-code-hero-typing>
-      }
+      <h1 style="margin-bottom: var(--space-2);">{{ profile().name }}</h1>
+      <p class="hero-tagline" style="margin-bottom: var(--space-4);">{{ profile().tagline }}</p>
+      
+      <!-- Live Semantic HTML Code Block with Typewriter Animation & Integrated Terminal Drawer -->
+      <app-code-hero-typing></app-code-hero-typing>
 
       <div class="hero-actions">
         <a class="btn btn-primary" routerLink="/projects">
@@ -50,35 +46,26 @@
     <!-- Executive Architect Dossier Card -->
     <aside class="profile-card" aria-label="Architect Profile Card">
       <figure class="profile-portrait">
-        @if (loadingProfile()) {
-          <app-skeleton-loader type="avatar"></app-skeleton-loader>
-        } @else {
-          <img
-            src="/profile/vishnu.jpeg"
-            alt="Vishnu Thankappan - Senior Frontend Engineer & UI/AI Architect"
-            width="136"
-            height="136"
-            loading="eager"
-          />
-        }
+        <img
+          src="/profile/vishnu.jpeg"
+          alt="Vishnu Thankappan - Senior Frontend Engineer & UI/AI Architect"
+          width="136"
+          height="136"
+          loading="eager"
+        />
       </figure>
 
       <div class="profile-meta-row">
-        @if (loadingProfile()) {
-          <app-skeleton-loader type="title" width="70%"></app-skeleton-loader>
-          <app-skeleton-loader type="custom" height="0.9rem" width="50%"></app-skeleton-loader>
-        } @else {
-          <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
-            <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0;">{{ profile().name }}</h2>
-            <span class="tag tag-accent">{{ profile().alias }}</span>
-          </div>
-          <p style="font-size: 0.9rem; color: var(--color-accent); font-weight: 600; margin-bottom: 0;">
-            {{ profile().title }}
-          </p>
-          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 0;">
-            📍 {{ profile().location }}
-          </p>
-        }
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+          <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0;">{{ profile().name }}</h2>
+          <span class="tag tag-accent">{{ profile().alias }}</span>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--color-accent); font-weight: 600; margin-bottom: 0;">
+          {{ profile().title }}
+        </p>
+        <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 0;">
+          📍 {{ profile().location }}
+        </p>
 
         <div class="profile-chips">
           <span class="tag tag-accent">Nx Monorepo Lead</span>
@@ -164,7 +151,7 @@
           <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-accent); margin-bottom: var(--space-3);">
             📐 Architecture & Frameworks
           </h3>
-          @if (loadingSkills()) {
+          @if (skills().length === 0) {
             <app-skeleton-loader type="pill-cloud" [count]="6"></app-skeleton-loader>
           } @else {
             <div class="skill-cloud">
@@ -179,7 +166,7 @@
           <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-ai); margin-bottom: var(--space-3);">
             🤖 AI & Intelligent Interfaces
           </h3>
-          @if (loadingSkills()) {
+          @if (skills().length === 0) {
             <app-skeleton-loader type="pill-cloud" [count]="5"></app-skeleton-loader>
           } @else {
             <div class="skill-cloud">
