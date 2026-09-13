@@ -150,6 +150,19 @@ export const WritingTab: React.FC<WritingTabProps> = ({
 
       {loading ? (
         <div style={{ color: 'var(--text-muted)' }}>Loading articles...</div>
+      ) : items.length === 0 ? (
+        <div className="card" style={{ textAlign: 'center', padding: '3.5rem 2rem', maxWidth: '580px', margin: '2rem auto' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>✍️</div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
+            No Articles Published Yet
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+            Drafts are brewing! Add your technical articles, architecture deep-dives, or video talks to showcase your thought leadership across Medium, Dev.to, and LinkedIn.
+          </p>
+          <button className="btn btn-primary" onClick={handleOpenAdd}>
+            <span>➕</span> Add First Article
+          </button>
+        </div>
       ) : (
         <div className="items-grid">
           {items.map((item) => (
