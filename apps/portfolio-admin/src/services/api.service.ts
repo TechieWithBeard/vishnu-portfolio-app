@@ -11,7 +11,7 @@ import {
 const API_BASE = (import.meta as any).env?.VITE_API_URL || '/api';
 
 // ---------------------------------------------------------------------------
-// Demo / Recruiter Sandbox Mode Detection & State Management
+// Demo / Evaluation Sandbox Mode Detection & State Management
 // ---------------------------------------------------------------------------
 export function isDemoMode(): boolean {
   if (typeof window === 'undefined') return false;

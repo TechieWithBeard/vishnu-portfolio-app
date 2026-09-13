@@ -151,7 +151,7 @@ export const App: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '1rem' }}>🧪</span>
               <span>
-                <strong>Recruiter Sandbox Mode:</strong> Zero database mutations. Changes are simulated in-memory so you can test all operations safely.
+                <strong>Evaluation Sandbox Mode:</strong> Zero database mutations. Changes are simulated in-memory so you can test all operations safely.
               </span>
             </div>
             <button
