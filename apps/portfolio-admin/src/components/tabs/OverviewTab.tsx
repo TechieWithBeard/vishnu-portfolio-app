@@ -89,7 +89,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
               Seed Default Data
             </button>
             <a
-              href="http://localhost:3000/api/health"
+              href="/api/health"
               target="_blank"
               rel="noreferrer"
               className="btn btn-secondary btn-sm"

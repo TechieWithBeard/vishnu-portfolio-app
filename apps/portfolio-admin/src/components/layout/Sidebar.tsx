@@ -78,13 +78,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="sidebar-footer">
         <div className="nav-section-title">Live Portfolio</div>
         <a
-          href="http://localhost:4200"
-          target="_blank"
-          rel="noreferrer"
+          href="/"
           className="btn btn-secondary btn-sm"
           style={{ width: '100%', justifyContent: 'center' }}
         >
-          <span>🌐</span> View Shell (Port 4200)
+          <span>🌐</span> View Portfolio Overview
         </a>
       </div>
     </aside>

@@ -528,8 +528,8 @@ export class AppStackComponent {
         'Offline resilience: instant client fallback if DB is unreachable',
       ],
       actionLabel: 'Launch Admin Studio',
-      actionLink: 'http://localhost:5173',
-      isExternal: true,
+      actionLink: '/admin-studio',
+      isExternal: false,
     },
     {
       id: 'webmcp',
@@ -588,8 +588,8 @@ export class AppStackComponent {
         'Interactive modal UI for editing projects, demos and skills',
       ],
       actionLabel: 'Open Admin Studio',
-      actionLink: 'http://localhost:5173',
-      isExternal: true,
+      actionLink: '/admin-studio',
+      isExternal: false,
     },
   ];
 
