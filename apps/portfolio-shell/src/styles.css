@@ -297,6 +297,18 @@ strong {
   font-weight: 600;
 }
 
+.nav-framework-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-full);
+  background: rgba(6, 182, 212, 0.15);
+  color: #06b6d4;
+  margin-left: 0.35rem;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+}
+
 /* Header Actions */
 .header-actions {
   display: flex;

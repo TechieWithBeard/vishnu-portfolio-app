@@ -5,6 +5,7 @@ import { ProjectsComponent } from './pages/projects/projects.component';
 import { DemosComponent } from './pages/demos/demos.component';
 import { WritingComponent } from './pages/writing/writing.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { AdminStudioComponent } from './pages/admin-studio/admin-studio.component';
 
 export const appRoutes: Route[] = [
   {
@@ -22,6 +23,10 @@ export const appRoutes: Route[] = [
   {
     path: 'demos',
     component: DemosComponent,
+  },
+  {
+    path: 'admin-studio',
+    component: AdminStudioComponent,
   },
   {
     path: 'writing',

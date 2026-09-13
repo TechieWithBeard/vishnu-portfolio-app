@@ -18,6 +18,7 @@ export const App: React.FC = () => {
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const demoMode = AdminApi.isDemoMode();
 
   useEffect(() => {
     loadHealth();
@@ -56,6 +57,14 @@ export const App: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleResetSandbox = () => {
+    AdminApi.resetDemoData();
+    addToast('info', 'Sandbox data reset to live baseline!');
+    setTimeout(() => {
+      window.location.reload();
+    }, 400);
   };
 
   const renderActiveTab = () => {
@@ -124,6 +133,38 @@ export const App: React.FC = () => {
         health={health}
       />
       <div className="main-content">
+        {demoMode && (
+          <div
+            style={{
+              background: 'linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(147, 51, 234, 0.12))',
+              borderBottom: '1px solid rgba(59, 130, 246, 0.25)',
+              padding: '0.65rem 1.25rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: '0.82rem',
+              color: 'var(--text-primary)',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '1rem' }}>🧪</span>
+              <span>
+                <strong>Recruiter Sandbox Mode:</strong> Zero database mutations. Changes are simulated in-memory so you can test all operations safely.
+              </span>
+            </div>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={handleResetSandbox}
+              style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem' }}
+              title="Reset in-memory changes back to live baseline"
+            >
+              ↺ Reset Sandbox
+            </button>
+          </div>
+        )}
         <Header
           health={health}
           onRefresh={loadHealth}

@@ -30,6 +30,9 @@ import { PortfolioApiService } from '../services/portfolio-api.service';
               [routerLinkActiveOptions]="{ exact: link.path === '/' }"
             >
               {{ link.label }}
+              @if (link.badge) {
+                <span class="nav-framework-pill">{{ link.badge }}</span>
+              }
             </a>
           }
         </nav>
@@ -70,6 +73,9 @@ import { PortfolioApiService } from '../services/portfolio-api.service';
               (click)="closeMobileMenu()"
             >
               {{ link.label }}
+              @if (link.badge) {
+                <span class="nav-framework-pill">{{ link.badge }}</span>
+              }
             </a>
           }
         </nav>
@@ -84,11 +90,12 @@ export class HeaderComponent {
 
   protected readonly mobileMenuOpen = signal<boolean>(false);
 
-  protected readonly links = [
+  protected readonly links: Array<{ path: string; label: string; badge?: string }> = [
     { path: '/', label: 'Overview' },
     { path: '/experience', label: 'Experience' },
     { path: '/projects', label: 'Projects' },
     { path: '/demos', label: 'Live Demos' },
+    { path: '/admin-studio', label: 'Admin Studio', badge: 'React 19' },
     { path: '/writing', label: 'Articles' },
     { path: '/contact', label: 'Contact' },
   ];

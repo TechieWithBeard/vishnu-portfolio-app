@@ -1,0 +1,127 @@
+<div class="container admin-studio-page">
+  <!-- Architecture Showcase Header -->
+  <section class="section" style="padding-bottom: var(--space-4);">
+    <div class="header-eyebrow-row">
+      <span class="eyebrow">Enterprise Microfrontend Showcase</span>
+      <span class="framework-tag react-tag">⚛️ React 19 Remote</span>
+      <span class="framework-tag angular-tag">🅰️ Angular 22 Host</span>
+    </div>
+
+    <h1 style="margin-bottom: var(--space-3);">Enterprise Admin Studio</h1>
+    <p class="section-subtitle">
+      A decoupled <strong>React 19 + TypeScript + Vite</strong> microfrontend seamlessly integrated within this <strong>Angular 22 Nx Monorepo</strong> host shell. Demonstrating cross-framework coexistence, shared domain contracts, and robust state isolation.
+    </p>
+
+    <!-- Technical Architecture Badges & Specifications -->
+    <div class="tech-spec-grid">
+      <div class="spec-card">
+        <span class="spec-label">Host Shell</span>
+        <span class="spec-value">Angular 22 (Zoneless + Signals)</span>
+      </div>
+      <div class="spec-card">
+        <span class="spec-label">Remote Microfrontend</span>
+        <span class="spec-value">React 19 (TypeScript 5.8 + Vite)</span>
+      </div>
+      <div class="spec-card">
+        <span class="spec-label">Monorepo Orchestration</span>
+        <span class="spec-value">Nx Monorepo (Shared Contracts)</span>
+      </div>
+      <div class="spec-card">
+        <span class="spec-label">Execution Guard</span>
+        <span class="spec-value">🧪 In-Memory Sandbox (Zero DB Writes)</span>
+      </div>
+    </div>
+
+    <!-- Recruiter Sandbox Safety Callout -->
+    <div class="sandbox-callout">
+      <div class="callout-icon">🛡️</div>
+      <div class="callout-body">
+        <div class="callout-title">Interactive Recruiter Sandbox Active</div>
+        <p class="callout-desc">
+          Feel free to test all administrative capabilities: create projects, edit career history, reorder demos, or update skills. All mutations are intercepted in-memory and reflected instantly in the UI with toast feedback — <strong>your actions will never write to or modify the production database</strong>.
+        </p>
+      </div>
+      <div class="callout-actions">
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          (click)="reloadSandbox()"
+          title="Reload Sandbox Frame"
+        >
+          <span>↺</span> Reload Sandbox
+        </button>
+        <a
+          class="btn btn-primary btn-sm"
+          [href]="adminUrl() | safeUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Open React 19 app in standalone fullscreen tab"
+        >
+          <span>↗</span> Standalone Tab
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Embedded React Admin Studio Window -->
+  <section class="studio-window-section">
+    <div class="browser-window">
+      <!-- Window Chrome -->
+      <div class="browser-chrome">
+        <div class="traffic-lights">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+
+        <div class="address-bar">
+          <span class="lock-icon">🔒</span>
+          <span class="url-text">https://www.techiewithbeard.com/admin/?demo=true</span>
+          <span class="sandbox-pill">SANDBOX MODE</span>
+        </div>
+
+        <div class="chrome-actions">
+          <button
+            type="button"
+            class="chrome-btn"
+            (click)="reloadSandbox()"
+            title="Reload sandbox window"
+            aria-label="Reload sandbox"
+          >
+            ↺
+          </button>
+          <a
+            class="chrome-btn"
+            [href]="adminUrl() | safeUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open in new tab"
+            aria-label="Open in new tab"
+          >
+            ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Iframe Container -->
+      <div class="browser-body">
+        @if (!iframeLoaded()) {
+          <div class="studio-loading-overlay">
+            <div class="spinner"></div>
+            <span>Mounting React 19 Microfrontend...</span>
+          </div>
+        }
+
+        <iframe
+          #adminIframe
+          class="studio-iframe"
+          [src]="adminUrl() | safeResourceUrl"
+          (load)="onIframeLoad()"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          loading="eager"
+          title="React 19 Portfolio Admin Microfrontend"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+</div>
