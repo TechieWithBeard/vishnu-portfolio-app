@@ -4,6 +4,8 @@
   bottom: 24px;
   left: 24px;
   z-index: 990;
+  transform: translateY(calc(-1 * var(--footer-lift, 0px)));
+  transition: transform 0.08s ease-out;
   animation: floatIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

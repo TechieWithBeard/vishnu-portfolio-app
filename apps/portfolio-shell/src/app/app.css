@@ -31,17 +31,18 @@
   cursor: pointer;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.25);
   backdrop-filter: blur(12px);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(calc(-1 * var(--footer-lift, 0px)));
+  transition: transform 0.08s ease-out, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .floating-ai-cockpit-btn:hover {
-  transform: translateY(-3px) scale(1.03);
+  transform: translateY(calc(-1 * var(--footer-lift, 0px) - 3px)) scale(1.03);
   border-color: rgba(56, 189, 248, 0.8);
   box-shadow: 0 14px 35px rgba(0, 0, 0, 0.6), 0 0 28px rgba(56, 189, 248, 0.45);
 }
 
 .floating-ai-cockpit-btn:active {
-  transform: translateY(-1px) scale(0.98);
+  transform: translateY(calc(-1 * var(--footer-lift, 0px) - 1px)) scale(0.98);
 }
 
 .ai-btn-pulse {
