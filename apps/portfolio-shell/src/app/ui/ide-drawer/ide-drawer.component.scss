@@ -252,6 +252,11 @@
 .stat-pill {
   color: #94a3b8;
   strong { color: #38bdf8; }
+
+  &.global-high {
+    color: #fbbf24;
+    strong { color: #fef08a; }
+  }
 }
 
 .arcade-tip {
@@ -333,6 +338,24 @@
   font-size: 0.7rem;
   color: #e2e8f0;
   margin-bottom: 4px;
+
+  &.global-ref {
+    color: #fbbf24;
+    font-size: 0.65rem;
+  }
+}
+
+.record-badge {
+  background: rgba(251, 191, 36, 0.2);
+  border: 1px solid #fbbf24;
+  color: #fef08a;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  margin: 4px auto;
+  display: inline-block;
+  animation: pulseDot 1.2s infinite;
 }
 
 .overlay-prompt {

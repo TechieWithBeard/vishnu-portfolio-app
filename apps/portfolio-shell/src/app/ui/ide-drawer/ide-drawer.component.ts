@@ -71,6 +71,8 @@ export class IdeDrawerComponent implements OnInit, OnDestroy {
   // Game signals
   readonly gameScore = signal<number>(0);
   readonly gameHighScore = signal<number>(0);
+  readonly globalHighScore = this.apiService.globalHighScore;
+  readonly isNewRecord = signal<boolean>(false);
   readonly gameState = signal<'ready' | 'playing' | 'gameover'>('ready');
   readonly lastKillerObstacle = signal<string>('');
 
@@ -282,10 +284,12 @@ export class IdeDrawerComponent implements OnInit, OnDestroy {
   }
 
   startGame(): void {
+    this.isNewRecord.set(false);
     this.gameState.set('playing');
   }
 
   resetGame(): void {
+    this.isNewRecord.set(false);
     const dpr = Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2);
     this.player.y = this.groundY - this.player.height;
     this.player.vy = 0;
@@ -478,6 +482,15 @@ export class IdeDrawerComponent implements OnInit, OnDestroy {
     this.gameState.set('gameover');
     this.lastKillerObstacle.set(killer);
     this.playSound('gameover');
+
+    const finalScore = this.gameScore();
+    if (finalScore > 0) {
+      this.apiService.submitArcadeScore(finalScore).subscribe((res) => {
+        if (res?.isNewRecord) {
+          this.isNewRecord.set(true);
+        }
+      });
+    }
 
     for (let i = 0; i < 20; i++) {
       this.particles.push({

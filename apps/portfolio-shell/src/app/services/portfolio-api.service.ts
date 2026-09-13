@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, delay, of, tap } from 'rxjs';
+import { Observable, catchError, delay, of, tap } from 'rxjs';
 import {
   Resume,
   Project,
@@ -47,6 +47,9 @@ export class PortfolioApiService {
     return this.config.apiUrl;
   }
 
+  // Supabase Global High Score Signal (Persisted in DB & Cached)
+  readonly globalHighScore = signal<number>(240);
+
   readonly defaultSkills: SkillCategory[] = [
     { id: 'cat-1', category: 'frontendArchitecture', categoryLabel: 'Frontend Architecture & Frameworks', items: fallbackResume.skills['frontendArchitecture'] || [], orderIndex: 1 },
     { id: 'cat-2', category: 'aiInterfaces', categoryLabel: 'AI & Intelligent Interfaces', items: fallbackResume.skills['aiInterfaces'] || [], orderIndex: 2 },
@@ -92,8 +95,17 @@ export class PortfolioApiService {
   private warmupCheckTimeout: any = null;
 
   constructor() {
+    try {
+      const saved = localStorage.getItem('packet_runner_global_high');
+      if (saved) {
+        const num = parseInt(saved, 10);
+        if (num > 0) this.globalHighScore.set(num);
+      }
+    } catch {}
+
     this.startCloudWarmupTracking();
     this.fetchAllData();
+    this.fetchArcadeHighScore();
   }
 
   openHud(tab: 'terminal' | 'arcade' = 'terminal'): void {
@@ -190,6 +202,7 @@ export class PortfolioApiService {
       `🚀 Container alive! HTTP 200 OK (${source}). Live cloud data synchronized.`,
       'success'
     );
+    this.fetchArcadeHighScore();
   }
 
   refresh(): void {
@@ -381,5 +394,58 @@ export class PortfolioApiService {
         })
       )
       .subscribe();
+  }
+
+  // ==============================================================================
+  // Supabase Cloud High Score Operations
+  // ==============================================================================
+  fetchArcadeHighScore(): void {
+    this.http
+      .get<{ highScore: number }>(`${this.apiBase}/arcade/high-score`)
+      .pipe(
+        catchError(() => of(null)),
+        tap((res) => {
+          if (res && typeof res.highScore === 'number' && res.highScore > 0) {
+            this.globalHighScore.set(res.highScore);
+            try {
+              localStorage.setItem('packet_runner_global_high', res.highScore.toString());
+            } catch {}
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  submitArcadeScore(
+    score: number,
+    playerName: string = 'PacketRunner'
+  ): Observable<{ highScore: number; isNewRecord: boolean }> {
+    const cleanScore = Math.max(0, Math.floor(score));
+    if (cleanScore > this.globalHighScore()) {
+      this.globalHighScore.set(cleanScore);
+      try {
+        localStorage.setItem('packet_runner_global_high', cleanScore.toString());
+      } catch {}
+    }
+
+    return this.http
+      .post<{ success: boolean; highScore: number; isNewRecord: boolean }>(`${this.apiBase}/arcade/score`, {
+        score: cleanScore,
+        playerName,
+      })
+      .pipe(
+        catchError(() =>
+          of({ success: false, highScore: this.globalHighScore(), isNewRecord: false })
+        ),
+        tap((res) => {
+          if (res && typeof res.highScore === 'number') {
+            const updated = Math.max(this.globalHighScore(), res.highScore);
+            this.globalHighScore.set(updated);
+            try {
+              localStorage.setItem('packet_runner_global_high', updated.toString());
+            } catch {}
+          }
+        })
+      );
   }
 }

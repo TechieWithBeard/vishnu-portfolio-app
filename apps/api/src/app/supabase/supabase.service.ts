@@ -30,6 +30,7 @@ export class SupabaseService implements OnModuleInit {
   private writingStore: WritingItem[] = [...initialWriting];
   private demosStore: DemoItem[] = [...initialDemos];
   private skillsStore: SkillCategoryItem[] = [...initialSkills];
+  private arcadeHighScoreStore = 240;
 
   onModuleInit() {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -1049,5 +1050,58 @@ export class SupabaseService implements OnModuleInit {
     });
 
     return updatedCount;
+  }
+
+  // ==============================================================================
+  // Arcade Leaderboard & High Score Operations (Packet Runner)
+  // ==============================================================================
+  public async getArcadeHighScore(): Promise<number> {
+    if (this.client) {
+      try {
+        const { data, error } = await this.client
+          .from('arcade_scores')
+          .select('score')
+          .order('score', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (data && !error && typeof data.score === 'number') {
+          this.arcadeHighScoreStore = Math.max(this.arcadeHighScoreStore, data.score);
+          return this.arcadeHighScoreStore;
+        }
+      } catch (err: any) {
+        this.logger.warn(`Supabase getArcadeHighScore notice: ${err.message}. Using local store.`);
+      }
+    }
+    return this.arcadeHighScoreStore;
+  }
+
+  public async saveArcadeScore(
+    score: number,
+    playerName: string = 'PacketRunner'
+  ): Promise<{ highScore: number; isNewRecord: boolean }> {
+    const cleanScore = Math.max(0, Math.min(Math.floor(score), 500000));
+    const currentHigh = await this.getArcadeHighScore();
+    const isNewRecord = cleanScore > currentHigh;
+
+    if (this.client) {
+      try {
+        await this.client.from('arcade_scores').insert({
+          score: cleanScore,
+          player_name: (playerName || 'PacketRunner').slice(0, 40),
+        });
+      } catch (err: any) {
+        this.logger.warn(`Supabase saveArcadeScore notice: ${err.message}. Updated local store.`);
+      }
+    }
+
+    if (isNewRecord) {
+      this.arcadeHighScoreStore = cleanScore;
+    }
+
+    return {
+      highScore: Math.max(currentHigh, cleanScore),
+      isNewRecord,
+    };
   }
 }

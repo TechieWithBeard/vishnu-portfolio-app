@@ -70,6 +70,8 @@ export class CloudBootHudComponent implements OnDestroy {
   // Game state
   readonly gameScore = signal<number>(0);
   readonly gameHighScore = signal<number>(0);
+  readonly globalHighScore = this.apiService.globalHighScore;
+  readonly isNewRecord = signal<boolean>(false);
   readonly gameState = signal<'ready' | 'playing' | 'gameover'>('ready');
   readonly lastKillerObstacle = signal<string>('');
 
@@ -297,10 +299,12 @@ export class CloudBootHudComponent implements OnDestroy {
   }
 
   private startGame(): void {
+    this.isNewRecord.set(false);
     this.gameState.set('playing');
   }
 
   private resetGame(): void {
+    this.isNewRecord.set(false);
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     this.player.y = this.groundY - this.player.height;
     this.player.vy = 0;
@@ -479,6 +483,15 @@ export class CloudBootHudComponent implements OnDestroy {
     this.lastKillerObstacle.set(killer);
     this.playSound('gameover');
 
+    const finalScore = this.gameScore();
+    if (finalScore > 0) {
+      this.apiService.submitArcadeScore(finalScore).subscribe((res) => {
+        if (res?.isNewRecord) {
+          this.isNewRecord.set(true);
+        }
+      });
+    }
+
     // Death explosion
     for (let i = 0; i < 24; i++) {
       this.particles.push({
@@ -617,8 +630,8 @@ export class CloudBootHudComponent implements OnDestroy {
     ctx.fillText(`SCORE: ${this.gameScore()}`, 16 * dpr, 24 * dpr);
 
     ctx.textAlign = 'right';
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillText(`HIGH: ${this.gameHighScore()}`, w - 16 * dpr, 24 * dpr);
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillText(`🏆 SUPABASE: ${this.globalHighScore()}`, w - 16 * dpr, 24 * dpr);
 
     // 8. Ready / Game Over Overlays
     if (this.gameState() === 'ready') {
@@ -632,7 +645,7 @@ export class CloudBootHudComponent implements OnDestroy {
 
       ctx.fillStyle = '#f8fafc';
       ctx.font = `${11 * dpr}px sans-serif`;
-      ctx.fillText('Jump over memory leaks & collect signals while Render warms up!', w / 2, h / 2 + 6 * dpr);
+      ctx.fillText(`Dodge bugs • 🏆 All-Time Record: ${this.globalHighScore()} (Supabase)`, w / 2, h / 2 + 6 * dpr);
 
       ctx.fillStyle = '#fbbf24';
       ctx.font = `bold ${11.5 * dpr}px monospace`;
@@ -648,7 +661,8 @@ export class CloudBootHudComponent implements OnDestroy {
 
       ctx.fillStyle = '#f8fafc';
       ctx.font = `${12 * dpr}px monospace`;
-      ctx.fillText(`Final Score: ${this.gameScore()}  •  High Score: ${this.gameHighScore()}`, w / 2, h / 2 + 6 * dpr);
+      const recordNotice = this.isNewRecord() ? ' 🎉 (NEW RECORD!)' : '';
+      ctx.fillText(`Score: ${this.gameScore()}  •  🏆 Supabase High: ${this.globalHighScore()}${recordNotice}`, w / 2, h / 2 + 6 * dpr);
 
       ctx.fillStyle = '#38bdf8';
       ctx.font = `bold ${11.5 * dpr}px monospace`;

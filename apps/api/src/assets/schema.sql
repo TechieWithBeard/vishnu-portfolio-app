@@ -383,3 +383,38 @@ INSERT INTO skills (id, category, category_label, items, order_index) VALUES
 ('cat-4', 'tooling', 'Tooling, Cloud & Ecosystem', '["Git & Trunk-Based Dev", "Docker", "Webpack & Vite", "Tailwind CSS v4", "Azure & Vercel", "REST & GraphQL APIs"]'::jsonb, 4),
 ('cat-5', 'crossPlatform', 'State Management & Platforms', '["NgRx & Signals Store", "Ionic Framework", "Cross-Platform Web", "Zoneless Angular", "PWA & Offline First"]'::jsonb, 5)
 ON CONFLICT (id) DO NOTHING;
+
+-- ==============================================================================
+-- 9. Arcade Leaderboard & High Scores (Packet Runner Mini-Game)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS arcade_scores (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    player_name TEXT NOT NULL DEFAULT 'PacketRunner',
+    score INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for high score lookups
+CREATE INDEX IF NOT EXISTS idx_arcade_scores_score ON arcade_scores (score DESC);
+
+-- Row Level Security
+ALTER TABLE arcade_scores ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'arcade_scores' AND policyname = 'Allow public read arcade_scores'
+    ) THEN
+        CREATE POLICY "Allow public read arcade_scores" ON arcade_scores FOR SELECT USING (true);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'arcade_scores' AND policyname = 'Allow public insert arcade_scores'
+    ) THEN
+        CREATE POLICY "Allow public insert arcade_scores" ON arcade_scores FOR INSERT WITH CHECK (true);
+    END IF;
+END $$;
+
+-- Baseline seed high score
+INSERT INTO arcade_scores (player_name, score)
+SELECT 'Vishnu (Architect)', 380
+WHERE NOT EXISTS (SELECT 1 FROM arcade_scores);
+

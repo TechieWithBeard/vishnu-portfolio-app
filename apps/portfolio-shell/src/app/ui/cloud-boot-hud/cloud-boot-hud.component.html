@@ -232,6 +232,9 @@
               } @else {
                 <span class="badge connected">🎉 Container is LIVE (HTTP 200)</span>
               }
+              <span class="badge connected" style="background: rgba(251, 191, 36, 0.18); border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;" title="All-time high score stored in Supabase">
+                🏆 Supabase High: {{ globalHighScore() }}
+              </span>
             </div>
 
             <div class="arcade-actions">

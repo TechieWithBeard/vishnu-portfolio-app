@@ -7,6 +7,7 @@ import { WritingController } from './controllers/writing.controller';
 import { DemosController } from './controllers/demos.controller';
 import { SkillsController } from './controllers/skills.controller';
 import { SeedController, HealthController } from './controllers/seed.controller';
+import { ArcadeController } from './controllers/arcade.controller';
 
 import { McpModule } from './mcp/mcp.module';
 
@@ -21,6 +22,7 @@ import { McpModule } from './mcp/mcp.module';
     DemosController,
     SkillsController,
     SeedController,
+    ArcadeController,
   ],
   providers: [SupabaseService],
   exports: [SupabaseService],

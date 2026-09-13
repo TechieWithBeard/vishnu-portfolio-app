@@ -158,7 +158,10 @@
           <div class="arcade-controls-bar">
             <div class="arcade-stats">
               <span class="stat-pill">Score: <strong>{{ gameScore() }}</strong></span>
-              <span class="stat-pill">High: <strong>{{ gameHighScore() }}</strong></span>
+              <span class="stat-pill" title="Current session high score">Session: <strong>{{ gameHighScore() }}</strong></span>
+              <span class="stat-pill global-high" title="Global all-time high score stored in Supabase">
+                🏆 Global: <strong>{{ globalHighScore() }}</strong>
+              </span>
             </div>
 
             <div class="arcade-tip">
@@ -197,6 +200,7 @@
                   <div class="overlay-icon">🎮</div>
                   <div class="overlay-title">PACKET RUNNER</div>
                   <div class="overlay-sub">Jump over 404s & Memory Leaks • Collect Signals & Nx Cache</div>
+                  <div class="overlay-score global-ref">🏆 All-Time Record: {{ globalHighScore() }} (Supabase)</div>
                   <div class="overlay-prompt">Click canvas or press <kbd>SPACE</kbd> to launch</div>
                 </div>
               </div>
@@ -209,7 +213,10 @@
                   <div class="overlay-icon">💥</div>
                   <div class="overlay-title danger">PACKET DROPPED!</div>
                   <div class="overlay-sub">Crash reason: <code>{{ lastKillerObstacle() }}</code></div>
-                  <div class="overlay-score">Score: {{ gameScore() }} | High: {{ gameHighScore() }}</div>
+                  <div class="overlay-score">Score: {{ gameScore() }} | 🏆 Supabase High: {{ globalHighScore() }}</div>
+                  @if (isNewRecord()) {
+                    <div class="record-badge">🎉 NEW RECORD SAVED TO SUPABASE!</div>
+                  }
                   <div class="overlay-prompt">Click canvas or press <kbd>SPACE</kbd> to retry</div>
                 </div>
               </div>
