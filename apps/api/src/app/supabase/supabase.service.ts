@@ -55,6 +55,19 @@ export class SupabaseService implements OnModuleInit {
     }
   }
 
+  private sanitizeAvailability(av: any) {
+    if (!av) return initialProfile.availability;
+    return {
+      status: /open|seeking|opportunit/i.test(av.status || '')
+        ? initialProfile.availability.status
+        : (av.status || initialProfile.availability.status),
+      target: av.target || initialProfile.availability.target,
+      note: /opportunit|avail/i.test(av.note || '')
+        ? initialProfile.availability.note
+        : (av.note || initialProfile.availability.note),
+    };
+  }
+
   public async syncFromSupabase(): Promise<void> {
     if (!this.client) return;
     try {
@@ -73,7 +86,7 @@ export class SupabaseService implements OnModuleInit {
           linkedin: pData.linkedin,
           github: pData.github,
           summary: pData.summary,
-          availability: pData.availability || initialProfile.availability,
+          availability: this.sanitizeAvailability(pData.availability),
           skills: pData.skills || initialProfile.skills,
           updatedAt: pData.updated_at,
         };
@@ -220,7 +233,7 @@ export class SupabaseService implements OnModuleInit {
             linkedin: data.linkedin,
             github: data.github,
             summary: data.summary,
-            availability: data.availability || initialProfile.availability,
+            availability: this.sanitizeAvailability(data.availability),
             skills: data.skills || initialProfile.skills,
             updatedAt: data.updated_at,
           };

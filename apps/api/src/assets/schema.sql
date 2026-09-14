@@ -27,7 +27,7 @@ CREATE TABLE profile (
     linkedin TEXT,
     github TEXT,
     summary TEXT,
-    availability JSONB DEFAULT '{"status": "Available for opportunities", "target": "Senior Frontend / UI Architecture Roles", "note": "Remote & EU/Global friendly"}'::jsonb,
+    availability JSONB DEFAULT '{"status": "Active Engineering & Architecture", "target": "Enterprise UI Architecture & AI Systems", "note": "Consulting, architectural advisory, and technical collaboration"}'::jsonb,
     skills JSONB DEFAULT '{}'::jsonb,
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

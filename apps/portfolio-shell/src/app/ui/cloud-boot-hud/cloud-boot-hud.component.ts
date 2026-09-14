@@ -61,7 +61,7 @@ export class CloudBootHudComponent implements OnDestroy {
   readonly isHudOpen = this.apiService.isHudOpen;
   readonly activeTab = this.apiService.activeHudTab;
 
-  // Sound toggle (muted by default for recruiter etiquette)
+  // Sound toggle (muted by default for visitor etiquette)
   readonly soundEnabled = signal<boolean>(false);
 
   // Audio Context (lazy initialized)
