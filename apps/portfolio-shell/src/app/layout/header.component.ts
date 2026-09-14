@@ -93,7 +93,7 @@ export class HeaderComponent {
   protected readonly links: Array<{ path: string; label: string; badge?: string }> = [
     { path: '/', label: 'Overview' },
     { path: '/experience', label: 'Experience' },
-    { path: '/projects', label: 'Projects' },
+    // { path: '/projects', label: 'Projects' },
     { path: '/demos', label: 'Live Demos' },
     { path: '/admin-studio', label: 'Admin Studio', badge: 'React 19' },
     { path: '/writing', label: 'Articles' },
