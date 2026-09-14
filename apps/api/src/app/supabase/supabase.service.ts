@@ -124,7 +124,7 @@ export class SupabaseService implements OnModuleInit {
         .from('writing')
         .select('*')
         .order('order_index', { ascending: true });
-      if (wData && !wErr && wData.length > 0) {
+      if (!wErr && Array.isArray(wData)) {
         this.writingStore = wData.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -528,7 +528,7 @@ export class SupabaseService implements OnModuleInit {
           query = query.ilike('platform', platform);
         }
         const { data, error } = await query;
-        if (data && !error && data.length > 0) {
+        if (!error && Array.isArray(data)) {
           this.writingStore = data.map((item: any) => ({
             id: item.id,
             title: item.title,

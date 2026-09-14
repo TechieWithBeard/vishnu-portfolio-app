@@ -32,7 +32,7 @@ export function isDemoMode(): boolean {
   }
 }
 
-const STORAGE_KEY = 'portfolio_admin_sandbox_state_v1';
+const STORAGE_KEY = 'portfolio_admin_sandbox_state_v2';
 
 interface DemoStore {
   profile: ProfileData | null;

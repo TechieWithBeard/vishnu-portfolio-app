@@ -331,10 +331,8 @@ export class PortfolioApiService {
           return of(null);
         }),
         tap((data) => {
-          if (data && data.length > 0) {
+          if (Array.isArray(data)) {
             this.writing.set(data);
-          } else {
-            this.writing.set(fallbackWriting);
           }
           this.loadingWriting.set(false);
         })
