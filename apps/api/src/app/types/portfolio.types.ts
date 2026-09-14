@@ -83,3 +83,14 @@ export interface SkillCategoryItem {
   items: string[];
   orderIndex: number;
 }
+
+export interface AgentQueryLog {
+  id?: string;
+  sessionId: string;
+  query: string;
+  answerPreview?: string;
+  selectedTool?: string;
+  provider?: string;
+  isFreeTier?: boolean;
+  createdAt?: string;
+}

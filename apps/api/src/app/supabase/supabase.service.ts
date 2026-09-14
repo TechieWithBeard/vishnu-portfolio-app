@@ -7,6 +7,7 @@ import {
   WritingItem,
   DemoItem,
   SkillCategoryItem,
+  AgentQueryLog,
 } from '../types/portfolio.types';
 import {
   initialProfile,
@@ -31,6 +32,7 @@ export class SupabaseService implements OnModuleInit {
   private demosStore: DemoItem[] = [...initialDemos];
   private skillsStore: SkillCategoryItem[] = [...initialSkills];
   private arcadeHighScoreStore = 240;
+  private queryLogsStore: AgentQueryLog[] = [];
 
   onModuleInit() {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -1116,5 +1118,62 @@ export class SupabaseService implements OnModuleInit {
       highScore: Math.max(currentHigh, cleanScore),
       isNewRecord,
     };
+  }
+
+  // --- AGENT QUERY OBSERVABILITY & TELEMETRY ---
+  public async logAgentQuery(log: Omit<AgentQueryLog, 'id' | 'createdAt'>): Promise<void> {
+    const entry: AgentQueryLog = {
+      ...log,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Keep in-memory buffer up to 100 entries
+    this.queryLogsStore.unshift(entry);
+    if (this.queryLogsStore.length > 100) {
+      this.queryLogsStore.pop();
+    }
+
+    if (this.client) {
+      try {
+        await this.client.from('agent_queries').insert({
+          session_id: entry.sessionId,
+          query: entry.query,
+          answer_preview: entry.answerPreview ? entry.answerPreview.slice(0, 300) : null,
+          selected_tool: entry.selectedTool || 'ask_portfolio_agent',
+          provider: entry.provider || 'default',
+          is_free_tier: entry.isFreeTier ?? true,
+        });
+      } catch (err: any) {
+        this.logger.warn(`Supabase logAgentQuery notice: ${err.message}. Retained in local store.`);
+      }
+    }
+  }
+
+  public async getAgentQueries(limit = 50): Promise<AgentQueryLog[]> {
+    if (this.client) {
+      try {
+        const { data, error } = await this.client
+          .from('agent_queries')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(limit);
+
+        if (data && !error) {
+          return data.map((q: any) => ({
+            id: q.id,
+            sessionId: q.session_id,
+            query: q.query,
+            answerPreview: q.answer_preview,
+            selectedTool: q.selected_tool,
+            provider: q.provider,
+            isFreeTier: q.is_free_tier,
+            createdAt: q.created_at,
+          }));
+        }
+      } catch (err: any) {
+        this.logger.warn(`Supabase getAgentQueries notice: ${err.message}. Serving local buffer.`);
+      }
+    }
+    return this.queryLogsStore.slice(0, limit);
   }
 }

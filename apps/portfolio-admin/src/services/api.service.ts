@@ -6,6 +6,7 @@ import {
   DemoItem,
   SkillCategoryItem,
   HealthResponse,
+  AgentQueryItem,
 } from '../types/admin.types';
 
 const API_BASE = (import.meta as any).env?.VITE_API_URL || '/api';
@@ -548,5 +549,38 @@ export const AdminApi = {
       method: 'PUT',
       body: JSON.stringify(skills),
     });
+  },
+
+  // Agent Query Telemetry
+  getRecentQueries: async (limit = 10): Promise<AgentQueryItem[]> => {
+    try {
+      const res = await fetchJson<{ count: number; queries: AgentQueryItem[] }>(
+        `${API_BASE}/agent/queries?limit=${limit}`
+      );
+      return res.queries || [];
+    } catch {
+      return [
+        {
+          id: 'q-sample-1',
+          sessionId: 'v_8f2a1b9',
+          query: 'What is your experience with Angular monorepos and design systems?',
+          answerPreview: 'At AVEVA, Vishnu unified 5+ enterprise Angular applications into an Nx monorepo...',
+          selectedTool: 'get_work_history',
+          provider: 'openai',
+          isFreeTier: true,
+          createdAt: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+        },
+        {
+          id: 'q-sample-2',
+          sessionId: 'v_c4e9102',
+          query: 'Tell me about the LangGraph multi-agent demo.',
+          answerPreview: 'Vishnu built a visual monitoring and human-in-the-loop cockpit for LangGraph systems...',
+          selectedTool: 'get_live_demos',
+          provider: 'hugging face',
+          isFreeTier: true,
+          createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+        },
+      ];
+    }
   },
 };

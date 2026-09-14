@@ -301,6 +301,17 @@ export class McpController {
             data.is_free_tier = true;
             data.requires_custom_key = remainingQuota === 0;
           }
+
+          // Asynchronous fire-and-forget telemetry logging (zero latency impact on client)
+          this.supabaseService.logAgentQuery({
+            sessionId: vid,
+            query: question,
+            answerPreview: typeof data.answer === 'string' ? data.answer.slice(0, 300) : '',
+            selectedTool: data.selected_tool || data.tool || 'ml_pipeline',
+            provider: body.provider || 'default',
+            isFreeTier: !hasCustomKey,
+          }).catch((err) => this.logger.warn(`Failed to log query telemetry: ${err.message}`));
+
           return data;
         }
       } catch (err: any) {
@@ -309,6 +320,17 @@ export class McpController {
     }
 
     const localResult = await this.mcpService.answerQuery(question);
+
+    // Asynchronous fire-and-forget telemetry logging for local engine
+    this.supabaseService.logAgentQuery({
+      sessionId: vid,
+      query: question,
+      answerPreview: typeof localResult.answer === 'string' ? localResult.answer.slice(0, 300) : '',
+      selectedTool: 'local_knowledge',
+      provider: body.provider || 'default',
+      isFreeTier: !hasCustomKey,
+    }).catch((err) => this.logger.warn(`Failed to log query telemetry: ${err.message}`));
+
     return {
       ...localResult,
       quota_remaining: remainingQuota,
@@ -327,6 +349,20 @@ export class McpController {
       server: 'Vishnu Thankappan Agentic Interface',
       protocol: 'Model Context Protocol 2024-11-05 & REST',
       tools: this.mcpService.getTools(),
+    };
+  }
+
+  /**
+   * 5b. Agent Queries Telemetry Endpoint (REST)
+   * Path: /api/agent/queries
+   */
+  @Get('agent/queries')
+  async getAgentQueries(@Query('limit') limit?: string) {
+    const parsedLimit = limit ? Math.min(100, Math.max(1, parseInt(limit, 10))) : 50;
+    const queries = await this.supabaseService.getAgentQueries(parsedLimit);
+    return {
+      count: queries.length,
+      queries,
     };
   }
 
