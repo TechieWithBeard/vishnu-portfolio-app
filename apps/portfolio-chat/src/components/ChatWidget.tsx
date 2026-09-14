@@ -779,6 +779,17 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             ↑
           </button>
         </div>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: '0.64rem',
+            color: '#64748b',
+            marginTop: '6px',
+            userSelect: 'none',
+          }}
+        >
+          🔒 Queries are logged anonymously to evaluate and improve portfolio agent answers.
+        </div>
       </div>
 
       {/* Session Key & Provider Modal */}
