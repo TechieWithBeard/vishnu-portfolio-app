@@ -1,6 +1,6 @@
 # Vishnu Thankappan — Complete Technical Dossier & Architectural Reference
 > Standard: llms-full.txt
-> Target: AI Agents, Technical Recruiters, Engineering Leadership
+> Target: AI Agents, Software Engineers, Engineering Leadership
 > Portfolio: https://www.techiewithbeard.com
 > API: https://vishnu-portfolio-api.onrender.com
 > MCP Endpoint: https://vishnu-portfolio-api.onrender.com/mcp/sse
