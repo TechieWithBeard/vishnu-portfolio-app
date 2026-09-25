@@ -13,7 +13,13 @@ import { PortfolioApiService } from '../services/portfolio-api.service';
       }
 
       <div class="header-inner">
-        <a class="brand" routerLink="/" (click)="closeMobileMenu()" aria-label="Vishnu Thankappan Home">
+        <a
+          class="brand"
+          routerLink="/"
+          (mouseenter)="onNavigate('/')"
+          (click)="onNavigate('/'); closeMobileMenu()"
+          aria-label="Vishnu Thankappan Home"
+        >
           <span class="brand-mark">VT</span>
           <span class="brand-copy">
             <strong>{{ profile().name }}</strong>
@@ -28,6 +34,8 @@ import { PortfolioApiService } from '../services/portfolio-api.service';
               [routerLink]="link.path"
               routerLinkActive="active"
               [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+              (mouseenter)="onNavigate(link.path)"
+              (click)="onNavigate(link.path)"
             >
               {{ link.label }}
               @if (link.badge) {
@@ -70,7 +78,8 @@ import { PortfolioApiService } from '../services/portfolio-api.service';
               [routerLink]="link.path"
               routerLinkActive="active"
               [routerLinkActiveOptions]="{ exact: link.path === '/' }"
-              (click)="closeMobileMenu()"
+              (mouseenter)="onNavigate(link.path)"
+              (click)="onNavigate(link.path); closeMobileMenu()"
             >
               {{ link.label }}
               @if (link.badge) {
@@ -99,6 +108,10 @@ export class HeaderComponent {
     { path: '/writing', label: 'Articles' },
     { path: '/contact', label: 'Contact' },
   ];
+
+  protected onNavigate(path: string): void {
+    this.apiService.fetchForRoute(path);
+  }
 
   protected readonly darkMode = signal<boolean>(this.getInitialTheme());
 

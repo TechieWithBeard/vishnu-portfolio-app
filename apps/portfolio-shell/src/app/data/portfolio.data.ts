@@ -89,7 +89,7 @@ export const resume: Resume = {
   tagline: 'Scalable UI Architecture • AI-Powered Interfaces • Design Systems',
   location: 'Bangalore, India',
   email: 'vishnuthankappan@techiewithbeard.com',
-  phone: '+91-8373923785',
+  phone: '',
   linkedin: 'https://www.linkedin.com/in/vishnu-thankappan-7bbb0675/',
   github: 'https://github.com/techiewithbeard',
   summary:

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
 import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
 
@@ -58,23 +58,6 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
                 (click)="copyToClipboard(profile().email, 'email')"
               >
                 {{ copiedField() === 'email' ? '✓ Copied' : 'Copy' }}
-              </button>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3);">
-              <div>
-                <small style="color: var(--color-text-muted); display: block; font-size: var(--text-xs);">PHONE</small>
-                @if (loadingProfile()) {
-                  <app-skeleton-loader type="custom" height="1.1rem" width="10rem"></app-skeleton-loader>
-                } @else {
-                  <strong>{{ profile().phone }}</strong>
-                }
-              </div>
-              <button
-                class="btn btn-secondary btn-sm"
-                (click)="copyToClipboard(profile().phone, 'phone')"
-              >
-                {{ copiedField() === 'phone' ? '✓ Copied' : 'Copy' }}
               </button>
             </div>
 
@@ -143,10 +126,14 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
     </div>
   `,
 })
-export class ContactComponent {
+export class ContactComponent implements OnInit {
   private readonly apiService = inject(PortfolioApiService);
   protected readonly profile = this.apiService.profile;
   protected readonly loadingProfile = this.apiService.loadingProfile;
+
+  ngOnInit(): void {
+    this.apiService.fetchProfile();
+  }
 
   protected readonly copiedField = signal<string | null>(null);
 

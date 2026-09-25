@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
 import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
@@ -86,10 +86,14 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
     </div>
   `,
 })
-export class ProjectsComponent {
+export class ProjectsComponent implements OnInit {
   private readonly apiService = inject(PortfolioApiService);
   protected readonly projects = this.apiService.projects;
   protected readonly loadingProjects = this.apiService.loadingProjects;
+
+  ngOnInit(): void {
+    this.apiService.fetchProjects();
+  }
 
   protected readonly categories = [
     'All',

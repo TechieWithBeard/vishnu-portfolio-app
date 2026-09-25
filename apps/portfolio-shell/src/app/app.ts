@@ -7,6 +7,7 @@ import { FooterComponent } from './layout/footer.component';
 import { HeaderComponent } from './layout/header.component';
 import { PortfolioChatWrapperComponent } from './ui/portfolio-chat-wrapper.component';
 import { CloudBootHudComponent } from './ui/cloud-boot-hud/cloud-boot-hud.component';
+import { PortfolioApiService } from './services/portfolio-api.service';
 
 @Component({
   imports: [
@@ -22,6 +23,7 @@ import { CloudBootHudComponent } from './ui/cloud-boot-hud/cloud-boot-hud.compon
 })
 export class App implements OnInit, OnDestroy {
   private readonly router = inject(Router);
+  private readonly apiService = inject(PortfolioApiService);
   readonly isChatOpen = signal(false);
 
   private navSub?: Subscription;
@@ -41,8 +43,9 @@ export class App implements OnInit, OnDestroy {
       window.addEventListener('resize', this.onScrollOrResize, { passive: true });
 
       this.navSub = this.router.events
-        .pipe(filter((event) => event instanceof NavigationEnd))
-        .subscribe(() => {
+        .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+        .subscribe((event) => {
+          this.apiService.fetchForRoute(event.urlAfterRedirects || event.url);
           setTimeout(() => this.updateLift(), 100);
         });
 

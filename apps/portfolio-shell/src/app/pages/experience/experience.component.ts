@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
 import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
 
@@ -83,9 +83,14 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
     </div>
   `,
 })
-export class ExperienceComponent {
+export class ExperienceComponent implements OnInit {
   private readonly apiService = inject(PortfolioApiService);
   protected readonly profile = this.apiService.profile;
   protected readonly experience = this.apiService.experience;
   protected readonly loadingExperience = this.apiService.loadingExperience;
+
+  ngOnInit(): void {
+    this.apiService.fetchExperience();
+    this.apiService.fetchProfile();
+  }
 }

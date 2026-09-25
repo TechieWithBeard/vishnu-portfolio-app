@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
 import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
@@ -11,8 +11,13 @@ import { AppStackComponent } from '../../ui/app-stack.component';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   private readonly apiService = inject(PortfolioApiService);
+
+  ngOnInit(): void {
+    this.apiService.fetchProfile();
+    this.apiService.fetchSkills();
+  }
 
   protected readonly profile = this.apiService.profile;
   protected readonly projects = this.apiService.projects;
