@@ -176,7 +176,7 @@ VALUES (
     'Scalable UI Architecture • AI-Powered Interfaces • Design Systems',
     'Bangalore, India',
     'vishnuthankappan@techiewithbeard.com',
-    '+91-8373923785',
+    '',
     'https://www.linkedin.com/in/vishnu-thankappan-7bbb0675/',
     'https://github.com/techiewithbeard',
     'Senior Frontend Engineer with 7+ years of experience engineering scalable, high-performance web platforms. Deep specialization in enterprise frontend architecture, Nx monorepos, reusable design systems, and modern Angular/React microfrontends. Actively shipping AI-powered interfaces with streaming LLM responses, LangChain, and LangGraph.',

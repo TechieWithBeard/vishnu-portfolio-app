@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { NgClass, TitleCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PortfolioApiService } from '../../services/portfolio-api.service';
@@ -229,10 +229,14 @@ import { SkeletonLoaderComponent } from '../../ui/skeleton-loader.component';
     `,
   ],
 })
-export class WritingComponent {
+export class WritingComponent implements OnInit {
   private readonly apiService = inject(PortfolioApiService);
   protected readonly writing = this.apiService.writing;
   protected readonly loadingWriting = this.apiService.loadingWriting;
+
+  ngOnInit(): void {
+    this.apiService.fetchWriting();
+  }
 
   protected readonly platforms = ['All', 'Medium', 'Dev.to', 'LinkedIn'];
   protected readonly selectedPlatform = signal<string>('All');

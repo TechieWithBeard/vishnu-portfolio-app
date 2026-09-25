@@ -40,6 +40,8 @@ export class DemosComponent implements OnInit {
   protected readonly expandedTechMap = signal<Record<string, boolean>>({});
 
   ngOnInit(): void {
+    this.apiService.fetchDemos();
+
     // Listen for incoming deeplinks (e.g. /demos?demo=talentlens-ai or /demos?id=...)
     this.route.queryParams.subscribe((params) => {
       const targetId = params['demo'] || params['id'];
